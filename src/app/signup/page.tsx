@@ -13,9 +13,9 @@ export default function SignupPage() {
       </div>
       <AuthForm mode="signup" />
       <p className="mt-4 text-center text-sm text-muted-foreground">
-        Already have an account?{" "}
-        <Link href="/login" className="underline underline-offset-4 hover:text-primary">
-          Login
+        Have a question/concern about this site?{" "}
+        <Link href="#" className="underline underline-offset-4 hover:text-primary">
+          Contact us
         </Link>
       </p>
     </div>

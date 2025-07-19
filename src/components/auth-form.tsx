@@ -115,7 +115,9 @@ export function AuthForm({ mode }: AuthFormProps) {
             <span className="w-full border-t" />
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+            <span className="bg-background px-2 text-muted-foreground">
+              {mode === 'signup' ? "use Google to login with your Smith email" : "Or continue with"}
+            </span>
           </div>
         </div>
         <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={isGoogleLoading}>

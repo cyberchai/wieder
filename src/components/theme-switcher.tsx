@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Moon, Sun, Paintbrush,熊 } from "lucide-react"
+import { Moon, Sun } from "lucide-react"
 import { useTheme } from "@/providers/theme-provider"
 
 import { Button } from "@/components/ui/button"
@@ -34,8 +34,8 @@ export function ThemeSwitcher() {
         <DropdownMenuItem onClick={() => setTheme("confesh")}>
           Confesh
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("bears")}>
-          Bears
+        <DropdownMenuItem onClick={() => setTheme("skunks")}>
+          Skunks
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setTheme("system")}>
           System
