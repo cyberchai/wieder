@@ -37,9 +37,6 @@ export function ThemeSwitcher() {
         <DropdownMenuItem onClick={() => setTheme("skunks")}>
           Skunks
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("system")}>
-          System
-        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )
