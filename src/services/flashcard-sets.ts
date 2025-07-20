@@ -10,8 +10,8 @@ import {
   updateDoc,
   deleteDoc,
   serverTimestamp,
+  orderBy,
 } from "firebase/firestore";
-import type { User } from "firebase/auth";
 
 export interface Card {
   id: string;
@@ -44,12 +44,12 @@ export const createFlashcardSet = async (
   });
 };
 
-// Get all flashcard sets for a user
+// Get all flashcard sets for a user, ordered by creation date
 export const getFlashcardSets = (
   userId: string,
   callback: (sets: FlashcardSet[]) => void
 ) => {
-  const q = query(setsCollection, where("userId", "==", userId));
+  const q = query(setsCollection, where("userId", "==", userId), orderBy("createdAt", "desc"));
   return onSnapshot(q, (querySnapshot) => {
     const sets: FlashcardSet[] = [];
     querySnapshot.forEach((doc) => {
@@ -88,4 +88,14 @@ export const updateFlashcardSet = async (
 export const deleteFlashcardSet = async (setId: string) => {
     const setDoc = doc(db, "flashcardSets", setId);
     return await deleteDoc(setDoc);
+};
+
+// Duplicate a flashcard set
+export const duplicateFlashcardSet = async (set: FlashcardSet) => {
+    return await addDoc(setsCollection, {
+        userId: set.userId,
+        title: `${set.title} (Copy)`,
+        cards: set.cards,
+        createdAt: serverTimestamp(),
+    });
 };

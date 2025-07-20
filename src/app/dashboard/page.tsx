@@ -5,7 +5,7 @@ import { ProtectedRoute, useAuth } from "@/providers/auth-provider";
 import Header from "@/components/header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { PlusCircle, MoreVertical, Loader2, Trash2, Edit, Share2, Copy } from "lucide-react";
+import { PlusCircle, MoreVertical, Loader2, Trash2, Edit, Share2, Copy, CopyPlus } from "lucide-react";
 import Link from "next/link";
 import {
   DropdownMenu,
@@ -23,7 +23,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { getFlashcardSets, deleteFlashcardSet, type FlashcardSet } from "@/services/flashcard-sets";
+import { getFlashcardSets, deleteFlashcardSet, duplicateFlashcardSet, type FlashcardSet } from "@/services/flashcard-sets";
 import { useToast } from "@/hooks/use-toast";
 
 const DashboardPage = () => {
@@ -68,6 +68,16 @@ const DashboardPage = () => {
         navigator.clipboard.writeText(shareLink);
         toast({ title: "Copied to clipboard!", description: "Share link has been copied." });
     };
+
+    const handleDuplicate = async (set: FlashcardSet) => {
+        if (!user) return;
+        try {
+            await duplicateFlashcardSet(set);
+            toast({ title: "Success", description: "Set duplicated successfully." });
+        } catch (error) {
+            toast({ title: "Error", description: "Failed to duplicate set.", variant: "destructive" });
+        }
+    }
 
     if (loading) {
         return (
@@ -117,6 +127,9 @@ const DashboardPage = () => {
                                                 <DropdownMenuContent align="end">
                                                     <DropdownMenuItem asChild>
                                                         <Link href={`/sets/${set.id}/edit`}><Edit className="mr-2 h-4 w-4" />Edit</Link>
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={() => handleDuplicate(set)}>
+                                                        <CopyPlus className="mr-2 h-4 w-4" />Duplicate
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem onClick={() => handleShare(set.id)}>
                                                         <Share2 className="mr-2 h-4 w-4" />Share
