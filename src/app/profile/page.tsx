@@ -33,11 +33,11 @@ export default function ProfilePage() {
                 <Header />
                 <main className="flex-1 p-4 md:p-8 container">
                     <div className="max-w-2xl mx-auto">
-                        <h1 className="text-3xl font-bold tracking-tight mb-8">Profile & Settings</h1>
+                        <h1 className="text-3xl font-bold tracking-tight mb-8">profile</h1>
                         <Card>
                             <CardHeader>
-                                <CardTitle>User Information</CardTitle>
-                                <CardDescription>Your account details.</CardDescription>
+                                <CardTitle>my info</CardTitle>
+                                {/* <CardDescription>Your account details.</CardDescription> */}
                             </CardHeader>
                             <CardContent className="space-y-6">
                                 <div className="flex items-center space-x-4">
@@ -51,16 +51,16 @@ export default function ProfilePage() {
                                     </div>
                                 </div>
 
-                                <div className="space-y-2">
+                                {/* <div className="space-y-2">
                                   <Label>Theme</Label>
                                   <div className="p-2 border rounded-md flex justify-between items-center">
                                       <p className="text-muted-foreground">Select your preferred theme.</p>
                                       <ThemeSwitcher />
                                   </div>
-                                </div>
+                                </div> */}
                                 
                                 <Button variant="destructive" onClick={handleSignOut} className="w-full sm:w-auto">
-                                    Sign Out
+                                    sign out
                                 </Button>
                             </CardContent>
                         </Card>

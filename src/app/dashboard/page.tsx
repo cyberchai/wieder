@@ -100,13 +100,13 @@ const DashboardPage = () => {
                 <main className="flex-1 p-4 md:p-8 container">
                     <div className="flex items-center justify-between mb-8">
                         <div>
-                            <h1 className="text-3xl font-bold tracking-tight">My Sets</h1>
-                             {user && <p className="text-muted-foreground">hi {user.displayName || user.email}</p>}
+                            <h1 className="text-3xl font-bold tracking-tight">my sets</h1>
+                             {user && <p className="text-muted-foreground">{user.displayName || user.email}</p>}
                         </div>
                         <Button asChild>
                             <Link href="/sets/create">
                                 <PlusCircle className="mr-2 h-4 w-4" />
-                                Create New Set
+                                new set
                             </Link>
                         </Button>
                     </div>
@@ -145,7 +145,7 @@ const DashboardPage = () => {
                                     <CardContent className="flex-grow"></CardContent>
                                     <CardFooter>
                                         <Button className="w-full" asChild>
-                                            <Link href={`/sets/${set.id}/study`}>Study</Link>
+                                            <Link href={`/sets/${set.id}/study`}>practice</Link>
                                         </Button>
                                     </CardFooter>
                                 </Card>

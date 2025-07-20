@@ -19,13 +19,13 @@ import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const setSchema = z.object({
-  title: z.string().min(1, 'Title is required'),
+  title: z.string().min(1, 'title is required'),
   cards: z
     .array(
       z.object({
         id: z.string(),
-        front: z.string().min(1, 'Front side cannot be empty'),
-        back: z.string().min(1, 'Back side cannot be empty'),
+        front: z.string().min(1, 'front side cannot be empty'),
+        back: z.string().min(1, 'back side cannot be empty'),
       })
     )
     .min(1, 'You must have at least one card'),
@@ -86,7 +86,7 @@ export default function EditSetPage() {
     setIsSubmitting(true);
     try {
       await updateFlashcardSet(setId, data.title, data.cards);
-      toast({ title: 'Success!', description: 'Your set has been updated.' });
+      toast({ title: 'yay!', description: 'your set has been updated.' });
       router.push('/dashboard');
     } catch (error) {
       toast({ title: 'Error', description: 'Failed to update set. Please try again.', variant: 'destructive' });
@@ -142,18 +142,18 @@ export default function EditSetPage() {
              <Button variant="ghost" asChild className="mb-4">
               <Link href="/dashboard">
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Dashboard
+                back
               </Link>
             </Button>
             <Card>
               <CardHeader>
-                <CardTitle className="text-3xl">Edit Set</CardTitle>
-                <CardDescription>Modify your set's title and flashcards below.</CardDescription>
+                <CardTitle className="text-3xl">edit set</CardTitle>
+                <CardDescription>modify your set's title and flashcards below.</CardDescription>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit(onSubmit)}>
                   <div className="mb-8">
-                    <Label htmlFor="title" className="text-lg font-semibold">Set Title</Label>
+                    <Label htmlFor="title" className="text-lg font-semibold">set title</Label>
                     <Input
                       id="title"
                       {...register('title')}
@@ -168,7 +168,7 @@ export default function EditSetPage() {
                         <div className="font-bold text-lg text-muted-foreground pt-2">{index + 1}</div>
                         <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
-                            <Label htmlFor={`cards.${index}.front`}>Front</Label>
+                            <Label htmlFor={`cards.${index}.front`}>front</Label>
                             <Textarea
                               id={`cards.${index}.front`}
                               {...register(`cards.${index}.front`)}
@@ -177,7 +177,7 @@ export default function EditSetPage() {
                             {errors.cards?.[index]?.front && <p className="text-destructive mt-1">{errors.cards[index]?.front?.message}</p>}
                           </div>
                           <div>
-                            <Label htmlFor={`cards.${index}.back`}>Back</Label>
+                            <Label htmlFor={`cards.${index}.back`}>back</Label>
                             <Textarea
                               id={`cards.${index}.back`}
                               {...register(`cards.${index}.back`)}
@@ -208,13 +208,13 @@ export default function EditSetPage() {
                     className="mt-6"
                   >
                     <PlusCircle className="mr-2 h-4 w-4" />
-                    Add Card
+                    add card
                   </Button>
 
                   <div className="flex justify-end mt-8">
                     <Button type="submit" size="lg" disabled={isSubmitting}>
                       {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                      Save Changes
+                      save changes
                     </Button>
                   </div>
                 </form>

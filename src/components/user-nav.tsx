@@ -62,14 +62,14 @@ export function UserNav() {
           <DropdownMenuItem asChild>
             <Link href="/profile">
               <UserIcon className="mr-2 h-4 w-4" />
-              <span>Profile</span>
+              <span>profile!</span>
             </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleSignOut}>
           <LogOut className="mr-2 h-4 w-4" />
-          <span>Log out</span>
+          <span>log out</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

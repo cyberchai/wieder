@@ -22,11 +22,11 @@ const setSchema = z.object({
   cards: z
     .array(
       z.object({
-        front: z.string().min(1, 'Front side cannot be empty'),
-        back: z.string().min(1, 'Back side cannot be empty'),
+        front: z.string().min(1, 'front side cannot be empty'),
+        back: z.string().min(1, 'back side cannot be empty'),
       })
     )
-    .min(1, 'You must have at least one card'),
+    .min(1, 'you must have at least one card'),
 });
 
 type SetFormData = z.infer<typeof setSchema>;
@@ -58,13 +58,13 @@ export default function CreateSetPage() {
 
   const onSubmit = async (data: SetFormData) => {
     if (!user) {
-      toast({ title: 'Error', description: 'You must be logged in to create a set.', variant: 'destructive' });
+      toast({ title: 'Error', description: 'you must be logged in to create a set.', variant: 'destructive' });
       return;
     }
     setIsSubmitting(true);
     try {
       await createFlashcardSet(user.uid, data.title, data.cards);
-      toast({ title: 'Success!', description: 'Your new set has been created.' });
+      toast({ title: 'yay!', description: 'your new set has been created.' });
       router.push('/dashboard');
     } catch (error) {
       toast({ title: 'Error', description: 'Failed to create set. Please try again.', variant: 'destructive' });
@@ -92,13 +92,13 @@ export default function CreateSetPage() {
             <Button variant="ghost" asChild className="mb-4">
               <Link href="/dashboard">
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Dashboard
+                back
               </Link>
             </Button>
             <Card>
               <CardHeader>
-                <CardTitle className="text-3xl">Create a New Set</CardTitle>
-                <CardDescription>Give your set a title and add your flashcards below.</CardDescription>
+                <CardTitle className="text-3xl">new set</CardTitle>
+                <CardDescription>give your set a title and add your flashcards below.</CardDescription>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit(onSubmit)}>
@@ -108,7 +108,7 @@ export default function CreateSetPage() {
                       id="title"
                       {...register('title')}
                       className="mt-2 text-xl p-4"
-                      placeholder="e.g. Japanese Vocabulary"
+                      placeholder="e.g. German Vocabulary"
                     />
                     {errors.title && <p className="text-destructive mt-1">{errors.title.message}</p>}
                   </div>
@@ -123,7 +123,7 @@ export default function CreateSetPage() {
                             <Textarea
                               id={`cards.${index}.front`}
                               {...register(`cards.${index}.front`)}
-                              placeholder="e.g. こんにちは"
+                              placeholder="e.g. wie geht's?"
                               className="mt-1 resize-none"
                             />
                             {errors.cards?.[index]?.front && <p className="text-destructive mt-1">{errors.cards[index]?.front?.message}</p>}
@@ -133,7 +133,7 @@ export default function CreateSetPage() {
                             <Textarea
                               id={`cards.${index}.back`}
                               {...register(`cards.${index}.back`)}
-                              placeholder="e.g. Hello"
+                              placeholder="e.g. how are you?"
                               className="mt-1 resize-none"
                               onKeyDown={(e) => handleKeyDown(e, index)}
                             />
@@ -161,13 +161,13 @@ export default function CreateSetPage() {
                     className="mt-6"
                   >
                     <PlusCircle className="mr-2 h-4 w-4" />
-                    Add Card
+                    add card
                   </Button>
 
                   <div className="flex justify-end mt-8">
                     <Button type="submit" size="lg" disabled={isSubmitting}>
                       {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                      Create Set
+                      create set
                     </Button>
                   </div>
                 </form>
