@@ -32,7 +32,7 @@ export default function LandingPage() {
                 {/* just an idea we can have free pop up in different languages */}
                 <p className="max-w-[600px] mx-auto text-muted-foreground md:text-xl">
                   simple and effective learning through repetition.<br></br>
-                  no ads, no AI, adhd-friendly.
+                  no ads, no ai, adhd-friendly.
                 </p>
               </div>
               <div className="flex justify-center flex-col gap-2 min-[400px]:flex-row">
