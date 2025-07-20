@@ -31,8 +31,8 @@ export default function LandingPage() {
                 </h1>
                 {/* just an idea we can have free pop up in different languages */}
                 <p className="max-w-[600px] mx-auto text-muted-foreground md:text-xl">
+                  no ads, no AI, adhd-friendly.<br></br>
                   simple and effective learning through repetition.
-                  ads-free, ai-free, and adhd-friendly.
                 </p>
               </div>
               <div className="flex justify-center flex-col gap-2 min-[400px]:flex-row">
