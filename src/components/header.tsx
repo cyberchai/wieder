@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { ThemeSwitcher } from './theme-switcher';
 import { UserNav } from './user-nav';
-import { AppWindow } from 'lucide-react';
+import { IterationCcw } from 'lucide-react';
 
 export default function Header() {
   return (
@@ -9,7 +9,7 @@ export default function Header() {
       <div className="container flex h-14 items-center">
         <div className="mr-4 flex items-center">
           <Link href="/dashboard" className="mr-6 flex items-center space-x-2">
-            <AppWindow className="h-6 w-6 text-primary" />
+            <IterationCcw className="h-6 w-6 text-primary" />
             <span className="hidden font-bold sm:inline-block">Wieder</span>
           </Link>
         </div>

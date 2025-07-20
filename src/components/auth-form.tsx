@@ -27,7 +27,7 @@ export function AuthForm({ mode }: AuthFormProps) {
       await signInWithPopup(auth, provider);
       // await signInWithRedirect(auth, new GoogleAuthProvider());
       router.push("/dashboard");
-      toast({ title: "Login successful", description: "Welcome!" });
+      toast({ title: "login successful", description: "welcome!" });
     } catch (error: any) {
       toast({
         title: "Google Sign-In Error",
@@ -42,9 +42,9 @@ export function AuthForm({ mode }: AuthFormProps) {
   return (
     <Card className="w-full max-w-sm">
       <CardHeader>
-        <CardTitle>{mode === "login" ? "Welcome Back!" : "Create an Account"}</CardTitle>
+        <CardTitle>{mode === "login" ? "welcome!" : "please sign in with your smith email"}</CardTitle>
         <CardDescription>
-          {mode === "login" ? "Sign in to access your flashcards." : "Sign up or log in using your Google account."}
+          {mode === "login" ? "sign in to access your flashcards" : "sign up or log in using your Google account"}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -54,7 +54,7 @@ export function AuthForm({ mode }: AuthFormProps) {
           </div>
           <div className="relative flex justify-center text-xs uppercase">
             <span className="bg-background px-2 text-muted-foreground">
-              {mode === 'signup' ? "use Google to login with your Smith email" : "Sign in with Google"}
+              {mode === 'signup' ? "use Google to login with your Smith email" : "sign in with Google"}
             </span>
           </div>
         </div>
@@ -64,7 +64,7 @@ export function AuthForm({ mode }: AuthFormProps) {
           ) : (
             <Icons.google className="mr-2 h-4 w-4" />
           )}
-          Google
+          google
         </Button>
       </CardContent>
     </Card>

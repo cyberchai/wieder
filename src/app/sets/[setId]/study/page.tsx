@@ -106,9 +106,9 @@ export default function StudyPage() {
             <div className="flex flex-col min-h-screen bg-secondary/50">
                 <Header />
                 <main className="flex-1 container py-8 text-center">
-                    <p>Set not found or has no cards.</p>
+                    <p>set not found or has no cards.</p>
                      <Button variant="link" asChild>
-                        <Link href="/dashboard">Go back to dashboard</Link>
+                        <Link href="/dashboard">go back to dashboard</Link>
                     </Button>
                 </main>
             </div>
@@ -127,46 +127,46 @@ export default function StudyPage() {
                 <Button variant="ghost" asChild>
                     <Link href="/dashboard">
                         <ArrowLeft className="mr-2 h-4 w-4" />
-                        Back to Dashboard
+                        back to dashboard
                     </Link>
                 </Button>
                  <div className="text-sm text-muted-foreground">
-                    Card {currentIndex + 1} of {shuffledCards.length}
+                    card {currentIndex + 1} of {shuffledCards.length}
                 </div>
             </div>
             <div className="flex-grow flex items-center justify-center">
                 {isFinished ? (
                      <Card className="w-full max-w-2xl text-center p-8">
-                        <CardTitle className="text-3xl mb-4">Congratulations!</CardTitle>
-                        <p className="text-muted-foreground mb-6">You've completed this study set.</p>
+                        <CardTitle className="text-3xl mb-4">YAY!</CardTitle>
+                        <p className="text-muted-foreground mb-6">you've completed this study set.</p>
                         <Button onClick={handleRestart}>
                             <RefreshCw className="mr-2 h-4 w-4" />
-                            Study Again
+                            study again
                         </Button>
                     </Card>
                 ) : (
                     <Card className="w-full max-w-2xl">
                         <CardHeader>
-                            <CardTitle>Definition:</CardTitle>
+                            <CardTitle>definition:</CardTitle>
                             <p className="text-2xl pt-4">{currentCard.back}</p>
                         </CardHeader>
                         <CardContent>
                             <form onSubmit={handleCheckAnswer} className="space-y-4">
                                 <div>
                                     <label htmlFor="answer" className="font-medium">
-                                        What is the corresponding term?
+                                        what is the corresponding term?
                                     </label>
                                     <Input
                                         id="answer"
                                         value={userAnswer}
                                         onChange={(e) => setUserAnswer(e.target.value)}
-                                        placeholder="Type your answer"
+                                        placeholder="type your answer"
                                         className="mt-2 text-lg"
                                         disabled={!!feedback}
                                     />
                                 </div>
                                 <Button type="submit" className="w-full" disabled={!!feedback}>
-                                    Check Answer
+                                    check!
                                 </Button>
                             </form>
                             {feedback && (
@@ -177,19 +177,19 @@ export default function StudyPage() {
                                     {feedback === 'correct' ? (
                                         <div className="flex items-center text-green-700 dark:text-green-300">
                                             <CheckCircle2 className="h-6 w-6 mr-2"/>
-                                            <p className="font-bold text-lg">Correct!</p>
+                                            <p className="font-bold text-lg">correct!</p>
                                         </div>
                                     ) : (
                                         <div className="flex flex-col items-center text-red-700 dark:text-red-300">
                                             <div className="flex items-center">
                                                 <XCircle className="h-6 w-6 mr-2"/>
-                                                <p className="font-bold text-lg">Incorrect</p>
+                                                <p className="font-bold text-lg">incorrect</p>
                                             </div>
-                                            <p className="mt-2">The correct answer is: <strong className="font-bold">{currentCard.front}</strong></p>
+                                            <p className="mt-2">the correct answer is: <strong className="font-bold">{currentCard.front}</strong></p>
                                         </div>
                                     )}
                                     <Button onClick={handleNextCard} className="mt-4 w-1/2">
-                                        Next
+                                        next
                                     </Button>
                                 </div>
                             )}

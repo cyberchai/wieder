@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Zap, CheckCircle, Share2 } from 'lucide-react';
-import { AppWindow } from 'lucide-react';
+import { IterationCcw } from 'lucide-react';
 import { ThemeSwitcher } from '@/components/theme-switcher';
 
 export default function LandingPage() {
@@ -9,7 +9,7 @@ export default function LandingPage() {
     <div className="flex flex-col min-h-screen bg-background">
       <header className="px-4 lg:px-6 h-14 flex items-center sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <Link href="#" className="flex items-center justify-center gap-2" prefetch={false}>
-          <AppWindow className="h-6 w-6 text-primary" />
+          <IterationCcw className="h-6 w-6 text-primary" />
           <span className="font-bold text-lg">wieder</span>
         </Link>
         <nav className="ml-auto flex gap-4 sm:gap-6 items-center">

@@ -6,8 +6,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { ThemedBody } from '@/components/themed-body';
 
 export const metadata: Metadata = {
-  title: 'Wieder - Modern Flashcards',
-  description: 'A modern flashcard application for effective learning.',
+  title: 'wieder - learning with flashcards',
+  description: 'a flashcard application for learning.',
 };
 
 // export default function RootLayout({
