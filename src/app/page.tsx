@@ -32,7 +32,7 @@ export default function LandingPage() {
                 {/* just an idea we can have free pop up in different languages */}
                 <p className="max-w-[600px] mx-auto text-muted-foreground md:text-xl">
                   simple and effective learning through repetition.
-                  this site is ai-free and adhd-friendly.
+                  ads-free, ai-free, and adhd-friendly.
                 </p>
               </div>
               <div className="flex justify-center flex-col gap-2 min-[400px]:flex-row">
@@ -81,13 +81,13 @@ export default function LandingPage() {
         </section>
       </main>
       <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t">
-        <p className="text-xs text-muted-foreground">made with &lt;3 by a Smithie</p>
+        <p className="text-xs text-muted-foreground">made with &lt;3 by a smithie</p>
         <nav className="sm:ml-auto flex gap-4 sm:gap-6">
           <Link href="/terms" className="text-xs hover:underline underline-offset-4" prefetch={false}>
-            Terms of Service
+            terms of service
           </Link>
           <Link href="/privacy" className="text-xs hover:underline underline-offset-4" prefetch={false}>
-            Privacy
+            privacy
           </Link>
         </nav>
       </footer>
