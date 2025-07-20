@@ -1,8 +1,6 @@
 import Link from 'next/link';
-import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { CheckCircle, Zap, Share2, Palette } from 'lucide-react';
+import { Zap, CheckCircle, Share2 } from 'lucide-react';
 import { AppWindow } from 'lucide-react';
 import { ThemeSwitcher } from '@/components/theme-switcher';
 
@@ -12,7 +10,7 @@ export default function LandingPage() {
       <header className="px-4 lg:px-6 h-14 flex items-center sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <Link href="#" className="flex items-center justify-center gap-2" prefetch={false}>
           <AppWindow className="h-6 w-6 text-primary" />
-          <span className="font-bold text-lg">Wieder</span>
+          <span className="font-bold text-lg">wieder</span>
         </Link>
         <nav className="ml-auto flex gap-4 sm:gap-6 items-center">
           <Button variant="default" asChild>
@@ -31,13 +29,15 @@ export default function LandingPage() {
                 <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
                   keep learning free
                 </h1>
+                {/* just an idea we can have free pop up in different languages */}
                 <p className="max-w-[600px] mx-auto text-muted-foreground md:text-xl">
                   simple and effective learning through repetition.
+                  this site is ai-free and adhd-friendly.
                 </p>
               </div>
               <div className="flex justify-center flex-col gap-2 min-[400px]:flex-row">
-                <Button size="lg" asChild>
-                  <Link href="/signup" prefetch={false}>
+                 <Button size="lg" asChild>
+                  <Link href="/login" prefetch={false}>
                     login with your smith email!
                   </Link>
                 </Button>
@@ -52,9 +52,6 @@ export default function LandingPage() {
               <div className="space-y-2">
                 <div className="inline-block rounded-lg bg-muted px-3 py-1 text-sm">tldr;</div>
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">how to use this</h2>
-                {/* <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                  Wieder is packed with features designed to enhance your learning experience, from creation to collaboration.
-                </p> */}
               </div>
             </div>
             <div className="mx-auto grid max-w-5xl items-start gap-8 sm:grid-cols-2 md:gap-12 lg:grid-cols-3 lg:gap-16 mt-12">
@@ -63,20 +60,20 @@ export default function LandingPage() {
                   <Zap className="h-8 w-8 text-primary" />
                 </div>
                 <h3 className="text-lg font-bold">flashcards</h3>
-                <p className="text-sm text-muted-foreground">make basic flashcards</p>
+                <p className="text-sm text-muted-foreground">create and learn with flashcards</p>
               </div>
               <div className="grid gap-1 text-center">
                 <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-background mb-4 shadow">
                   <CheckCircle className="h-8 w-8 text-primary" />
                 </div>
                 <h3 className="text-lg font-bold">handwrite</h3>
-                <p className="text-sm text-muted-foreground">handwrite vocab + definitions using your tablet</p>
+                <p className="text-sm text-muted-foreground">handwrite vocab + definitions for your learning set when using your tablet</p>
               </div>
               <div className="grid gap-1 text-center">
                 <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-background mb-4 shadow">
                   <Share2 className="h-8 w-8 text-primary" />
                 </div>
-                <h3 className="text-lg font-bold">share with peers</h3>
+                <h3 className="text-lg font-bold">share sets</h3>
                 <p className="text-sm text-muted-foreground">use the link associated with your learning set to share with other smithies</p>
               </div>
             </div>
@@ -87,10 +84,10 @@ export default function LandingPage() {
         <p className="text-xs text-muted-foreground">made with &lt;3 by a Smithie</p>
         <nav className="sm:ml-auto flex gap-4 sm:gap-6">
           <Link href="#" className="text-xs hover:underline underline-offset-4" prefetch={false}>
-            terms of service
+            Terms of Service
           </Link>
           <Link href="#" className="text-xs hover:underline underline-offset-4" prefetch={false}>
-            privacy
+            Privacy
           </Link>
         </nav>
       </footer>

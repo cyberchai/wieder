@@ -1,10 +1,11 @@
 "use client"
 
-import { ProtectedRoute } from "@/providers/auth-provider";
+import { useState, useEffect } from "react";
+import { ProtectedRoute, useAuth } from "@/providers/auth-provider";
 import Header from "@/components/header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { PlusCircle, MoreVertical } from "lucide-react";
+import { PlusCircle, MoreVertical, Loader2, Trash2, Edit, Share2, Copy } from "lucide-react";
 import Link from "next/link";
 import {
   DropdownMenu,
@@ -12,22 +13,86 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
-const mockSets = [
-    { id: '1', title: 'Japanese Vocabulary', cardCount: 50 },
-    { id: '2', title: 'React Hooks', cardCount: 12 },
-    { id: '3', title: 'Organic Chemistry Reactions', cardCount: 125 },
-    { id: '4', title: 'Architectural Styles', cardCount: 30 },
-]
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { getFlashcardSets, deleteFlashcardSet, type FlashcardSet } from "@/services/flashcard-sets";
+import { useToast } from "@/hooks/use-toast";
 
 const DashboardPage = () => {
+    const { user } = useAuth();
+    const { toast } = useToast();
+    const [sets, setSets] = useState<FlashcardSet[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [deletingId, setDeletingId] = useState<string | null>(null);
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
+    useEffect(() => {
+        if (user) {
+            const unsubscribe = getFlashcardSets(user.uid, (data) => {
+                setSets(data);
+                setLoading(false);
+            });
+            return () => unsubscribe();
+        }
+    }, [user]);
+    
+    const handleDeleteClick = (setId: string) => {
+        setDeletingId(setId);
+        setIsDeleteDialogOpen(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (deletingId) {
+            try {
+                await deleteFlashcardSet(deletingId);
+                toast({ title: "Success", description: "Set deleted successfully." });
+            } catch (error) {
+                toast({ title: "Error", description: "Failed to delete set.", variant: "destructive" });
+            } finally {
+                setIsDeleteDialogOpen(false);
+                setDeletingId(null);
+            }
+        }
+    };
+    
+    const handleShare = (setId: string) => {
+        const shareLink = `${window.location.origin}/sets/${setId}/study`;
+        navigator.clipboard.writeText(shareLink);
+        toast({ title: "Copied to clipboard!", description: "Share link has been copied." });
+    };
+
+    if (loading) {
+        return (
+            <ProtectedRoute>
+                <div className="flex flex-col min-h-screen bg-secondary/50">
+                    <Header />
+                    <main className="flex-1 p-4 md:p-8 container text-center">
+                        <Loader2 className="h-8 w-8 animate-spin mx-auto mt-12" />
+                        <p className="text-muted-foreground mt-2">Loading your sets...</p>
+                    </main>
+                </div>
+            </ProtectedRoute>
+        );
+    }
+    
     return (
         <ProtectedRoute>
             <div className="flex flex-col min-h-screen bg-secondary/50">
                 <Header />
                 <main className="flex-1 p-4 md:p-8 container">
                     <div className="flex items-center justify-between mb-8">
-                        <h1 className="text-3xl font-bold tracking-tight">My Sets</h1>
+                        <div>
+                            <h1 className="text-3xl font-bold tracking-tight">My Sets</h1>
+                             {user && <p className="text-muted-foreground">hi {user.displayName || user.email}</p>}
+                        </div>
                         <Button asChild>
                             <Link href="/sets/create">
                                 <PlusCircle className="mr-2 h-4 w-4" />
@@ -36,9 +101,9 @@ const DashboardPage = () => {
                         </Button>
                     </div>
 
-                    {mockSets.length > 0 ? (
+                    {sets.length > 0 ? (
                         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                            {mockSets.map(set => (
+                            {sets.map(set => (
                                 <Card key={set.id} className="flex flex-col">
                                     <CardHeader>
                                         <div className="flex items-start justify-between">
@@ -50,14 +115,19 @@ const DashboardPage = () => {
                                                     </Button>
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align="end">
-                                                    <DropdownMenuItem>Edit</DropdownMenuItem>
-                                                    <DropdownMenuItem>Share</DropdownMenuItem>
-                                                    <DropdownMenuItem>Duplicate</DropdownMenuItem>
-                                                    <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
+                                                    <DropdownMenuItem asChild>
+                                                        <Link href={`/sets/${set.id}/edit`}><Edit className="mr-2 h-4 w-4" />Edit</Link>
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={() => handleShare(set.id)}>
+                                                        <Share2 className="mr-2 h-4 w-4" />Share
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={() => handleDeleteClick(set.id)} className="text-destructive">
+                                                        <Trash2 className="mr-2 h-4 w-4" />Delete
+                                                    </DropdownMenuItem>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
                                         </div>
-                                        <CardDescription>{set.cardCount} cards</CardDescription>
+                                        <CardDescription>{set.cards.length} cards</CardDescription>
                                     </CardHeader>
                                     <CardContent className="flex-grow"></CardContent>
                                     <CardFooter>
@@ -82,6 +152,22 @@ const DashboardPage = () => {
                     )}
                 </main>
             </div>
+            <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete your flashcard set.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleConfirmDelete} className="bg-destructive hover:bg-destructive/90">
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
         </ProtectedRoute>
     )
 }
