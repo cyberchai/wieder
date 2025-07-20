@@ -6,6 +6,7 @@ import { auth } from '@/lib/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { Skeleton } from '@/components/ui/skeleton';
+import { AuthForm } from '@/components/auth-form';
 
 type AuthContextType = {
   user: User | null;
@@ -68,6 +69,27 @@ export const ProtectedRoute = ({ children }: { children: ReactNode }) => {
 
     if (!user) {
         return null;
+    }
+
+    return <>{children}</>;
+};
+
+export const PublicRoute = ({ children }: { children: ReactNode }) => {
+    const { user, loading } = useAuth();
+    const router = useRouter();
+
+    useEffect(() => {
+        if (!loading && user) {
+            router.push('/dashboard');
+        }
+    }, [user, loading, router]);
+
+    if (loading || user) {
+        return (
+             <div className="flex flex-col min-h-screen items-center justify-center">
+                <Skeleton className="h-48 w-full max-w-sm" />
+            </div>
+        )
     }
 
     return <>{children}</>;
