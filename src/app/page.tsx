@@ -66,8 +66,8 @@ export default function LandingPage() {
                 <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-background mb-4 shadow">
                   <CheckCircle className="h-8 w-8 text-primary" />
                 </div>
-                <h3 className="text-lg font-bold">handwrite</h3>
-                <p className="text-sm text-muted-foreground">handwrite vocab + definitions for your learning set when using your tablet</p>
+                <h3 className="text-lg font-bold">test yourself</h3>
+                <p className="text-sm text-muted-foreground">generate a practice test to quiz your knowledge</p>
               </div>
               <div className="grid gap-1 text-center">
                 <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-background mb-4 shadow">
