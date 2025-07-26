@@ -29,6 +29,7 @@ const setSchema = z.object({
       })
     )
     .min(1, 'You must have at least one card'),
+  shared: z.boolean(),
 });
 
 type SetFormData = z.infer<typeof setSchema>;
@@ -41,6 +42,7 @@ export default function EditSetPage() {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isShared, setIsShared] = useState(false);
 
   const {
     register,
@@ -53,6 +55,7 @@ export default function EditSetPage() {
     defaultValues: {
       title: '',
       cards: [],
+      shared: false,
     },
   });
 
@@ -67,7 +70,8 @@ export default function EditSetPage() {
     const fetchSet = async () => {
       const set = await getFlashcardSet(setId);
       if (set && set.userId === user.uid) {
-        reset({ title: set.title, cards: set.cards });
+        reset({ title: set.title, cards: set.cards, shared: set.shared });
+        setIsShared(set.shared);
       } else {
         toast({ title: "Error", description: "Set not found or you don't have permission to edit it.", variant: "destructive" });
         router.push('/dashboard');
@@ -85,7 +89,7 @@ export default function EditSetPage() {
     }
     setIsSubmitting(true);
     try {
-      await updateFlashcardSet(setId, data.title, data.cards);
+      await updateFlashcardSet(setId, data.title, data.cards, data.shared);
       toast({ title: 'yay!', description: 'your set has been updated.' });
       router.push('/dashboard');
     } catch (error) {

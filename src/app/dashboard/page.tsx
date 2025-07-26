@@ -5,7 +5,7 @@ import { ProtectedRoute, useAuth } from "@/providers/auth-provider";
 import Header from "@/components/header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { PlusCircle, MoreVertical, Loader2, Trash2, Edit, Share2, CopyPlus, Link as LinkIcon } from "lucide-react";
+import { PlusCircle, MoreVertical, Loader2, Trash2, Edit, Share2, Copy, Link as LinkIcon, CopyPlus } from "lucide-react";
 import Link from "next/link";
 import {
   DropdownMenu,
@@ -23,7 +23,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { getFlashcardSets, deleteFlashcardSet, duplicateFlashcardSet, type FlashcardSet } from "@/services/flashcard-sets";
+import { getFlashcardSets, deleteFlashcardSet, updateFlashcardSet, duplicateFlashcardSet, type FlashcardSet } from "@/services/flashcard-sets";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from 'next/navigation';
 import { Input } from "@/components/ui/input";
@@ -69,10 +69,22 @@ const DashboardPage = () => {
         }
     };
     
-    const handleShare = (setId: string) => {
-        const shareLink = `${window.location.origin}/sets/${setId}/study`;
-        navigator.clipboard.writeText(shareLink);
-        toast({ title: "Copied to clipboard!", description: "Share link has been copied." });
+    const handleShare = async (set: FlashcardSet) => {
+        try {
+          if (!set.shared) {
+            await updateFlashcardSet(set.id, set.title, set.cards, true);
+          }
+          const shareLink = `${window.location.origin}/sets/${set.id}/study`;
+          navigator.clipboard.writeText(shareLink);
+          toast({ title: "Copied to clipboard!", description: "Share link has been copied." });
+        } catch (error) {
+          toast({ title: "Error", description: "Could not share set.", variant: "destructive" });
+        }
+    };
+
+    const handleCopyId = (setId: string) => {
+        navigator.clipboard.writeText(setId);
+        toast({ title: "Copied!", description: "Set ID has been copied to your clipboard." });
     };
 
     const handleDuplicate = async (set: FlashcardSet) => {
@@ -172,8 +184,11 @@ const DashboardPage = () => {
                                                     <DropdownMenuItem onClick={() => handleDuplicate(set)}>
                                                         <CopyPlus className="mr-2 h-4 w-4" />Duplicate
                                                     </DropdownMenuItem>
-                                                    <DropdownMenuItem onClick={() => handleShare(set.id)}>
+                                                    <DropdownMenuItem onClick={() => handleShare(set)}>
                                                         <Share2 className="mr-2 h-4 w-4" />Share
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={() => handleCopyId(set.id)}>
+                                                        <Copy className="mr-2 h-4 w-4" />copy setID
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem onClick={() => handleDeleteClick(set.id)} className="text-destructive">
                                                         <Trash2 className="mr-2 h-4 w-4" />Delete

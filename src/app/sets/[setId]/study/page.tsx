@@ -41,7 +41,10 @@ export default function StudyPage() {
       setLoading(true);
       const fetchedSet = await getFlashcardSet(setId);
       if (fetchedSet) {
-        // For shared sets, we don't need to check user ID
+        if (!fetchedSet.shared && fetchedSet.userId !== user?.uid) {
+            toast({ title: "Error", description: "You don't have permission to view this set.", variant: "destructive" });
+            return router.push('/dashboard');
+        }
         setSet(fetchedSet);
         setShuffledCards(shuffleCards(fetchedSet.cards));
       } else {
@@ -50,15 +53,15 @@ export default function StudyPage() {
       setLoading(false);
     };
 
-    if (setId) {
+    if (setId && user) {
       fetchSet();
     }
-  }, [setId, router, shuffleCards]);
+  }, [setId, router, shuffleCards, user]);
 
   const currentCard = useMemo(() => shuffledCards[currentIndex], [shuffledCards, currentIndex]);
 
-  const promptText = isReversed ? currentCard?.front : currentCard?.back;
-  const answerText = isReversed ? currentCard?.back : currentCard?.front;
+  const promptText = isReversed ? currentCard?.back : currentCard?.front;
+  const answerText = isReversed ? currentCard?.front : currentCard?.back;
   
   const handleCheckAnswer = (e: React.FormEvent) => {
     e.preventDefault();
@@ -83,8 +86,7 @@ export default function StudyPage() {
     }
   };
   
-  const handleRestart = () => {
-    setShuffledCards(shuffleCards(set!.cards));
+  const resetQuizState = () => {
     setCurrentIndex(0);
     setUserAnswer('');
     setFeedback(null);
@@ -92,12 +94,21 @@ export default function StudyPage() {
     setShowConfetti(false);
   }
 
+  const handleRestart = () => {
+    if(set) {
+        setShuffledCards(shuffleCards(set.cards));
+        resetQuizState();
+    }
+  }
+
   const handleShuffle = () => {
     setShuffledCards(shuffleCards(shuffledCards));
-    setCurrentIndex(0);
-    setUserAnswer('');
-    setFeedback(null);
-    setIsFinished(false);
+    resetQuizState();
+  }
+
+  const handleReverseToggle = (checked: boolean) => {
+    setIsReversed(checked);
+    handleShuffle();
   }
 
   if (loading) {
@@ -150,7 +161,7 @@ export default function StudyPage() {
                     shuffle
                   </Button>
                   <div className="flex items-center space-x-2">
-                    <Switch id="reverse-mode" checked={isReversed} onCheckedChange={setIsReversed} />
+                    <Switch id="reverse-mode" checked={isReversed} onCheckedChange={handleReverseToggle} />
                     <Label htmlFor="reverse-mode" className="flex items-center gap-2 cursor-pointer">
                       <Repeat className="h-4 w-4"/>
                       swap
@@ -174,14 +185,14 @@ export default function StudyPage() {
                 ) : (
                     <Card className="w-full max-w-2xl">
                         <CardHeader>
-                            <CardTitle>{isReversed ? 'term:' : 'definition:'}</CardTitle>
+                            <CardTitle>{isReversed ? 'definition:' : 'term:'}</CardTitle>
                             <p className="text-2xl pt-4">{promptText}</p>
                         </CardHeader>
                         <CardContent>
                             <form onSubmit={handleCheckAnswer} className="space-y-4">
                                 <div>
                                     <label htmlFor="answer" className="font-medium">
-                                        {isReversed ? 'what is the corresponding definition?' : 'what is the corresponding term?'}
+                                        {isReversed ? 'what is the corresponding term?' : 'what is the corresponding definition?'}
                                     </label>
                                     <Input
                                         id="answer"
