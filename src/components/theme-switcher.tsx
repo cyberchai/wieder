@@ -11,6 +11,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { NeilsonIcon, ConfeshIcon, SkunksIcon } from './theme-icons';
+
 
 export function ThemeSwitcher() {
   const { setTheme } = useTheme()
@@ -25,17 +27,21 @@ export function ThemeSwitcher() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setTheme("light")}>
-          light mode :/
+        <DropdownMenuItem onClick={() => setTheme("neilson")}>
+          <NeilsonIcon className="mr-2 h-4 w-4" />
+          <span>neilson</span>
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setTheme("dark")}>
-          dark mode
+          <Moon className="mr-2 h-4 w-4" />
+          <span>dark</span>
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setTheme("confesh")}>
-          confesh mode
+          <ConfeshIcon className="mr-2 h-4 w-4" />
+          <span>confesh</span>
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setTheme("skunks")}>
-          bears mode
+          <SkunksIcon className="mr-2 h-4 w-4" />
+          <span>bears</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

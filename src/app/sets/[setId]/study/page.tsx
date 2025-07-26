@@ -31,6 +31,7 @@ export default function StudyPage() {
   const [showConfetti, setShowConfetti] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
   const [isReversed, setIsReversed] = useState(false);
+  const [ignoreNonAlphanumeric, setIgnoreNonAlphanumeric] = useState(false);
 
   const shuffleCards = useCallback((cards: CardType[]) => {
     return [...cards].sort(() => Math.random() - 0.5);
@@ -42,8 +43,7 @@ export default function StudyPage() {
       const fetchedSet = await getFlashcardSet(setId);
       if (fetchedSet) {
         if (!fetchedSet.shared && fetchedSet.userId !== user?.uid) {
-            toast({ title: "Error", description: "You don't have permission to view this set.", variant: "destructive" });
-            return router.push('/dashboard');
+            router.push('/dashboard');
         }
         setSet(fetchedSet);
         setShuffledCards(shuffleCards(fetchedSet.cards));
@@ -63,14 +63,22 @@ export default function StudyPage() {
   const promptText = isReversed ? currentCard?.back : currentCard?.front;
   const answerText = isReversed ? currentCard?.front : currentCard?.back;
   
+  const cleanString = (str: string) => {
+    return str.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+  };
+  
   const handleCheckAnswer = (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentCard || feedback) return;
+    
+    const userAnswerClean = ignoreNonAlphanumeric ? cleanString(userAnswer) : userAnswer.trim().toLowerCase();
+    const answerTextClean = ignoreNonAlphanumeric ? cleanString(answerText) : answerText.trim().toLowerCase();
 
-    if (userAnswer.trim().toLowerCase() === answerText.trim().toLowerCase()) {
+    if (userAnswerClean === answerTextClean) {
       setFeedback('correct');
     } else {
       setFeedback('incorrect');
+      setShuffledCards(prev => [...prev, currentCard]);
     }
   };
 
@@ -155,7 +163,7 @@ export default function StudyPage() {
                         back to dashboard
                     </Link>
                 </Button>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-4 flex-wrap justify-center">
                   <Button variant="outline" size="sm" onClick={handleShuffle}>
                     <Shuffle className="mr-2 h-4 w-4" />
                     shuffle
@@ -165,6 +173,12 @@ export default function StudyPage() {
                     <Label htmlFor="reverse-mode" className="flex items-center gap-2 cursor-pointer">
                       <Repeat className="h-4 w-4"/>
                       swap
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Switch id="ignore-chars-mode" checked={ignoreNonAlphanumeric} onCheckedChange={setIgnoreNonAlphanumeric} />
+                    <Label htmlFor="ignore-chars-mode" className="cursor-pointer">
+                      ignore special characters
                     </Label>
                   </div>
                 </div>
@@ -191,9 +205,9 @@ export default function StudyPage() {
                         <CardContent>
                             <form onSubmit={handleCheckAnswer} className="space-y-4">
                                 <div>
-                                    <label htmlFor="answer" className="font-medium">
+                                    {/* <label htmlFor="answer" className="font-medium">
                                         {isReversed ? 'what is the corresponding term?' : 'what is the corresponding definition?'}
-                                    </label>
+                                    </label> */}
                                     <Input
                                         id="answer"
                                         value={userAnswer}

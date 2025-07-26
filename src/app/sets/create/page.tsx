@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, KeyboardEvent } from 'react';
-import { useFieldArray, useForm } from 'react-hook-form';
+import { useFieldArray, useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useRouter } from 'next/navigation';
@@ -13,9 +13,18 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import { Trash2, PlusCircle, Loader2, ArrowLeft } from 'lucide-react';
+import { Trash2, PlusCircle, Loader2, ArrowLeft, Upload } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 
 const setSchema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -36,12 +45,15 @@ export default function CreateSetPage() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const lastFrontInputRef = useRef<HTMLInputElement>(null);
+  const [importText, setImportText] = useState("");
+  const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
+
 
   const {
     register,
     control,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<SetFormData>({
     resolver: zodResolver(setSchema),
@@ -83,6 +95,36 @@ export default function CreateSetPage() {
     }
   };
   
+  const handleImport = () => {
+    const lines = importText.split('\n').filter(line => line.trim() !== '');
+    const newCards: { front: string; back: string }[] = [];
+    let error = false;
+
+    for (const line of lines) {
+      const parts = line.split('\t');
+      if (parts.length === 2) {
+        newCards.push({ front: parts[0].trim(), back: parts[1].trim() });
+      } else {
+        error = true;
+        break;
+      }
+    }
+
+    if (error) {
+      toast({
+        title: 'Import Error',
+        description: 'please make sure each line includes a tab character separating word and definition',
+        variant: 'destructive',
+      });
+    } else if (newCards.length > 0) {
+      setValue('cards', newCards, { shouldValidate: true });
+      toast({ title: 'Success!', description: `${newCards.length} cards imported.` });
+      setIsImportDialogOpen(false);
+      setImportText("");
+    }
+  };
+
+
   return (
     <ProtectedRoute>
       <div className="flex flex-col min-h-screen bg-secondary/50">
@@ -97,8 +139,36 @@ export default function CreateSetPage() {
             </Button>
             <Card>
               <CardHeader>
-                <CardTitle className="text-3xl">new set</CardTitle>
-                <CardDescription>give your set a title and add your flashcards below.</CardDescription>
+                <div className="flex justify-between items-center">
+                    <div>
+                        <CardTitle className="text-3xl">new set</CardTitle>
+                        <CardDescription>give your set a title and add your flashcards below.</CardDescription>
+                    </div>
+                    <Dialog open={isImportDialogOpen} onOpenChange={setIsImportDialogOpen}>
+                      <DialogTrigger asChild>
+                         <Button variant="outline"><Upload className="mr-2 h-4 w-4" />import</Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-[425px]">
+                        <DialogHeader>
+                          <DialogTitle>import set from quizlet</DialogTitle>
+                          <DialogDescription>
+                            paste your tab-separated list below. each line should have a term, a tab, then a definition.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="grid gap-4 py-4">
+                           <Textarea
+                              placeholder="arbeiten	to work..."
+                              value={importText}
+                              onChange={e => setImportText(e.target.value)}
+                              className="h-48"
+                            />
+                        </div>
+                        <DialogFooter>
+                          <Button onClick={handleImport}>import cards</Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                </div>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit(onSubmit)}>

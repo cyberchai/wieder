@@ -47,17 +47,46 @@ export function UserNav() {
     }
   };
 
-  const handleFeedbackSubmit = (e: React.FormEvent) => {
+  const handleFeedbackSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (feedbackMessage.trim()) {
-      // In a real app, you'd send this to a backend or service.
-      // For now, we'll just simulate it.
-      console.log("Feedback submitted:", feedbackMessage);
-      toast({ title: "feedback sent", description: "thank you for your feedback!" });
+    if (!feedbackMessage.trim()) return;
+
+    if (!user) {
+      toast({
+        title: "not signed in",
+        description: "please sign in to send feedback.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      await fetch("https://formspree.io/f/mzzvrjyq", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: feedbackMessage,
+          email: user.email ?? "anonymous@user.com",
+        }),
+      });
+
+      toast({
+        title: "feedback sent",
+        description: "thank you for your feedback!",
+      });
+
       setFeedbackMessage('');
       setIsFeedbackOpen(false);
+    } catch (error) {
+      toast({
+        title: "error sending feedback",
+        description: "please try again later.",
+        variant: "destructive",
+      });
     }
   };
+
+
 
   if (!user) {
     return null;
