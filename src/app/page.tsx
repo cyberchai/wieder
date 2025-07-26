@@ -13,12 +13,12 @@ export default function LandingPage() {
           <span className="font-bold text-lg">wieder</span>
         </Link>
         <nav className="ml-auto flex gap-4 sm:gap-6 items-center">
+          <ThemeSwitcher />
           <Button variant="default" asChild>
             <Link href="/login" prefetch={false}>
-              Login
+              login
             </Link>
           </Button>
-          <ThemeSwitcher />
         </nav>
       </header>
       <main className="flex-1">
@@ -38,7 +38,7 @@ export default function LandingPage() {
               <div className="flex justify-center flex-col gap-2 min-[400px]:flex-row">
                  <Button size="lg" asChild>
                   <Link href="/login" prefetch={false}>
-                    login with your smith email!
+                    login with your email!
                   </Link>
                 </Button>
               </div>
@@ -50,7 +50,7 @@ export default function LandingPage() {
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
-                <div className="inline-block rounded-lg bg-muted px-3 py-1 text-sm">tldr;</div>
+                <div className="inline-block rounded-lg bg-muted px-3 py-1 text-sm">tl;dr</div>
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">how to use this</h2>
               </div>
             </div>
@@ -66,15 +66,15 @@ export default function LandingPage() {
                 <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-background mb-4 shadow">
                   <CheckCircle className="h-8 w-8 text-primary" />
                 </div>
-                <h3 className="text-lg font-bold">handwrite</h3>
-                <p className="text-sm text-muted-foreground">handwrite vocab + definitions for your learning set when using your tablet</p>
+                <h3 className="text-lg font-bold">test yourself</h3>
+                <p className="text-sm text-muted-foreground">generate a practice test to quiz your knowledge</p>
               </div>
               <div className="grid gap-1 text-center">
                 <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-background mb-4 shadow">
                   <Share2 className="h-8 w-8 text-primary" />
                 </div>
                 <h3 className="text-lg font-bold">share sets</h3>
-                <p className="text-sm text-muted-foreground">use the link associated with your learning set to share with other smithies</p>
+                <p className="text-sm text-muted-foreground">use the link associated with your learning set to share with other people</p>
               </div>
             </div>
           </div>

@@ -13,54 +13,43 @@ export default function PrivacyPage() {
       </header>
       <main className="flex-1 container mx-auto py-12 px-4 md:px-6">
         <div className="prose prose-stone dark:prose-invert max-w-4xl mx-auto">
-          <h1>Privacy Policy</h1>
+          <h1>privacy policy</h1>
+
           <p>
-            Your privacy is important to us. It is Wieder's policy to respect
-            your privacy regarding any information we may collect from you
-            across our website.
+            your privacy matters to us. it's wieder's policy to respect your privacy and keep any info you share with us safe and minimal.
           </p>
 
-          <h2>1. Information We Collect</h2>
+          <h2>1. what we collect</h2>
           <p>
-            We only ask for personal information when we truly need it to
-            provide a service to you. We collect it by fair and lawful means,
-            with your knowledge and consent. We also let you know why we’re
-            collecting it and how it will be used. The only personal information
-            we store is your Google account email address and display name for authentication purposes.
+            we only ask for info when we actually need it to run the site or help you use it. right now, that’s just your google account email and display name so you can log in. nothing else.
           </p>
 
-          <h2>2. How We Use Your Information</h2>
+          <h2>2. how we use it</h2>
           <p>
-            We use the information we collect to operate and maintain our
-            Services, and to provide the features and functionality of the
-            Services. Specifically, your user ID is associated with the flashcard sets you create.
+            we use your info to keep the site working smoothly and to save your flashcard sets under your user id.
           </p>
 
-          <h2>3. Data Storage</h2>
+          <h2>3. storing your data</h2>
           <p>
-            We only retain collected information for as long as necessary to
-            provide you with your requested service. What data we store, we’ll
-            protect within commercially acceptable means to prevent loss and
-            theft, as well as unauthorized access, disclosure, copying, use or
-            modification.
-          </p>
-          
-          <h2>4. Sharing Information</h2>
-          <p>
-            We don’t share any personally identifying information publicly or
-            with third-parties, except when required to by law.
+            we only keep your info as long as we need it to run the service. we do our best to protect it from anything sketchy like loss, theft, or unauthorized access.
           </p>
 
-          <h2>5. Your Consent</h2>
+          <h2>4. sharing info</h2>
           <p>
-            By using our site, you consent to our privacy policy.
+            we don’t share your personal info with anyone, unless we're legally required to.
           </p>
 
-          <h2>Contact Us</h2>
+          <h2>5. your consent</h2>
           <p>
-            If you have any questions about this Privacy Policy, please contact
-            us.
+            by using wieder, you’re saying it’s cool for us to use your info this way.
           </p>
+
+          <h2>questions?</h2>
+          <p>
+            if you have any questions or concerns, feel free to reach out to us anytime at <a href="mailto:support@nextnode.ventures">support@nextnode.ventures</a> or <a href="https://chairaharder.com" target="_blank" rel="noopener noreferrer">chairaharder.com</a>
+          </p>
+
+
         </div>
       </main>
     </div>

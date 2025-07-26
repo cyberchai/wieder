@@ -25,6 +25,7 @@ export interface FlashcardSet {
   title: string;
   cards: Card[];
   createdAt: Date;
+  shared: boolean;
 }
 
 const setsCollection = collection(db, "flashcardSets");
@@ -41,6 +42,7 @@ export const createFlashcardSet = async (
     title,
     cards: newCards,
     createdAt: serverTimestamp(),
+    shared: false, // Default to not shared
   });
 };
 
@@ -75,13 +77,18 @@ export const getFlashcardSet = async (setId: string): Promise<FlashcardSet | nul
 export const updateFlashcardSet = async (
     setId: string,
     title: string,
-    cards: Card[]
+    cards: Card[],
+    shared?: boolean
   ) => {
     const setDoc = doc(db, "flashcardSets", setId);
-    return await updateDoc(setDoc, {
+    const dataToUpdate: { title: string; cards: Card[]; shared?: boolean } = {
       title,
       cards,
-    });
+    };
+    if (typeof shared === 'boolean') {
+      dataToUpdate.shared = shared;
+    }
+    return await updateDoc(setDoc, dataToUpdate);
   };
 
 // Delete a flashcard set
@@ -97,5 +104,6 @@ export const duplicateFlashcardSet = async (set: FlashcardSet) => {
         title: `${set.title} (Copy)`,
         cards: set.cards,
         createdAt: serverTimestamp(),
+        shared: false, // Duplicates are private by default
     });
 };

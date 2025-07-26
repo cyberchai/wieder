@@ -36,7 +36,6 @@ export default function ProfilePage() {
                         <h1 className="text-3xl font-bold tracking-tight mb-8">profile</h1>
                         <Card>
                             <CardHeader>
-                                <CardTitle>my info</CardTitle>
                                 {/* <CardDescription>Your account details.</CardDescription> */}
                             </CardHeader>
                             <CardContent className="space-y-6">
