@@ -5,7 +5,7 @@ import { ProtectedRoute, useAuth } from "@/providers/auth-provider";
 import Header from "@/components/header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { PlusCircle, MoreVertical, Loader2, Trash2, Edit, Share2, Copy, CopyPlus } from "lucide-react";
+import { PlusCircle, MoreVertical, Loader2, Trash2, Edit, Share2, CopyPlus, Link as LinkIcon } from "lucide-react";
 import Link from "next/link";
 import {
   DropdownMenu,
@@ -25,14 +25,20 @@ import {
 } from "@/components/ui/alert-dialog";
 import { getFlashcardSets, deleteFlashcardSet, duplicateFlashcardSet, type FlashcardSet } from "@/services/flashcard-sets";
 import { useToast } from "@/hooks/use-toast";
+import { useRouter } from 'next/navigation';
+import { Input } from "@/components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Label } from "@/components/ui/label";
 
 const DashboardPage = () => {
     const { user } = useAuth();
     const { toast } = useToast();
+    const router = useRouter();
     const [sets, setSets] = useState<FlashcardSet[]>([]);
     const [loading, setLoading] = useState(true);
     const [deletingId, setDeletingId] = useState<string | null>(null);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const [joinSetId, setJoinSetId] = useState("");
 
     useEffect(() => {
         if (user) {
@@ -79,6 +85,14 @@ const DashboardPage = () => {
         }
     }
 
+    const handleJoinSet = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (joinSetId.trim()) {
+            router.push(`/sets/${joinSetId.trim()}/study`);
+        }
+    }
+
+
     if (loading) {
         return (
             <ProtectedRoute>
@@ -98,17 +112,44 @@ const DashboardPage = () => {
             <div className="flex flex-col min-h-screen bg-secondary/50">
                 <Header />
                 <main className="flex-1 p-4 md:p-8 container">
-                    <div className="flex items-center justify-between mb-8">
+                    <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
                         <div>
                             <h1 className="text-3xl font-bold tracking-tight">my sets</h1>
-                             {user && <p className="text-muted-foreground">{user.displayName || user.email}</p>}
+                             {user && <p className="text-muted-foreground">{`hi ${user.displayName || user.email}`}</p>}
                         </div>
-                        <Button asChild>
-                            <Link href="/sets/create">
-                                <PlusCircle className="mr-2 h-4 w-4" />
-                                new set
-                            </Link>
-                        </Button>
+                        <div className="flex gap-2 items-center">
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button variant="outline"><LinkIcon className="mr-2 h-4 w-4"/>join set</Button>
+                                </PopoverTrigger>
+                                <PopoverContent>
+                                    <form onSubmit={handleJoinSet} className="grid gap-4">
+                                        <div className="space-y-2">
+                                            <h4 className="font-medium leading-none">join a shared set</h4>
+                                            <p className="text-sm text-muted-foreground">
+                                                paste the set id below to practice.
+                                            </p>
+                                        </div>
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="join-set-id" className="sr-only">set id</Label>
+                                            <Input
+                                                id="join-set-id"
+                                                placeholder="enter set id"
+                                                value={joinSetId}
+                                                onChange={(e) => setJoinSetId(e.target.value)}
+                                            />
+                                            <Button type="submit">join</Button>
+                                        </div>
+                                    </form>
+                                </PopoverContent>
+                            </Popover>
+                            <Button asChild>
+                                <Link href="/sets/create">
+                                    <PlusCircle className="mr-2 h-4 w-4" />
+                                    new set
+                                </Link>
+                            </Button>
+                        </div>
                     </div>
 
                     {sets.length > 0 ? (
@@ -164,6 +205,17 @@ const DashboardPage = () => {
                         </div>
                     )}
                 </main>
+                <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t mt-auto">
+                    <p className="text-xs text-muted-foreground">made with &lt;3 by a smithie</p>
+                    <nav className="sm:ml-auto flex gap-4 sm:gap-6">
+                    <Link href="/terms" className="text-xs hover:underline underline-offset-4" prefetch={false}>
+                        terms of service
+                    </Link>
+                    <Link href="/privacy" className="text-xs hover:underline underline-offset-4" prefetch={false}>
+                        privacy
+                    </Link>
+                    </nav>
+                </footer>
             </div>
             <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
               <AlertDialogContent>
