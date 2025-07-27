@@ -104,6 +104,6 @@ export const duplicateFlashcardSet = async (set: FlashcardSet) => {
         title: `${set.title} (Copy)`,
         cards: set.cards,
         createdAt: serverTimestamp(),
-        shared: false, // Duplicates are private by default
+        shared: true,
     });
 };
