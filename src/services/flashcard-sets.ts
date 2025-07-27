@@ -42,7 +42,7 @@ export const createFlashcardSet = async (
     title,
     cards: newCards,
     createdAt: serverTimestamp(),
-    shared: false, // Default to not shared
+    shared: true, // Default to shared
   });
 };
 
