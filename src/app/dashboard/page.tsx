@@ -5,7 +5,7 @@ import { ProtectedRoute, useAuth } from "@/providers/auth-provider";
 import Header from "@/components/header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { PlusCircle, MoreVertical, Loader2, Trash2, Edit, Share2, Copy, Link as LinkIcon, CopyPlus, Gamepad2, Users, FileText } from "lucide-react";
+import { PlusCircle, MoreVertical, Loader2, Trash2, Edit, Share2, Copy, Link as LinkIcon, CopyPlus, Gamepad2, Users, FileText, UserX } from "lucide-react";
 import Link from "next/link";
 import {
   DropdownMenu,
@@ -57,9 +57,13 @@ const DashboardPage = () => {
                 const fetchSharedSets = async () => {
                     const fetchedSets: FlashcardSet[] = [];
                     for (const setId of joinedSetIds) {
-                        const set = await getFlashcardSet(setId);
-                        if (set) {
-                            fetchedSets.push(set);
+                        try {
+                            const set = await getFlashcardSet(setId);
+                            if (set) {
+                                fetchedSets.push(set);
+                            }
+                        } catch (error) {
+                            console.error(`Failed to fetch shared set ${setId}`, error);
                         }
                     }
                     setSharedSets(fetchedSets);
@@ -95,14 +99,11 @@ const DashboardPage = () => {
     
     const handleShare = async (set: FlashcardSet) => {
         try {
-          if (!set.shared) {
-            await updateFlashcardSet(set.id, set.title, set.cards, true);
-          }
           const shareLink = `${window.location.origin}/sets/${set.id}/study`;
           navigator.clipboard.writeText(shareLink);
           toast({ title: "Copied to clipboard!", description: "Share link has been copied." });
         } catch (error) {
-          toast({ title: "Error", description: "Could not share set.", variant: "destructive" });
+          toast({ title: "Error", description: "Could not copy share link.", variant: "destructive" });
         }
     };
 
@@ -125,19 +126,39 @@ const DashboardPage = () => {
         e.preventDefault();
         const trimmedId = joinSetId.trim();
         if (trimmedId) {
-            const set = await getFlashcardSet(trimmedId);
-            if (set && set.shared) {
-                const joinedSetIds = JSON.parse(localStorage.getItem('joinedSetIds') || '[]');
-                if (!joinedSetIds.includes(trimmedId)) {
-                    joinedSetIds.push(trimmedId);
-                    localStorage.setItem('joinedSetIds', JSON.stringify(joinedSetIds));
+            try {
+                const set = await getFlashcardSet(trimmedId);
+                if (set && set.shared) {
+                    const joinedSetIds = JSON.parse(localStorage.getItem('joinedSetIds') || '[]');
+                    if (!joinedSetIds.includes(trimmedId)) {
+                        joinedSetIds.push(trimmedId);
+                        localStorage.setItem('joinedSetIds', JSON.stringify(joinedSetIds));
+                        
+                        setSharedSets(prev => {
+                            const newSharedSets = [...prev];
+                            if(!newSharedSets.find(s => s.id === set.id)) {
+                                newSharedSets.push(set);
+                            }
+                            return newSharedSets;
+                        });
+                    }
+                    router.push(`/sets/${trimmedId}/study`);
+                } else {
+                     toast({ title: "Error", description: "Set not found or is not shared.", variant: "destructive" });
                 }
-                router.push(`/sets/${trimmedId}/study`);
-            } else {
-                 toast({ title: "Error", description: "Set not found or is not shared.", variant: "destructive" });
+            } catch(error) {
+                toast({ title: "Error", description: "Could not find the set.", variant: "destructive" });
             }
         }
     }
+
+    const handleRemoveSharedSet = (setIdToRemove: string) => {
+        const joinedSetIds = JSON.parse(localStorage.getItem('joinedSetIds') || '[]');
+        const updatedIds = joinedSetIds.filter((id: string) => id !== setIdToRemove);
+        localStorage.setItem('joinedSetIds', JSON.stringify(updatedIds));
+        setSharedSets(prev => prev.filter(set => set.id !== setIdToRemove));
+        toast({ title: "Set removed", description: "The shared set has been removed from your dashboard." });
+    };
 
 
     if (loading) {
@@ -293,9 +314,19 @@ const DashboardPage = () => {
                                         <CardHeader>
                                             <div className="flex items-start justify-between">
                                                 <CardTitle className="pr-4">{set.title}</CardTitle>
-                                                <Button variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0" disabled>
-                                                    <Users className="h-4 w-4 text-muted-foreground" />
-                                                </Button>
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0">
+                                                            <MoreVertical className="h-4 w-4" />
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent align="end">
+                                                        <DropdownMenuItem onClick={() => handleRemoveSharedSet(set.id)} className="text-destructive">
+                                                            <UserX className="mr-2 h-4 w-4" />
+                                                            remove myself from set
+                                                        </DropdownMenuItem>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
                                             </div>
                                             <CardDescription>{set.cards.length} cards</CardDescription>
                                         </CardHeader>
