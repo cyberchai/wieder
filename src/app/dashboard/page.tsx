@@ -352,7 +352,7 @@ const DashboardPage = () => {
                                  </span>
                              </TabsTrigger>
                          </TabsList>
-                                                 <TabsContent value="my-sets">
+                            <TabsContent value="my-sets">
                              <div className="space-y-8">
                                  {/* Personal Sets Section */}
                                  <div>
@@ -376,26 +376,61 @@ const DashboardPage = () => {
                                                              <div className="flex items-start justify-between">
                                                                  <CardTitle className="pr-4">{set.title}</CardTitle>
                                                                  <DropdownMenu>
-                                                                     <DropdownMenuTrigger asChild>
-                                                                         <Button variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0 hover:shadow-md hover:scale-110 transition-all duration-200 ease-in-out transform" onClick={(e) => e.preventDefault()}>
-                                                                             <MoreVertical className="h-4 w-4" />
-                                                                         </Button>
-                                                                     </DropdownMenuTrigger>
-                                                                     <DropdownMenuContent align="end">
+                                                                 <DropdownMenuTrigger asChild>
+                                                                    <Button
+                                                                        variant="ghost"
+                                                                        size="icon"
+                                                                        className="h-8 w-8 ..."
+                                                                        onClick={(e) => {
+                                                                        e.preventDefault();
+                                                                        e.stopPropagation();
+                                                                        }}
+                                                                    >
+                                                                        <MoreVertical className="h-4 w-4" />
+                                                                    </Button>
+                                                                </DropdownMenuTrigger>
+
+                                                                    <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
                                                                          <DropdownMenuItem asChild>
                                                                              <Link href={`/sets/${set.id}/edit`}><Edit className="mr-2 h-4 w-4" />Edit</Link>
                                                                          </DropdownMenuItem>
-                                                                         <DropdownMenuItem onClick={() => handleDuplicate(set)}>
-                                                                             <CopyPlus className="mr-2 h-4 w-4" />Duplicate
+                                                                         <DropdownMenuItem
+                                                                            onSelect={(e) => {
+                                                                                e.preventDefault();
+                                                                                e.stopPropagation();
+                                                                                handleDuplicate(set);
+                                                                            }}
+                                                                            >
+                                                                            <CopyPlus className="mr-2 h-4 w-4" />Duplicate
+                                                                            </DropdownMenuItem>
+
+                                                                            <DropdownMenuItem
+                                                                            onSelect={(e) => {
+                                                                                e.preventDefault();
+                                                                                e.stopPropagation();
+                                                                                handleShare(set);
+                                                                            }}
+                                                                            >
+                                                                            <Share2 className="mr-2 h-4 w-4" />Share
+                                                                            </DropdownMenuItem>
+
+                                                                            <DropdownMenuItem
+                                                                            onSelect={(e) => {
+                                                                                e.preventDefault();
+                                                                                e.stopPropagation();
+                                                                                handleCopyId(set.id);
+                                                                            }}
+                                                                            >
+                                                                            <Copy className="mr-2 h-4 w-4" />copy setID
                                                                          </DropdownMenuItem>
-                                                                         <DropdownMenuItem onClick={() => handleShare(set)}>
-                                                                             <Share2 className="mr-2 h-4 w-4" />Share
-                                                                         </DropdownMenuItem>
-                                                                         <DropdownMenuItem onClick={() => handleCopyId(set.id)}>
-                                                                             <Copy className="mr-2 h-4 w-4" />copy setID
-                                                                         </DropdownMenuItem>
-                                                                         <DropdownMenuItem onClick={() => handleDeleteClick(set.id)}>
-                                                                             <Trash2 className="mr-2 h-4 w-4" />Delete
+                                                                         <DropdownMenuItem
+                                                                            onSelect={(e) => {
+                                                                                e.preventDefault();
+                                                                                e.stopPropagation();
+                                                                                handleDeleteClick(set.id);
+                                                                            }}
+                                                                            >
+                                                                            <Trash2 className="mr-2 h-4 w-4" />Delete
                                                                          </DropdownMenuItem>
                                                                      </DropdownMenuContent>
                                                                  </DropdownMenu>
