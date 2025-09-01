@@ -9,7 +9,7 @@ export default function LandingPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background relative">
       <AuroraBackground />
-      <header className="sticky top-0 z-10 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex h-14 items-center justify-between">
             <Link href="#" className="flex items-center justify-center gap-2" prefetch={false}>
