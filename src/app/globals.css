@@ -29,6 +29,7 @@
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
+    --tab-bar-bg: 45 83.3% 87.5%; /* Darker tab bar background for Neilson theme */
   }
   .dark {
     --background: 0 0% 2.5%; /* Darker background */
@@ -55,6 +56,8 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+    --radius: 0.5rem;
+    --tab-bar-bg: 0 0% 8%; /* Darker tab bar background for dark theme */
   }
   .confesh {
     --background: 80 61% 50%; /* #99cc66 */
@@ -77,6 +80,7 @@
     --input: 205 70% 94%; /* #daf3fe with slight adjustment */
     --ring: 205 70% 47%;
     --radius: 0.5rem;
+    --tab-bar-bg: 80 61% 45%; /* Darker tab bar background for confesh theme */
   }
   .skunks {
     --background: 224 60% 22%; /* #1a2c57 */
@@ -99,6 +103,7 @@
     --input: 224 60% 30%; /* Lighter blue */
     --ring: 41 98% 54%; /* #fcb715 */
     --radius: 0.5rem;
+    --tab-bar-bg: 224 60% 18%; /* Darker tab bar background for skunks theme */
   }
 }
 
@@ -117,6 +122,11 @@
 @layer components {
   .confesh-input {
     @apply bg-[hsl(var(--input))];
+  }
+  
+  /* Tab bar background that uses theme-specific darker background */
+  .tab-bar-bg {
+    background-color: hsl(var(--tab-bar-bg));
   }
   
   /* 3D Flip Animation Classes */
