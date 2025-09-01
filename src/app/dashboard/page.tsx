@@ -310,8 +310,11 @@ const DashboardPage = () => {
                                 <div className="flex items-center gap-2">
                                     <Search className="h-4 w-4 text-muted-foreground" />
                                     <p className="text-sm text-muted-foreground">
-                                        found {filteredSets.length + filteredSharedSets.length} result{filteredSets.length + filteredSharedSets.length !== 1 ? 's' : ''} for "{searchQuery}"
+                                        {`found ${filteredSets.length + filteredSharedSets.length} result${
+                                            filteredSets.length + filteredSharedSets.length !== 1 ? "s" : ""
+                                        } for "${searchQuery}"`}
                                     </p>
+
                                 </div>
                                 <Button
                                     variant="ghost"

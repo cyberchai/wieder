@@ -152,7 +152,7 @@ export default function EditSetPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="text-3xl">edit set</CardTitle>
-                <CardDescription>modify your set's title and flashcards below.</CardDescription>
+                <CardDescription>modify your set&rsquo;s title and flashcards below.</CardDescription>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit(onSubmit)}>

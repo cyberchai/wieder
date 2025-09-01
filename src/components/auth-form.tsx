@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useToast } from "@/hooks/use-toast";
 import { Icons } from "@/components/icons";
 import { Loader2 } from "lucide-react";
+import type { AuthError } from "firebase/auth";
 // import { signInWithRedirect } from 'firebase/auth';
 
 type AuthFormProps = {
@@ -28,10 +29,11 @@ export function AuthForm({ mode }: AuthFormProps) {
       // await signInWithRedirect(auth, new GoogleAuthProvider());
       router.push("/dashboard");
       toast({ title: "login successful", description: "welcome!" });
-    } catch (error: any) {
+    } catch (error) {
+      const err = error as AuthError;
       toast({
         title: "Google Sign-In Error",
-        description: error.message,
+        description: err.message,
         variant: "destructive",
       });
     } finally {

@@ -7,16 +7,21 @@ import './DotGrid.css';
 
 gsap.registerPlugin(InertiaPlugin);
 
-const throttle = <T extends (...args: any[]) => void>(func: T, limit: number) => {
+const throttle = (
+  func: (e: MouseEvent) => void,
+  limit: number
+) => {
   let lastCall = 0;
-  return function (this: any, ...args: Parameters<T>) {
+  return function (this: unknown, e: MouseEvent) {
     const now = performance.now();
     if (now - lastCall >= limit) {
       lastCall = now;
-      func.apply(this, args);
+      func.call(this, e);
     }
   };
 };
+
+
 
 interface Dot {
   cx: number;

@@ -190,7 +190,7 @@ export default function PracticePage() {
                 {isFinished ? (
                      <Card className="w-full max-w-2xl text-center p-8">
                         <CardTitle className="text-3xl mb-4">YAY!</CardTitle>
-                        <p className="text-muted-foreground mb-6">you've completed this practice set.</p>
+                        <p className="text-muted-foreground mb-6">you&rsquo;ve completed this practice set.</p>
                         <Button onClick={handleRestart}>
                             <RefreshCw className="mr-2 h-4 w-4" />
                             practice again

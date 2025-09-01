@@ -94,7 +94,8 @@ export default function PlayPage() {
 
   const shuffleCards = useCallback((cards: CardType[]) => {
     if (!cards?.length) return [];
-    let gameCards = [...cards];
+    // let gameCards = [...cards];
+    const gameCards = [...cards];
     const extras = [...cards]
       .sort(() => 0.5 - Math.random())
       .slice(0, Math.floor(Math.random() * cards.length));
