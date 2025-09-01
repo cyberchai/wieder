@@ -5,12 +5,14 @@ import { AuthForm } from "@/components/auth-form";
 import { IterationCcw } from 'lucide-react';
 import { PublicRoute } from "@/providers/auth-provider";
 import AuroraBackground from "@/components/aurora-background";
+import DotGridBackground from "@/components/dot-grid-background";
 
 export default function SignupPage() {
   return (
     <PublicRoute>
       <div className="flex min-h-screen flex-col items-center justify-center p-4 relative">
         <AuroraBackground />
+        <DotGridBackground />
         <div className="absolute top-4 left-4 z-10">
           <Link href="/" className="flex items-center justify-center gap-2 text-lg font-bold" prefetch={false}>
             <IterationCcw className="h-6 w-6 text-primary" />

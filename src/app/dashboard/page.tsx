@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import { ProtectedRoute, useAuth } from "@/providers/auth-provider";
 import Header from "@/components/header";
 import AuroraBackground from "@/components/aurora-background";
+import DashboardParticlesBackground from "@/components/dashboard-particles-background";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { PlusCircle, MoreVertical, Loader2, Trash2, Edit, Share2, Copy, Link as LinkIcon, CopyPlus, Gamepad2, Users, FileText, UserX, Search, BookOpen, Globe, Users2 } from "lucide-react";
@@ -229,6 +230,7 @@ const DashboardPage = () => {
             <ProtectedRoute>
                 <div className="flex flex-col min-h-screen bg-secondary/50 relative">
                     <AuroraBackground />
+                    <DashboardParticlesBackground />
                     <Header 
                       searchQuery={searchQuery}
                       onSearchChange={setSearchQuery}
@@ -247,6 +249,7 @@ const DashboardPage = () => {
         <ProtectedRoute>
             <div className="flex flex-col min-h-screen bg-secondary/50 relative">
                 <AuroraBackground />
+                <DashboardParticlesBackground />
                 <Header 
                   searchQuery={searchQuery}
                   onSearchChange={setSearchQuery}

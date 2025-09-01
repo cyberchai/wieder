@@ -4,11 +4,13 @@ import { Zap, CheckCircle, Share2 } from 'lucide-react';
 import { IterationCcw } from 'lucide-react';
 import { ThemeSwitcher } from '@/components/theme-switcher';
 import AuroraBackground from '@/components/aurora-background';
+import DotGridBackground from '@/components/dot-grid-background';
 
 export default function LandingPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background relative">
       <AuroraBackground />
+      <DotGridBackground />
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex h-14 items-center justify-between">
