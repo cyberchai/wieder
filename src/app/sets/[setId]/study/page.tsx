@@ -1,18 +1,15 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth, ProtectedRoute } from '@/providers/auth-provider';
 import { getFlashcardSet, type FlashcardSet, type Card as CardType } from '@/services/flashcard-sets';
 import Header from '@/components/header';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, CheckCircle2, XCircle, RefreshCw, Shuffle, Repeat } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { ArrowLeft, ArrowRight, RotateCcw, Shuffle, Repeat, BookOpen, Gamepad2, FileText } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
-import { cn } from '@/lib/utils';
-import Confetti from 'react-confetti';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 
@@ -26,12 +23,10 @@ export default function StudyPage() {
   const [loading, setLoading] = useState(true);
   const [shuffledCards, setShuffledCards] = useState<CardType[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [userAnswer, setUserAnswer] = useState('');
-  const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null);
-  const [showConfetti, setShowConfetti] = useState(false);
-  const [isFinished, setIsFinished] = useState(false);
+  const [isFlipped, setIsFlipped] = useState(false);
   const [isReversed, setIsReversed] = useState(false);
-  const [ignoreNonAlphanumeric, setIgnoreNonAlphanumeric] = useState(false);
+  const [showProgress, setShowProgress] = useState(true);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   const shuffleCards = useCallback((cards: CardType[]) => {
     return [...cards].sort(() => Math.random() - 0.5);
@@ -58,73 +53,88 @@ export default function StudyPage() {
     }
   }, [setId, router, shuffleCards, user]);
 
-  const currentCard = useMemo(() => shuffledCards[currentIndex], [shuffledCards, currentIndex]);
+  const currentCard = shuffledCards[currentIndex];
 
-  const promptText = isReversed ? currentCard?.back : currentCard?.front;
-  const answerText = isReversed ? currentCard?.front : currentCard?.back;
-  
-  const cleanString = (str: string) => {
-    return str.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
-  };
-  
-  const handleCheckAnswer = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!currentCard || feedback) return;
-    
-    const userAnswerClean = ignoreNonAlphanumeric ? cleanString(userAnswer) : userAnswer.trim().toLowerCase();
-    const answerTextClean = ignoreNonAlphanumeric ? cleanString(answerText) : answerText.trim().toLowerCase();
-
-    if (userAnswerClean === answerTextClean) {
-      setFeedback('correct');
-    } else {
-      setFeedback('incorrect');
-      setShuffledCards(prev => [...prev, currentCard]);
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    switch (e.key) {
+      case ' ':
+        e.preventDefault();
+        setIsFlipped(prev => !prev);
+        break;
+      case 'Enter':
+      case 'ArrowRight':
+        e.preventDefault();
+        if (currentIndex < shuffledCards.length - 1) {
+          setCurrentIndex(prev => prev + 1);
+          setIsFlipped(false);
+        }
+        break;
+      case 'ArrowLeft':
+        e.preventDefault();
+        if (currentIndex > 0) {
+          setCurrentIndex(prev => prev - 1);
+          setIsFlipped(false);
+        }
+        break;
     }
-  };
+  }, [currentIndex, shuffledCards.length]);
 
-  const handleNextCard = () => {
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [handleKeyDown]);
+
+  const handleNext = () => {
     if (currentIndex < shuffledCards.length - 1) {
-      setCurrentIndex(currentIndex + 1);
-      setUserAnswer('');
-      setFeedback(null);
-    } else {
-      setIsFinished(true);
-      setShowConfetti(true);
-      setTimeout(() => setShowConfetti(false), 5000);
+      setIsTransitioning(true);
+      setTimeout(() => {
+        setCurrentIndex(prev => prev + 1);
+        setIsFlipped(false);
+        setIsTransitioning(false);
+      }, 150);
     }
   };
-  
-  const resetQuizState = () => {
-    setCurrentIndex(0);
-    setUserAnswer('');
-    setFeedback(null);
-    setIsFinished(false);
-    setShowConfetti(false);
-  }
+
+  const handlePrevious = () => {
+    if (currentIndex > 0) {
+      setIsTransitioning(true);
+      setTimeout(() => {
+        setCurrentIndex(prev => prev - 1);
+        setIsFlipped(false);
+        setIsTransitioning(false);
+      }, 150);
+    }
+  };
+
+  const handleFlip = () => {
+    setIsFlipped(prev => !prev);
+  };
 
   const handleRestart = () => {
-    if(set) {
-        setShuffledCards(shuffleCards(set.cards));
-        resetQuizState();
+    if (set) {
+      setShuffledCards(shuffleCards(set.cards));
+      setCurrentIndex(0);
+      setIsFlipped(false);
     }
-  }
+  };
 
   const handleShuffle = () => {
     setShuffledCards(shuffleCards(shuffledCards));
-    resetQuizState();
-  }
+    setCurrentIndex(0);
+    setIsFlipped(false);
+  };
 
   const handleReverseToggle = (checked: boolean) => {
     setIsReversed(checked);
     handleShuffle();
-  }
+  };
 
   if (loading) {
     return (
       <ProtectedRoute>
         <div className="flex flex-col min-h-screen bg-secondary/50">
           <Header />
-          <main className="flex-1 container py-8 flex flex-col items-center justify-center">
+          <main className="flex-1 container mx-auto py-8 px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center">
             <Skeleton className="h-10 w-48 mb-4" />
             <Skeleton className="h-72 w-full max-w-2xl" />
           </main>
@@ -138,7 +148,7 @@ export default function StudyPage() {
         <ProtectedRoute>
             <div className="flex flex-col min-h-screen bg-secondary/50">
                 <Header />
-                <main className="flex-1 container py-8 text-center">
+                <main className="flex-1 container mx-auto py-8 px-4 sm:px-6 lg:px-8 text-center">
                     <p>set not found or has no cards.</p>
                      <Button variant="link" asChild>
                         <Link href="/dashboard">go back to dashboard</Link>
@@ -149,14 +159,16 @@ export default function StudyPage() {
      )
   }
 
+  const frontText = isReversed ? currentCard.back : currentCard.front;
+  const backText = isReversed ? currentCard.front : currentCard.back;
+
   return (
     <ProtectedRoute>
       <div className="flex flex-col min-h-screen bg-secondary/50">
-        {showConfetti && <Confetti recycle={false} numberOfPieces={400} />}
         <Header />
-        <main className="flex-1 container py-8 flex flex-col">
+        <main className="flex-1 container mx-auto py-8 px-4 sm:px-6 lg:px-8 flex flex-col">
           <div className="w-full max-w-4xl mx-auto flex-grow flex flex-col">
-             <div className="flex items-center justify-between mb-4 flex-wrap gap-4">
+             <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
                 <Button variant="ghost" asChild>
                     <Link href="/dashboard">
                         <ArrowLeft className="mr-2 h-4 w-4" />
@@ -176,9 +188,10 @@ export default function StudyPage() {
                     </Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Switch id="ignore-chars-mode" checked={ignoreNonAlphanumeric} onCheckedChange={setIgnoreNonAlphanumeric} />
-                    <Label htmlFor="ignore-chars-mode" className="cursor-pointer">
-                      ignore special characters
+                    <Switch id="progress-toggle" checked={showProgress} onCheckedChange={setShowProgress} />
+                    <Label htmlFor="progress-toggle" className="flex items-center gap-2 cursor-pointer">
+                      <div className="w-4 h-1 bg-current rounded-full"/>
+                      progress
                     </Label>
                   </div>
                 </div>
@@ -186,68 +199,162 @@ export default function StudyPage() {
                     card {currentIndex + 1} of {shuffledCards.length}
                 </div>
             </div>
+
+            {/* Keyboard Shortcuts Info */}
+            <div className="mb-6 p-4 bg-muted/50 rounded-lg border text-center">
+              <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground flex-wrap">
+                <div className="flex items-center gap-2">
+                  <kbd className="px-2 py-1 bg-background border rounded text-xs">Space</kbd>
+                  <span>flip card</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <kbd className="px-2 py-1 bg-background border rounded text-xs">←</kbd>
+                  <span>previous</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <kbd className="px-2 py-1 bg-background border rounded text-xs">→</kbd>
+                  <span>next</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <kbd className="px-2 py-1 bg-background border rounded text-xs">Enter</kbd>
+                  <span>next</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Progress Bar */}
+            {showProgress && shuffledCards.length > 1 && (
+              <div className="mb-6">
+                <div className="flex items-center justify-between text-sm text-muted-foreground mb-2">
+                  <span>Progress</span>
+                  <span>{currentIndex + 1} / {shuffledCards.length}</span>
+                </div>
+                <div className="w-full bg-muted rounded-full h-2">
+                  <div 
+                    className="bg-primary h-2 rounded-full transition-all duration-300 ease-out"
+                    style={{ width: `${((currentIndex + 1) / shuffledCards.length) * 100}%` }}
+                  />
+                </div>
+              </div>
+            )}
+
             <div className="flex-grow flex items-center justify-center">
-                {isFinished ? (
-                     <Card className="w-full max-w-2xl text-center p-8">
-                        <CardTitle className="text-3xl mb-4">YAY!</CardTitle>
-                        <p className="text-muted-foreground mb-6">you've completed this study set.</p>
-                        <Button onClick={handleRestart}>
-                            <RefreshCw className="mr-2 h-4 w-4" />
-                            study again
-                        </Button>
-                    </Card>
-                ) : (
-                    <Card className="w-full max-w-2xl">
-                        <CardHeader>
-                            <CardTitle>{isReversed ? 'definition:' : 'term:'}</CardTitle>
-                            <p className="text-2xl pt-4">{promptText}</p>
-                        </CardHeader>
-                        <CardContent>
-                            <form onSubmit={handleCheckAnswer} className="space-y-4">
-                                <div>
-                                    {/* <label htmlFor="answer" className="font-medium">
-                                        {isReversed ? 'what is the corresponding term?' : 'what is the corresponding definition?'}
-                                    </label> */}
-                                    <Input
-                                        id="answer"
-                                        value={userAnswer}
-                                        onChange={(e) => setUserAnswer(e.target.value)}
-                                        placeholder="type your answer"
-                                        className="mt-2 text-lg"
-                                        disabled={!!feedback}
-                                    />
-                                </div>
-                                <Button type="submit" className="w-full" disabled={!!feedback}>
-                                    check!
-                                </Button>
-                            </form>
-                            {feedback && (
-                                <div className={cn(
-                                    "mt-4 p-4 rounded-md text-center flex flex-col items-center",
-                                    feedback === 'correct' ? 'bg-green-100 dark:bg-green-900/50' : 'bg-red-100 dark:bg-red-900/50'
-                                )}>
-                                    {feedback === 'correct' ? (
-                                        <div className="flex items-center text-green-700 dark:text-green-300">
-                                            <CheckCircle2 className="h-6 w-6 mr-2"/>
-                                            <p className="font-bold text-lg">correct!</p>
-                                        </div>
-                                    ) : (
-                                        <div className="flex flex-col items-center text-red-700 dark:text-red-300">
-                                            <div className="flex items-center">
-                                                <XCircle className="h-6 w-6 mr-2"/>
-                                                <p className="font-bold text-lg">incorrect</p>
-                                            </div>
-                                            <p className="mt-2">the correct answer is: <strong className="font-bold">{answerText}</strong></p>
-                                        </div>
-                                    )}
-                                    <Button onClick={handleNextCard} className="mt-4 w-1/2">
-                                        next
-                                    </Button>
-                                </div>
-                            )}
-                        </CardContent>
-                    </Card>
-                )}
+              <div className="w-full max-w-2xl flex flex-col items-center">
+                <div className="w-full min-h-[400px] mb-6 perspective-1000">
+                  <Card 
+                    className={`w-full min-h-[400px] flex flex-col cursor-pointer hover:shadow-lg transform-style-preserve-3d ${
+                      isTransitioning ? 'opacity-50 scale-95' : 'opacity-100 scale-100'
+                    }`}
+                    onClick={handleFlip}
+                    style={{
+                      transformStyle: 'preserve-3d',
+                      transition: 'opacity 0.15s ease-in-out, transform 0.3s ease-in-out',
+                      transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)'
+                    }}
+                  >
+                    {/* Front of card */}
+                    <CardContent 
+                      className="flex-grow flex items-center justify-center p-8 absolute inset-0 backface-hidden"
+                      style={{
+                        backfaceVisibility: 'hidden',
+                        transform: 'rotateY(0deg)',
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0
+                      }}
+                    >
+                      <div className="text-center">
+                        <div className="text-3xl font-bold leading-relaxed">
+                          {frontText}
+                        </div>
+                      </div>
+                    </CardContent>
+
+                    {/* Back of card */}
+                    <CardContent 
+                      className="flex-grow flex items-center justify-center p-8 absolute inset-0 backface-hidden"
+                      style={{
+                        backfaceVisibility: 'hidden',
+                        transform: 'rotateY(180deg)',
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0
+                      }}
+                    >
+                      <div className="text-center">
+                        <div className="text-3xl font-medium leading-relaxed">
+                          {backText}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* Navigation Buttons - Separate from card */}
+                <div className="flex items-center justify-between w-full gap-4 mb-6">
+                  <Button 
+                    variant="outline" 
+                    onClick={handlePrevious}
+                    disabled={currentIndex === 0}
+                    className="flex items-center gap-2"
+                  >
+                    <ArrowLeft className="h-4 w-4" />
+                    previous
+                  </Button>
+                  
+                  <Button 
+                    variant="outline" 
+                    onClick={handleRestart}
+                    className="flex items-center gap-2"
+                  >
+                    <RotateCcw className="h-4 w-4" />
+                    restart
+                  </Button>
+                  
+                  <Button 
+                    onClick={handleNext}
+                    disabled={currentIndex === shuffledCards.length - 1}
+                    className="flex items-center gap-2"
+                  >
+                    next
+                    <ArrowRight className="h-4 w-4" />
+                  </Button>
+                </div>
+
+                {/* Study Mode Buttons */}
+                <div className="flex items-center justify-center gap-4 w-full">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => router.push(`/sets/${setId}/practice`)}
+                    className="flex items-center gap-2"
+                  >
+                    <BookOpen className="h-4 w-4" />
+                    Practice
+                  </Button>
+                  
+                  <Button 
+                    variant="outline" 
+                    onClick={() => router.push(`/sets/${setId}/play`)}
+                    className="flex items-center gap-2"
+                  >
+                    <Gamepad2 className="h-4 w-4" />
+                    Game
+                  </Button>
+                  
+                  <Button 
+                    variant="outline" 
+                    onClick={() => router.push(`/sets/${setId}/test`)}
+                    className="flex items-center gap-2"
+                  >
+                    <FileText className="h-4 w-4" />
+                    Test
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
         </main>

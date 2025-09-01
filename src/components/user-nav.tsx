@@ -139,7 +139,7 @@ export function UserNav() {
             <DialogHeader>
               <DialogTitle>submit feedback</DialogTitle>
               <DialogDescription>
-                have a suggestion or found a bug? let us know!
+                have a suggestion or bug fix request? or anything else
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
@@ -147,7 +147,7 @@ export function UserNav() {
                 <Label htmlFor="message">your message</Label>
                 <Textarea
                   id="message"
-                  placeholder="type your message here."
+                  placeholder="lmk here"
                   value={feedbackMessage}
                   onChange={(e) => setFeedbackMessage(e.target.value)}
                   required

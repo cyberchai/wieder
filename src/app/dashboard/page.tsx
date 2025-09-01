@@ -1,11 +1,11 @@
 "use client"
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { ProtectedRoute, useAuth } from "@/providers/auth-provider";
 import Header from "@/components/header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { PlusCircle, MoreVertical, Loader2, Trash2, Edit, Share2, Copy, Link as LinkIcon, CopyPlus, Gamepad2, Users, FileText, UserX } from "lucide-react";
+import { PlusCircle, MoreVertical, Loader2, Trash2, Edit, Share2, Copy, Link as LinkIcon, CopyPlus, Gamepad2, Users, FileText, UserX, Search, BookOpen, Globe, Users2 } from "lucide-react";
 import Link from "next/link";
 import {
   DropdownMenu,
@@ -30,6 +30,7 @@ import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 
 const DashboardPage = () => {
@@ -43,6 +44,54 @@ const DashboardPage = () => {
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [joinSetId, setJoinSetId] = useState("");
     const [loadingShared, setLoadingShared] = useState(true);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [activeTab, setActiveTab] = useState("my-sets");
+    const searchInputRef = useRef<HTMLInputElement>(null);
+
+    // Filtered sets based on search query
+    const filteredSets = useMemo(() => {
+        if (!searchQuery.trim()) return sets;
+        
+        const query = searchQuery.toLowerCase().trim();
+        
+        return sets.filter(set => {
+            // First, search in set title
+            if (set.title.toLowerCase().includes(query)) {
+                return true;
+            }
+            
+            // Then, search in card keys and values
+            return set.cards.some(card => 
+                card.front.toLowerCase().includes(query) || 
+                card.back.toLowerCase().includes(query)
+            );
+        });
+    }, [sets, searchQuery]);
+
+    // Filtered shared sets based on search query
+    const filteredSharedSets = useMemo(() => {
+        if (!searchQuery.trim()) return sharedSets;
+        
+        const query = searchQuery.toLowerCase().trim();
+        
+        return sharedSets.filter(set => {
+            // First, search in set title
+            if (set.title.toLowerCase().includes(query)) {
+                return true;
+            }
+            
+            // Then, search in card keys and values
+            return set.cards.some(card => 
+                card.front.toLowerCase().includes(query) || 
+                card.back.toLowerCase().includes(query)
+            );
+        });
+    }, [sharedSets, searchQuery]);
+
+    // Combined my sets and shared sets for the "my sets" tab
+    const allMySets = useMemo(() => {
+        return [...filteredSets, ...filteredSharedSets];
+    }, [filteredSets, filteredSharedSets]);
 
     useEffect(() => {
         if (user) {
@@ -77,6 +126,19 @@ const DashboardPage = () => {
             return () => unsubscribe();
         }
     }, [user]);
+
+    // Keyboard shortcut to focus search (Cmd/Ctrl + K)
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                e.preventDefault();
+                searchInputRef.current?.focus();
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyDown);
+        return () => document.removeEventListener('keydown', handleKeyDown);
+    }, []);
     
     const handleDeleteClick = (setId: string) => {
         setDeletingId(setId);
@@ -165,8 +227,12 @@ const DashboardPage = () => {
         return (
             <ProtectedRoute>
                 <div className="flex flex-col min-h-screen bg-secondary/50">
-                    <Header />
-                    <main className="flex-1 p-4 md:p-8 container text-center">
+                    <Header 
+                      searchQuery={searchQuery}
+                      onSearchChange={setSearchQuery}
+                      searchInputRef={searchInputRef}
+                    />
+                    <main className="flex-1 container mx-auto p-4 sm:p-6 lg:p-8 text-center">
                         <Loader2 className="h-8 w-8 animate-spin mx-auto mt-12" />
                         <p className="text-muted-foreground mt-2">loading your sets...</p>
                     </main>
@@ -178,8 +244,12 @@ const DashboardPage = () => {
     return (
         <ProtectedRoute>
             <div className="flex flex-col min-h-screen bg-secondary/50">
-                <Header />
-                <main className="flex-1 container p-4 md:p-8">
+                <Header 
+                  searchQuery={searchQuery}
+                  onSearchChange={setSearchQuery}
+                  searchInputRef={searchInputRef}
+                />
+                <main className="flex-1 container mx-auto p-4 sm:p-6 lg:p-8">
                     <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
                         <div>
                         {user && (
@@ -226,149 +296,303 @@ const DashboardPage = () => {
                             </Button>
                         </div>
                     </div>
-                    
-                    <div className="mb-12">
-                        <h2 className="text-2xl font-bold tracking-tight mb-4">my sets</h2>
-                        {sets.length > 0 ? (
-                            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                                {sets.map(set => (
-                                    <Card key={set.id} className="flex flex-col">
-                                        <CardHeader>
-                                            <div className="flex items-start justify-between">
-                                                <CardTitle className="pr-4">{set.title}</CardTitle>
-                                                <DropdownMenu>
-                                                    <DropdownMenuTrigger asChild>
-                                                        <Button variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0">
-                                                            <MoreVertical className="h-4 w-4" />
-                                                        </Button>
-                                                    </DropdownMenuTrigger>
-                                                    <DropdownMenuContent align="end">
-                                                        <DropdownMenuItem asChild>
-                                                            <Link href={`/sets/${set.id}/edit`}><Edit className="mr-2 h-4 w-4" />Edit</Link>
-                                                        </DropdownMenuItem>
-                                                        <DropdownMenuItem onClick={() => handleDuplicate(set)}>
-                                                            <CopyPlus className="mr-2 h-4 w-4" />Duplicate
-                                                        </DropdownMenuItem>
-                                                        <DropdownMenuItem onClick={() => handleShare(set)}>
-                                                            <Share2 className="mr-2 h-4 w-4" />Share
-                                                        </DropdownMenuItem>
-                                                        <DropdownMenuItem onClick={() => handleCopyId(set.id)}>
-                                                            <Copy className="mr-2 h-4 w-4" />copy setID
-                                                        </DropdownMenuItem>
-                                                        <DropdownMenuItem onClick={() => handleDeleteClick(set.id)} className="text-destructive">
-                                                            <Trash2 className="mr-2 h-4 w-4" />Delete
-                                                        </DropdownMenuItem>
-                                                    </DropdownMenuContent>
-                                                </DropdownMenu>
-                                            </div>
-                                            <CardDescription>{set.cards.length} cards</CardDescription>
-                                        </CardHeader>
-                                        <CardContent className="flex-grow"></CardContent>
-                                        <CardFooter className="flex flex-col gap-2">
-                                            <div className="w-full flex gap-2">
-                                                <Button className="w-full" asChild>
-                                                    <Link href={`/sets/${set.id}/study`}>practice</Link>
-                                                </Button>
-                                                <Button variant="outline" size="icon" className="flex-shrink-0" asChild>
-                                                    <Link href={`/sets/${set.id}/play`}>
-                                                        <Gamepad2 className="h-4 w-4" />
-                                                    </Link>
-                                                </Button>
-                                            </div>
-                                            <Button className="w-full" variant="outline" asChild>
-                                                <Link href={`/sets/${set.id}/test`}>
-                                                    <FileText className="mr-2 h-4 w-4" />test
-                                                </Link>
-                                            </Button>
-                                        </CardFooter>
-                                    </Card>
-                                ))}
-                            </div>
-                        ) : (
-                            <div className="flex flex-col items-center justify-center text-center p-12 border-2 border-dashed rounded-lg bg-card">
-                               <h2 className="text-2xl font-semibold mb-2">no sets yet!</h2>
-                                <p className="text-muted-foreground mb-4">get started by creating your first flashcard set.</p>
-                                <Button asChild>
-                                    <Link href="/sets/create">
-                                        <PlusCircle className="mr-2 h-4 w-4" />
-                                        create a set
-                                    </Link>
+
+                    {/* Search Results Summary */}
+                    {searchQuery && (
+                        <div className="mb-8 p-4 bg-muted/50 rounded-lg border">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <Search className="h-4 w-4 text-muted-foreground" />
+                                    <p className="text-sm text-muted-foreground">
+                                        found {filteredSets.length + filteredSharedSets.length} result{filteredSets.length + filteredSharedSets.length !== 1 ? 's' : ''} for "{searchQuery}"
+                                    </p>
+                                </div>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-6 px-2 text-xs"
+                                    onClick={() => setSearchQuery("")}
+                                >
+                                    clear search
                                 </Button>
                             </div>
-                        )}
-                    </div>
+                        </div>
+                    )}
                     
-                    <Separator />
+                                         <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-8">
+                         <TabsList className="grid w-full grid-cols-3">
+                             <TabsTrigger value="my-sets" className="flex items-center gap-2">
+                                 <BookOpen className="h-4 w-4" />
+                                 My Sets
+                                 <span className="ml-1 text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                                     {allMySets.length}
+                                 </span>
+                             </TabsTrigger>
+                             <TabsTrigger value="class-sets" className="flex items-center gap-2">
+                                 <Users className="h-4 w-4" />
+                                 Class Sets
+                                 <span className="ml-1 text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
+                                     0
+                                 </span>
+                             </TabsTrigger>
+                             <TabsTrigger value="public-sets" className="flex items-center gap-2">
+                                 <Globe className="h-4 w-4" />
+                                 Public Sets
+                                 <span className="ml-1 text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
+                                     ∞
+                                 </span>
+                             </TabsTrigger>
+                         </TabsList>
+                                                 <TabsContent value="my-sets">
+                             <div className="space-y-8">
+                                 {/* Personal Sets Section */}
+                                 <div>
+                                     <h3 className="text-xl font-semibold mb-4 flex items-center justify-between">
+                                         <div className="flex items-center gap-2">
+                                             <BookOpen className="h-5 w-5" />
+                                             personal sets
+                                         </div>
+                                         {searchQuery && (
+                                             <span className="text-sm text-muted-foreground">
+                                                 {filteredSets.length} result{filteredSets.length !== 1 ? 's' : ''}
+                                             </span>
+                                         )}
+                                     </h3>
+                                     {filteredSets.length > 0 ? (
+                                         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                                             {filteredSets.map(set => (
+                                                 <Link key={set.id} href={`/sets/${set.id}/study`} className="block">
+                                                     <Card className="flex flex-col hover:shadow-md transition-shadow cursor-pointer">
+                                                         <CardHeader>
+                                                             <div className="flex items-start justify-between">
+                                                                 <CardTitle className="pr-4">{set.title}</CardTitle>
+                                                                 <DropdownMenu>
+                                                                     <DropdownMenuTrigger asChild>
+                                                                         <Button variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0" onClick={(e) => e.preventDefault()}>
+                                                                             <MoreVertical className="h-4 w-4" />
+                                                                         </Button>
+                                                                     </DropdownMenuTrigger>
+                                                                     <DropdownMenuContent align="end">
+                                                                         <DropdownMenuItem asChild>
+                                                                             <Link href={`/sets/${set.id}/edit`}><Edit className="mr-2 h-4 w-4" />Edit</Link>
+                                                                         </DropdownMenuItem>
+                                                                         <DropdownMenuItem onClick={() => handleDuplicate(set)}>
+                                                                             <CopyPlus className="mr-2 h-4 w-4" />Duplicate
+                                                                         </DropdownMenuItem>
+                                                                         <DropdownMenuItem onClick={() => handleShare(set)}>
+                                                                             <Share2 className="mr-2 h-4 w-4" />Share
+                                                                         </DropdownMenuItem>
+                                                                         <DropdownMenuItem onClick={() => handleCopyId(set.id)}>
+                                                                             <Copy className="mr-2 h-4 w-4" />copy setID
+                                                                         </DropdownMenuItem>
+                                                                         <DropdownMenuItem onClick={() => handleDeleteClick(set.id)}>
+                                                                             <Trash2 className="mr-2 h-4 w-4" />Delete
+                                                                         </DropdownMenuItem>
+                                                                     </DropdownMenuContent>
+                                                                 </DropdownMenu>
+                                                             </div>
+                                                             <CardDescription>{set.cards.length} cards</CardDescription>
+                                                             {searchQuery && (
+                                                                 <div className="text-xs text-muted-foreground">
+                                                                     {set.title.toLowerCase().includes(searchQuery.toLowerCase()) ? (
+                                                                         <span>matches title</span>
+                                                                     ) : (
+                                                                         <span>matches {set.cards.filter(card => 
+                                                                             card.front.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                                                                             card.back.toLowerCase().includes(searchQuery.toLowerCase())
+                                                                         ).length} cards</span>
+                                                                     )}
+                                                                 </div>
+                                                             )}
+                                                         </CardHeader>
+                                                         <CardContent className="flex-grow"></CardContent>
+                                                         <CardFooter className="flex flex-col gap-2">
+                                                             <Button className="w-full" onClick={() => router.push(`/sets/${set.id}/study`)}>
+                                                                 <BookOpen className="mr-2 h-4 w-4" />
+                                                                 Study
+                                                             </Button>
+                                                         </CardFooter>
+                                                     </Card>
+                                                 </Link>
+                                             ))}
+                                         </div>
+                                     ) : searchQuery ? (
+                                         <div className="flex flex-col items-center justify-center text-center p-8 border-2 border-dashed rounded-lg bg-card">
+                                             <h4 className="text-lg font-semibold mb-2">no personal sets found</h4>
+                                             <p className="text-muted-foreground mb-4">try adjusting your search terms or create a new set.</p>
+                                             <Button asChild>
+                                                 <Link href="/sets/create">
+                                                     <PlusCircle className="mr-2 h-4 w-4" />
+                                                     create a set
+                                                 </Link>
+                                             </Button>
+                                         </div>
+                                     ) : (
+                                         <div className="flex flex-col items-center justify-center text-center p-8 border-2 border-dashed rounded-lg bg-card">
+                                            <h4 className="text-lg font-semibold mb-2">no personal sets yet!</h4>
+                                             <p className="text-muted-foreground mb-4">get started by creating your first flashcard set.</p>
+                                             <Button asChild>
+                                                 <Link href="/sets/create">
+                                                     <PlusCircle className="mr-2 h-4 w-4" />
+                                                     create a set
+                                                 </Link>
+                                             </Button>
+                                         </div>
+                                     )}
+                                 </div>
 
-                    <div className="mt-12">
-                         <h2 className="text-2xl font-bold tracking-tight mb-4">shared sets</h2>
-                         {loadingShared ? (
-                             <div className="flex items-center gap-2 text-muted-foreground">
-                                <Loader2 className="h-5 w-5 animate-spin" />
-                                <span>loading shared sets...</span>
-                            </div>
-                         ) : sharedSets.length > 0 ? (
-                             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                                {sharedSets.map(set => (
-                                    <Card key={set.id} className="flex flex-col">
-                                        <CardHeader>
-                                            <div className="flex items-start justify-between">
-                                                <CardTitle className="pr-4">{set.title}</CardTitle>
-                                                <DropdownMenu>
-                                                    <DropdownMenuTrigger asChild>
-                                                        <Button variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0">
-                                                            <MoreVertical className="h-4 w-4" />
-                                                        </Button>
-                                                    </DropdownMenuTrigger>
-                                                    <DropdownMenuContent align="end">
-                                                        <DropdownMenuItem onClick={() => handleRemoveSharedSet(set.id)} className="text-destructive">
-                                                            <UserX className="mr-2 h-4 w-4" />
-                                                            remove myself from set
-                                                        </DropdownMenuItem>
-                                                    </DropdownMenuContent>
-                                                </DropdownMenu>
-                                            </div>
-                                            <CardDescription>{set.cards.length} cards</CardDescription>
-                                        </CardHeader>
-                                        <CardContent className="flex-grow"></CardContent>
-                                        <CardFooter className="flex flex-col gap-2">
-                                            <div className="w-full flex gap-2">
-                                                <Button className="w-full" asChild>
-                                                    <Link href={`/sets/${set.id}/study`}>practice</Link>
-                                                </Button>
-                                                <Button variant="outline" size="icon" className="flex-shrink-0" asChild>
-                                                    <Link href={`/sets/${set.id}/play`}>
-                                                        <Gamepad2 className="h-4 w-4" />
-                                                    </Link>
-                                                </Button>
-                                            </div>
-                                            <Button className="w-full" variant="outline" asChild>
-                                                <Link href={`/sets/${set.id}/test`}>
-                                                    <FileText className="mr-2 h-4 w-4" />test
+                                 {/* Shared Sets Section */}
+                                 <div>
+                                     <h3 className="text-xl font-semibold mb-4 flex items-center justify-between">
+                                         <div className="flex items-center gap-2">
+                                             <Users2 className="h-5 w-5" />
+                                             shared with me
+                                         </div>
+                                         {searchQuery && (
+                                             <span className="text-sm text-muted-foreground">
+                                                 {filteredSharedSets.length} result{filteredSharedSets.length !== 1 ? 's' : ''}
+                                             </span>
+                                         )}
+                                     </h3>
+                                     {loadingShared ? (
+                                         <div className="flex items-center gap-2 text-muted-foreground">
+                                            <Loader2 className="h-5 w-5 animate-spin" />
+                                            <span>loading shared sets...</span>
+                                        </div>
+                                     ) : filteredSharedSets.length > 0 ? (
+                                         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                                            {filteredSharedSets.map(set => (
+                                                <Link key={set.id} href={`/sets/${set.id}/study`} className="block">
+                                                    <Card className="flex flex-col hover:shadow-md transition-shadow cursor-pointer">
+                                                        <CardHeader>
+                                                            <div className="flex items-start justify-between">
+                                                                <CardTitle className="pr-4">{set.title}</CardTitle>
+                                                                <DropdownMenu>
+                                                                    <DropdownMenuTrigger asChild>
+                                                                        <Button variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0" onClick={(e) => e.preventDefault()}>
+                                                                            <MoreVertical className="h-4 w-4" />
+                                                                        </Button>
+                                                                    </DropdownMenuTrigger>
+                                                                    <DropdownMenuContent align="end">
+                                                                        <DropdownMenuItem onClick={() => handleRemoveSharedSet(set.id)} className="text-destructive">
+                                                                            <UserX className="mr-2 h-4 w-4" />
+                                                                            remove myself from set
+                                                                        </DropdownMenuItem>
+                                                                    </DropdownMenuContent>
+                                                                </DropdownMenu>
+                                                            </div>
+                                                            <CardDescription>{set.cards.length} cards</CardDescription>
+                                                            {searchQuery && (
+                                                                <div className="text-xs text-muted-foreground">
+                                                                    {set.title.toLowerCase().includes(searchQuery.toLowerCase()) ? (
+                                                                        <span>matches title</span>
+                                                                    ) : (
+                                                                        <span>matches {set.cards.filter(card => 
+                                                                            card.front.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                                                                            card.back.toLowerCase().includes(searchQuery.toLowerCase())
+                                                                        ).length} cards</span>
+                                                                    )}
+                                                                </div>
+                                                            )}
+                                                        </CardHeader>
+                                                        <CardContent className="flex-grow"></CardContent>
+                                                        <CardFooter className="flex flex-col gap-2">
+                                                            <Button className="w-full" onClick={() => router.push(`/sets/${set.id}/study`)}>
+                                                                <BookOpen className="mr-2 h-4 w-4" />
+                                                                Study
+                                                            </Button>
+                                                        </CardFooter>
+                                                    </Card>
                                                 </Link>
-                                            </Button>
-                                        </CardFooter>
-                                    </Card>
-                                ))}
-                            </div>
-                         ) : (
-                             <div className="flex flex-col items-center justify-center text-center p-12 border-2 border-dashed rounded-lg bg-card">
-                               <h2 className="text-2xl font-semibold mb-2">no shared sets</h2>
-                                <p className="text-muted-foreground">sets you join using an ID will appear here.</p>
-                            </div>
-                         )}
-                    </div>
+                                            ))}
+                                        </div>
+                                     ) : searchQuery ? (
+                                         <div className="flex flex-col items-center justify-center text-center p-8 border-2 border-dashed rounded-lg bg-card">
+                                           <h4 className="text-lg font-semibold mb-2">no shared sets found</h4>
+                                            <p className="text-muted-foreground">try adjusting your search terms.</p>
+                                        </div>
+                                     ) : (
+                                         <div className="flex flex-col items-center justify-center text-center p-8 border-2 border-dashed rounded-lg bg-card">
+                                           <h4 className="text-lg font-semibold mb-2">no shared sets</h4>
+                                            <p className="text-muted-foreground">sets you join using an ID will appear here.</p>
+                                        </div>
+                                     )}
+                                 </div>
+                             </div>
+                         </TabsContent>
+                                                 <TabsContent value="class-sets">
+                             <div className="space-y-6">
+                                 <div className="flex items-center justify-between">
+                                     <h2 className="text-2xl font-bold tracking-tight">class sets</h2>
+                                     <Button variant="outline" size="sm">
+                                         <Users className="mr-2 h-4 w-4" />
+                                         join class
+                                     </Button>
+                                 </div>
+                                 
+                                 <div className="text-center py-12 border-2 border-dashed rounded-lg bg-card">
+                                     <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                                     <h3 className="text-lg font-semibold mb-2">no class sets yet</h3>
+                                     <p className="text-muted-foreground mb-4">
+                                         join a class to access shared flashcard sets from your teachers and classmates
+                                     </p>
+                                     <div className="flex gap-2 justify-center">
+                                         <Button variant="outline">
+                                             <Users className="mr-2 h-4 w-4" />
+                                             join with class code
+                                         </Button>
+                                         <Button variant="outline">
+                                             <Search className="mr-2 h-4 w-4" />
+                                             browse classes
+                                         </Button>
+                                     </div>
+                                 </div>
+                             </div>
+                         </TabsContent>
+                         
+                         <TabsContent value="public-sets">
+                             <div className="space-y-6">
+                                 <div className="flex items-center justify-between">
+                                     <h2 className="text-2xl font-bold tracking-tight">public sets</h2>
+                                     <Button variant="outline" size="sm">
+                                         <Globe className="mr-2 h-4 w-4" />
+                                         browse all
+                                     </Button>
+                                 </div>
+                                 
+                                 <div className="text-center py-12 border-2 border-dashed rounded-lg bg-card">
+                                     <Globe className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                                     <h3 className="text-lg font-semibold mb-2">explore public sets</h3>
+                                     <p className="text-muted-foreground mb-4">
+                                         discover and join public flashcard sets created by the community
+                                     </p>
+                                     <div className="flex gap-2 justify-center">
+                                         <Button variant="outline">
+                                             <Search className="mr-2 h-4 w-4" />
+                                             search public sets
+                                         </Button>
+                                         <Button variant="outline">
+                                             <BookOpen className="mr-2 h-4 w-4" />
+                                             popular subjects
+                                         </Button>
+                                     </div>
+                                 </div>
+                             </div>
+                         </TabsContent>
+                    </Tabs>
                 </main>
-                <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t mt-auto">
-                    <p className="text-xs text-muted-foreground">made with &lt;3 by a smithie</p>
-                    <nav className="sm:ml-auto flex gap-4 sm:gap-6">
-                    <Link href="/terms" className="text-xs hover:underline underline-offset-4" prefetch={false}>
-                        terms of service
-                    </Link>
-                    <Link href="/privacy" className="text-xs hover:underline underline-offset-4" prefetch={false}>
-                        privacy
-                    </Link>
-                    </nav>
+                <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 sm:px-6 lg:px-8 border-t mt-auto">
+                    <div className="container mx-auto flex flex-col gap-2 sm:flex-row items-center justify-between">
+                        <p className="text-xs text-muted-foreground">made with &lt;3</p>
+                        <nav className="flex gap-4 sm:gap-6">
+                        <Link href="/terms" className="text-xs hover:underline underline-offset-4" prefetch={false}>
+                            terms of service
+                        </Link>
+                        <Link href="/privacy" className="text-xs hover:underline underline-offset-4" prefetch={false}>
+                            privacy
+                        </Link>
+                        </nav>
+                    </div>
                 </footer>
             </div>
             <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
