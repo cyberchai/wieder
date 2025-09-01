@@ -46,6 +46,7 @@
     "firebase-functions": "^6.4.0",
     "genkit": "^1.14.1",
     "lucide-react": "^0.475.0",
+    "ogl": "^1.0.11",
     "patch-package": "^8.0.0",
     "react": "^18.3.1",
     "react-confetti": "^6.1.0",

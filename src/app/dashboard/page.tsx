@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { ProtectedRoute, useAuth } from "@/providers/auth-provider";
 import Header from "@/components/header";
+import AuroraBackground from "@/components/aurora-background";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { PlusCircle, MoreVertical, Loader2, Trash2, Edit, Share2, Copy, Link as LinkIcon, CopyPlus, Gamepad2, Users, FileText, UserX, Search, BookOpen, Globe, Users2 } from "lucide-react";
@@ -226,16 +227,17 @@ const DashboardPage = () => {
     if (loading) {
         return (
             <ProtectedRoute>
-                <div className="flex flex-col min-h-screen bg-secondary/50">
+                <div className="flex flex-col min-h-screen bg-secondary/50 relative">
+                    <AuroraBackground />
                     <Header 
                       searchQuery={searchQuery}
                       onSearchChange={setSearchQuery}
                       searchInputRef={searchInputRef}
                     />
-                    <main className="flex-1 container mx-auto p-4 sm:p-6 lg:p-8 text-center">
-                        <Loader2 className="h-8 w-8 animate-spin mx-auto mt-12" />
-                        <p className="text-muted-foreground mt-2">loading your sets...</p>
-                    </main>
+                                    <main className="flex-1 container mx-auto p-4 sm:p-6 lg:p-8 text-center relative z-10">
+                    <Loader2 className="h-8 w-8 animate-spin mx-auto mt-12" />
+                    <p className="text-muted-foreground mt-2">loading your sets...</p>
+                </main>
                 </div>
             </ProtectedRoute>
         );
@@ -243,13 +245,14 @@ const DashboardPage = () => {
     
     return (
         <ProtectedRoute>
-            <div className="flex flex-col min-h-screen bg-secondary/50">
+            <div className="flex flex-col min-h-screen bg-secondary/50 relative">
+                <AuroraBackground />
                 <Header 
                   searchQuery={searchQuery}
                   onSearchChange={setSearchQuery}
                   searchInputRef={searchInputRef}
                 />
-                <main className="flex-1 container mx-auto p-4 sm:p-6 lg:p-8">
+                <main className="flex-1 container mx-auto p-4 sm:p-6 lg:p-8 relative z-10">
                     <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
                         <div>
                         {user && (
@@ -581,7 +584,7 @@ const DashboardPage = () => {
                          </TabsContent>
                     </Tabs>
                 </main>
-                <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 sm:px-6 lg:px-8 border-t mt-auto">
+                <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 sm:px-6 lg:px-8 border-t mt-auto relative z-10">
                     <div className="container mx-auto flex flex-col gap-2 sm:flex-row items-center justify-between">
                         <p className="text-xs text-muted-foreground">made with &lt;3</p>
                         <nav className="flex gap-4 sm:gap-6">

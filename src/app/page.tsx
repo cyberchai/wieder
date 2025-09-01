@@ -3,11 +3,13 @@ import { Button } from '@/components/ui/button';
 import { Zap, CheckCircle, Share2 } from 'lucide-react';
 import { IterationCcw } from 'lucide-react';
 import { ThemeSwitcher } from '@/components/theme-switcher';
+import AuroraBackground from '@/components/aurora-background';
 
 export default function LandingPage() {
   return (
-    <div className="flex flex-col min-h-screen bg-background">
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <div className="flex flex-col min-h-screen bg-background relative">
+      <AuroraBackground />
+      <header className="sticky top-0 z-10 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex h-14 items-center justify-between">
             <Link href="#" className="flex items-center justify-center gap-2" prefetch={false}>
@@ -25,7 +27,7 @@ export default function LandingPage() {
           </div>
         </div>
       </header>
-      <main className="flex-1">
+      <main className="flex-1 relative z-10">
         <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col justify-center space-y-4 text-center">
@@ -84,7 +86,7 @@ export default function LandingPage() {
           </div>
         </section>
       </main>
-      <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 sm:px-6 lg:px-8 border-t">
+      <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 sm:px-6 lg:px-8 border-t relative z-10">
         <div className="container mx-auto flex flex-col gap-2 sm:flex-row items-center justify-between">
           <p className="text-xs text-muted-foreground">made with &lt;3</p>
           <nav className="flex gap-4 sm:gap-6">
