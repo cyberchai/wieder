@@ -289,12 +289,12 @@ const DashboardPage = () => {
                                                 value={joinSetId}
                                                 onChange={(e) => setJoinSetId(e.target.value)}
                                             />
-                                            <Button type="submit">join</Button>
+                                            <Button className="hover:shadow-lg hover:scale-105 transition-all duration-200 ease-in-out transform" type="submit">join</Button>
                                         </div>
                                     </form>
                                 </PopoverContent>
                             </Popover>
-                            <Button asChild>
+                            <Button className="hover:shadow-lg hover:scale-105 transition-all duration-200 ease-in-out transform" asChild>
                                 <Link href="/sets/create">
                                     <PlusCircle className="mr-2 h-4 w-4" />
                                     new set
@@ -316,7 +316,7 @@ const DashboardPage = () => {
                                 <Button
                                     variant="ghost"
                                     size="sm"
-                                    className="h-6 px-2 text-xs"
+                                    className="h-6 px-2 text-xs hover:shadow-md hover:scale-105 transition-all duration-200 ease-in-out transform"
                                     onClick={() => setSearchQuery("")}
                                 >
                                     clear search
@@ -368,13 +368,13 @@ const DashboardPage = () => {
                                          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                                              {filteredSets.map(set => (
                                                  <Link key={set.id} href={`/sets/${set.id}/study`} className="block">
-                                                     <Card className="flex flex-col hover:shadow-md transition-shadow cursor-pointer">
+                                                     <Card className="flex flex-col hover:shadow-xl hover:-translate-y-1 hover:border-primary/20 transition-all duration-300 ease-in-out cursor-pointer transform">
                                                          <CardHeader>
                                                              <div className="flex items-start justify-between">
                                                                  <CardTitle className="pr-4">{set.title}</CardTitle>
                                                                  <DropdownMenu>
                                                                      <DropdownMenuTrigger asChild>
-                                                                         <Button variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0" onClick={(e) => e.preventDefault()}>
+                                                                         <Button variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0 hover:shadow-md hover:scale-110 transition-all duration-200 ease-in-out transform" onClick={(e) => e.preventDefault()}>
                                                                              <MoreVertical className="h-4 w-4" />
                                                                          </Button>
                                                                      </DropdownMenuTrigger>
@@ -413,7 +413,7 @@ const DashboardPage = () => {
                                                          </CardHeader>
                                                          <CardContent className="flex-grow"></CardContent>
                                                          <CardFooter className="flex flex-col gap-2">
-                                                             <Button className="w-full" onClick={() => router.push(`/sets/${set.id}/study`)}>
+                                                             <Button className="w-full hover:shadow-lg hover:scale-105 transition-all duration-200 ease-in-out transform" onClick={() => router.push(`/sets/${set.id}/study`)}>
                                                                  <BookOpen className="mr-2 h-4 w-4" />
                                                                  Study
                                                              </Button>
@@ -426,7 +426,7 @@ const DashboardPage = () => {
                                          <div className="flex flex-col items-center justify-center text-center p-8 border-2 border-dashed rounded-lg bg-card">
                                              <h4 className="text-lg font-semibold mb-2">no personal sets found</h4>
                                              <p className="text-muted-foreground mb-4">try adjusting your search terms or create a new set.</p>
-                                             <Button asChild>
+                                             <Button className="hover:shadow-lg hover:scale-105 transition-all duration-200 ease-in-out transform" asChild>
                                                  <Link href="/sets/create">
                                                      <PlusCircle className="mr-2 h-4 w-4" />
                                                      create a set
@@ -437,7 +437,7 @@ const DashboardPage = () => {
                                          <div className="flex flex-col items-center justify-center text-center p-8 border-2 border-dashed rounded-lg bg-card">
                                             <h4 className="text-lg font-semibold mb-2">no personal sets yet!</h4>
                                              <p className="text-muted-foreground mb-4">get started by creating your first flashcard set.</p>
-                                             <Button asChild>
+                                             <Button className="hover:shadow-lg hover:scale-105 transition-all duration-200 ease-in-out transform" asChild>
                                                  <Link href="/sets/create">
                                                      <PlusCircle className="mr-2 h-4 w-4" />
                                                      create a set
@@ -469,15 +469,15 @@ const DashboardPage = () => {
                                          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                                             {filteredSharedSets.map(set => (
                                                 <Link key={set.id} href={`/sets/${set.id}/study`} className="block">
-                                                    <Card className="flex flex-col hover:shadow-md transition-shadow cursor-pointer">
+                                                    <Card className="flex flex-col hover:shadow-xl hover:-translate-y-1 hover:border-primary/20 transition-all duration-300 ease-in-out cursor-pointer transform">
                                                         <CardHeader>
                                                             <div className="flex items-start justify-between">
                                                                 <CardTitle className="pr-4">{set.title}</CardTitle>
                                                                 <DropdownMenu>
                                                                     <DropdownMenuTrigger asChild>
-                                                                        <Button variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0" onClick={(e) => e.preventDefault()}>
-                                                                            <MoreVertical className="h-4 w-4" />
-                                                                        </Button>
+                                                                                                                                            <Button variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0 hover:shadow-md hover:scale-110 transition-all duration-200 ease-in-out transform" onClick={(e) => e.preventDefault()}>
+                                                                        <MoreVertical className="h-4 w-4" />
+                                                                    </Button>
                                                                     </DropdownMenuTrigger>
                                                                     <DropdownMenuContent align="end">
                                                                         <DropdownMenuItem onClick={() => handleRemoveSharedSet(set.id)} className="text-destructive">
@@ -503,7 +503,7 @@ const DashboardPage = () => {
                                                         </CardHeader>
                                                         <CardContent className="flex-grow"></CardContent>
                                                         <CardFooter className="flex flex-col gap-2">
-                                                            <Button className="w-full" onClick={() => router.push(`/sets/${set.id}/study`)}>
+                                                            <Button className="w-full hover:shadow-lg hover:scale-105 transition-all duration-200 ease-in-out transform" onClick={() => router.push(`/sets/${set.id}/study`)}>
                                                                 <BookOpen className="mr-2 h-4 w-4" />
                                                                 Study
                                                             </Button>
