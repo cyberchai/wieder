@@ -7,7 +7,7 @@ import AuroraBackground from "@/components/aurora-background";
 import DashboardParticlesBackground from "@/components/dashboard-particles-background";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { PlusCircle, MoreVertical, Loader2, Trash2, Edit, Share2, Copy, Link as LinkIcon, CopyPlus, Gamepad2, Users, FileText, UserX, Search, BookOpen, Users2 } from "lucide-react";
+import { PlusCircle, MoreVertical, Loader2, Trash2, Edit, Share2, Copy, Link as LinkIcon, CopyPlus, Gamepad2, Users, FileText, UserX, Search, BookOpen, Globe, Users2 } from "lucide-react";
 import Link from "next/link";
 import {
   DropdownMenu,
@@ -345,7 +345,7 @@ const DashboardPage = () => {
                     )}
                     
                                          <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-8">
-                         <TabsList className="grid w-full grid-cols-2">
+                         <TabsList className="grid w-full grid-cols-3">
                              <TabsTrigger value="my-sets" className="flex items-center gap-2">
                                  <BookOpen className="h-4 w-4" />
                                  My Sets
@@ -358,6 +358,13 @@ const DashboardPage = () => {
                                  Group Sets
                                  <span className="ml-1 text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
                                      0
+                                 </span>
+                             </TabsTrigger>
+                             <TabsTrigger value="public-sets" className="flex items-center gap-2">
+                                 <Globe className="h-4 w-4" />
+                                 Public Sets
+                                 <span className="ml-1 text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
+                                     ∞
                                  </span>
                              </TabsTrigger>
                          </TabsList>
@@ -571,6 +578,36 @@ const DashboardPage = () => {
                                          </div>
                                      )}
                                  </div> */}
+                             </div>
+                         </TabsContent>
+                         
+                         <TabsContent value="public-sets">
+                             <div className="space-y-6">
+                                 <div className="flex items-center justify-between">
+                                     <h2 className="text-2xl font-bold tracking-tight">public sets</h2>
+                                     <Button variant="outline" size="sm">
+                                         <Globe className="mr-2 h-4 w-4" />
+                                         browse all
+                                     </Button>
+                                 </div>
+                                 
+                                 <div className="text-center py-12 border-2 border-dashed rounded-lg bg-card">
+                                     <Globe className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                                     <h3 className="text-lg font-semibold mb-2">explore public sets</h3>
+                                     <p className="text-muted-foreground mb-4">
+                                         discover and join public flashcard sets created by the community
+                                     </p>
+                                     <div className="flex gap-2 justify-center">
+                                         <Button variant="outline">
+                                             <Search className="mr-2 h-4 w-4" />
+                                             search public sets
+                                         </Button>
+                                         <Button variant="outline">
+                                             <BookOpen className="mr-2 h-4 w-4" />
+                                             popular subjects
+                                         </Button>
+                                     </div>
+                                 </div>
                              </div>
                          </TabsContent>
                                                  <TabsContent value="group-sets">
