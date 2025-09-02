@@ -42,7 +42,26 @@ export const SkunksIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg id='Letter_S_24' width='24' height='24' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' xmlnsXlink='http://www.w3.org/1999/xlink' {...props}>
         <rect width='24' height='24' stroke='none' fill='#000000' opacity='0'/>
         <g transform="matrix(1.11 0 0 1.11 12 12)" >
-        <path style={{stroke: 'none', strokeWidth: 1, strokeDasharray: 'none', strokeLinecap: 'butt', strokeDashoffset: 0, strokeLinejoin: 'miter', strokeMiterlimit: 4, fill: 'currentColor', fillRule: 'nonzero', opacity: 1}} transform=" translate(-13.5, -13)" d="M 10.8125 4 C 10.347656 4.050781 9.917969 4.261719 9.59375 4.59375 L 6.59375 7.59375 C 6.21875 7.964844 6.003906 8.472656 6 9 L 6 10 C 6.003906 10.527344 6.21875 11.035156 6.59375 11.40625 L 9.59375 14.40625 C 9.964844 14.78125 10.472656 14.996094 11 15 L 15.1875 15 L 16.6875 16.5 L 15.1875 18 L 10.8125 18 L 8.90625 16.09375 L 6.09375 18.90625 L 8.59375 21.40625 C 8.964844 21.78125 9.472656 21.996094 10 22 L 16 22 C 16.527344 21.996094 17.035156 21.78125 17.40625 21.40625 L 20.40625 18.40625 C 20.78125 18.035156 20.996094 17.527344 21 17 L 21 16 C 20.996094 15.472656 20.78125 14.964844 20.40625 14.59375 L 17.40625 11.59375 C 17.035156 11.21875 16.527344 11.003906 16 11 L 11.8125 11 L 10.3125 9.5 L 11.8125 8 L 15.1875 8 L 17.09375 9.90625 L 19.90625 7.09375 L 17.40625 4.59375 C 17.035156 4.21875 16.527344 4.003906 16 4 L 11 4 C 10.9375 3.996094 10.875 3.996094 10.8125 4 Z"/>
+        <path style={{stroke: 'none', strokeWidth: 1, strokeDasharray: 'none', strokeLinecap: 'butt', strokeDashoffset: 0, strokeLinejoin: 'miter', strokeMiterlimit: 4, fill: 'currentColor', fillRule: 'nonzero', opacity: 1}} transform=" translate(-13.5, -13)" d="M 10.8125 4 C 10.347656 4.050781 9.917969 4.261719 9.59375 4.59375 L 6.59375 7.59375 C 6.21875 7.964844 6.003906 8.472656 6 9 L 6 10 C 6.003906 10.527344 6.21875 11.035156 6.59375 11.40625 L 9.59375 14.40625 C 9.964844 14.78125 10.472656 14.996094 11 15 L 15.1875 15 L 16.6875 16.5 L 15.1875 18 L 10.8125 18 L 8.90625 16.09375 L 6.09375 18.90625 L 8.59375 21.40625 C 8.964844 21.78125 10.472656 21.996094 10 22 L 16 22 C 16.527344 21.996094 17.035156 21.78125 17.40625 21.40625 L 20.40625 18.40625 C 20.78125 18.035156 20.996094 17.527344 21 17 L 21 16 C 20.996094 15.472656 20.78125 14.964844 20.40625 14.59375 L 17.40625 11.59375 C 17.035156 11.21875 16.527344 11.003906 16 11 L 11.8125 11 L 10.3125 9.5 L 11.8125 8 L 15.1875 8 L 17.09375 9.90625 L 19.90625 7.09375 L 17.40625 4.59375 C 17.035156 4.21875 16.527344 4.003906 16 4 L 11 4 C 10.9375 3.996094 10.875 3.996094 10.8125 4 Z"/>
+        </g>
+    </svg>
+)
+
+export const MatrixIcon = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg id='Matrix_Icon_24' width='24' height='24' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' xmlnsXlink='http://www.w3.org/1999/xlink' {...props}>
+        <rect width='24' height='24' stroke='none' fill='#000000' opacity='0'/>
+        <g transform="matrix(0.8 0 0 0.8 12 12)" >
+            {/* Matrix-style grid pattern */}
+            <rect x="-8" y="-8" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="0.5" opacity="0.3"/>
+            <rect x="-6" y="-6" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="0.5" opacity="0.5"/>
+            <rect x="-4" y="-4" width="8" height="8" fill="none" stroke="currentColor" strokeWidth="0.5" opacity="0.7"/>
+            {/* Center dot */}
+            <circle cx="0" cy="0" r="1" fill="currentColor"/>
+            {/* Corner dots */}
+            <circle cx="-6" cy="-6" r="0.5" fill="currentColor"/>
+            <circle cx="6" cy="-6" r="0.5" fill="currentColor"/>
+            <circle cx="-6" cy="6" r="0.5" fill="currentColor"/>
+            <circle cx="6" cy="6" r="0.5" fill="currentColor"/>
         </g>
     </svg>
 )

@@ -12,6 +12,7 @@ import {
   serverTimestamp,
   orderBy,
 } from "firebase/firestore";
+import { getUserProfile } from "./users";
 
 export interface Card {
   id: string;
@@ -26,6 +27,8 @@ export interface FlashcardSet {
   cards: Card[];
   createdAt: Date;
   shared: boolean;
+  isPublic?: boolean;
+  creatorDisplayName?: string;
 }
 
 const setsCollection = collection(db, "flashcardSets");
@@ -70,6 +73,7 @@ export const getFlashcardSets = (
           cards: Array.isArray(data?.cards) ? data.cards : [],
           createdAt: data?.createdAt,
           shared: Boolean(data?.shared),
+          isPublic: Boolean(data?.isPublic),
         } as FlashcardSet);
       });
       callback(sets);
@@ -87,14 +91,28 @@ export const getFlashcardSet = async (setId: string): Promise<FlashcardSet | nul
 
     if (docSnap.exists()) {
         const data = docSnap.data() as any;
-        return {
+        const set: FlashcardSet = {
           id: docSnap.id,
           userId: data?.userId ?? "",
           title: data?.title ?? "Untitled",
           cards: Array.isArray(data?.cards) ? data.cards : [],
           createdAt: data?.createdAt,
           shared: Boolean(data?.shared),
-        } as FlashcardSet;
+          isPublic: Boolean(data?.isPublic),
+        };
+        
+        // Fetch creator display name if this is a public set
+        if (set.isPublic && set.userId) {
+          try {
+            const userProfile = await getUserProfile(set.userId);
+            set.creatorDisplayName = userProfile?.displayName || "some user on this app";
+          } catch (error) {
+            console.error(`Failed to fetch user profile for ${set.userId}:`, error);
+            set.creatorDisplayName = "some user on this app";
+          }
+        }
+        
+        return set;
     } else {
         return null;
     }
@@ -103,19 +121,10 @@ export const getFlashcardSet = async (setId: string): Promise<FlashcardSet | nul
 // Update a flashcard set
 export const updateFlashcardSet = async (
     setId: string,
-    title: string,
-    cards: Card[],
-    shared?: boolean
+    updates: Partial<Pick<FlashcardSet, 'title' | 'cards' | 'shared' | 'isPublic'>>
   ) => {
     const setDoc = doc(db, "flashcardSets", setId);
-    const dataToUpdate: { title: string; cards: Card[]; shared?: boolean } = {
-      title,
-      cards,
-    };
-    if (typeof shared === 'boolean') {
-      dataToUpdate.shared = shared;
-    }
-    return await updateDoc(setDoc, dataToUpdate);
+    return await updateDoc(setDoc, updates);
   };
 
 // Delete a flashcard set
@@ -132,5 +141,56 @@ export const duplicateFlashcardSet = async (set: FlashcardSet) => {
         cards: set.cards,
         createdAt: serverTimestamp(),
         shared: true,
+        isPublic: false, // Default to private
     });
+};
+
+// Get all public flashcard sets
+export const getPublicFlashcardSets = (
+    callback: (sets: FlashcardSet[]) => void,
+    onError?: (error: unknown) => void
+) => {
+    const q = query(
+        setsCollection,
+        where("isPublic", "==", true),
+        orderBy("createdAt", "desc")
+    );
+    return onSnapshot(
+        q,
+        async (querySnapshot) => {
+            const sets: FlashcardSet[] = [];
+            
+            // Process each set and fetch creator display names
+            for (const docSnap of querySnapshot.docs) {
+                const data = docSnap.data() as any;
+                const set: FlashcardSet = {
+                    id: docSnap.id,
+                    userId: data?.userId ?? "",
+                    title: data?.title ?? "Untitled",
+                    cards: Array.isArray(data?.cards) ? data.cards : [],
+                    createdAt: data?.createdAt,
+                    shared: Boolean(data?.shared),
+                    isPublic: Boolean(data?.isPublic),
+                };
+                
+                // Fetch creator display name
+                if (set.userId) {
+                    try {
+                        const userProfile = await getUserProfile(set.userId);
+                        set.creatorDisplayName = userProfile?.displayName || "some user on this app";
+                    } catch (error) {
+                        console.error(`Failed to fetch user profile for ${set.userId}:`, error);
+                        set.creatorDisplayName = "some user on this app";
+                    }
+                }
+                
+                sets.push(set);
+            }
+            
+            callback(sets);
+        },
+        (error) => {
+            if (onError) onError(error);
+        }
+    );
 };

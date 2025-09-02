@@ -6,7 +6,7 @@ import { auth } from '@/lib/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { Skeleton } from '@/components/ui/skeleton';
-import { AuthForm } from '@/components/auth-form';
+import { createOrUpdateUserProfile } from '@/services/users';
 
 type AuthContextType = {
   user: User | null;
@@ -20,7 +20,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        // Create or update user profile when they sign in
+        try {
+          await createOrUpdateUserProfile({
+            uid: user.uid,
+            displayName: user.displayName || user.email?.split('@')[0] || 'User',
+            email: user.email || '',
+            photoURL: user.photoURL || undefined,
+          });
+        } catch (error) {
+          console.error('Failed to create/update user profile:', error);
+        }
+      }
+      
       setUser(user);
       setLoading(false);
     });

@@ -67,7 +67,8 @@ export default function PlayPage() {
     setLoading(true);
     const fetchedSet = await getFlashcardSet(setId);
     if (fetchedSet) {
-      if (!fetchedSet.shared && fetchedSet.userId !== user?.uid) {
+              // Allow access if: user owns the set, set is shared, or set is public
+        if (!fetchedSet.shared && !fetchedSet.isPublic && fetchedSet.userId !== user?.uid) {
         toast({
           title: "Error",
           description: "You don't have permission to view this set.",

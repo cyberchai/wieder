@@ -11,7 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { NeilsonIcon, ConfeshIcon, SkunksIcon } from './theme-icons';
+import { NeilsonIcon, ConfeshIcon, SkunksIcon, MatrixIcon } from './theme-icons';
 
 
 export function ThemeSwitcher() {
@@ -42,6 +42,10 @@ export function ThemeSwitcher() {
         <DropdownMenuItem onClick={() => setTheme("skunks")}>
           <SkunksIcon className="mr-2 h-4 w-4" />
           <span>bears</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme("bw")}>
+          <MatrixIcon className="mr-2 h-4 w-4" />
+          <span>BW</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -25,7 +25,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { getFlashcardSets, deleteFlashcardSet, updateFlashcardSet, duplicateFlashcardSet, getFlashcardSet, type FlashcardSet } from "@/services/flashcard-sets";
+import { getFlashcardSets, deleteFlashcardSet, updateFlashcardSet, duplicateFlashcardSet, getFlashcardSet, getPublicFlashcardSets, type FlashcardSet } from "@/services/flashcard-sets";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from 'next/navigation';
 import { Input } from "@/components/ui/input";
@@ -41,13 +41,18 @@ const DashboardPage = () => {
     const router = useRouter();
     const [sets, setSets] = useState<FlashcardSet[]>([]);
     const [sharedSets, setSharedSets] = useState<FlashcardSet[]>([]);
+    const [groupSets, setGroupSets] = useState<FlashcardSet[]>([]);
+    const [publicSets, setPublicSets] = useState<FlashcardSet[]>([]);
     const [loading, setLoading] = useState(true);
     const [deletingId, setDeletingId] = useState<string | null>(null);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [joinSetId, setJoinSetId] = useState("");
     const [loadingShared, setLoadingShared] = useState(true);
+    const [loadingGroup, setLoadingGroup] = useState(true);
+    const [loadingPublic, setLoadingPublic] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
     const [activeTab, setActiveTab] = useState("my-sets");
+    const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false);
     const searchInputRef = useRef<HTMLInputElement>(null);
 
     // Filtered sets based on search query
@@ -145,6 +150,47 @@ const DashboardPage = () => {
         }
     }, [user]);
 
+    // Load group sets from localStorage
+    useEffect(() => {
+        const joinedGroupSetIds = JSON.parse(localStorage.getItem('joinedGroupSetIds') || '[]');
+        if (joinedGroupSetIds.length > 0) {
+            const fetchGroupSets = async () => {
+                const fetchedSets: FlashcardSet[] = [];
+                for (const setId of joinedGroupSetIds) {
+                    try {
+                        const set = await getFlashcardSet(setId);
+                        if (set) {
+                            fetchedSets.push(set);
+                        }
+                    } catch (error) {
+                        console.error(`Failed to fetch group set ${setId}`, error);
+                    }
+                }
+                setGroupSets(fetchedSets);
+                setLoadingGroup(false);
+            };
+            fetchGroupSets();
+        } else {
+            setLoadingGroup(false);
+        }
+    }, []);
+
+    // Load public sets
+    useEffect(() => {
+        const unsubscribe = getPublicFlashcardSets(
+            (data) => {
+                setPublicSets(data);
+                setLoadingPublic(false);
+            },
+            (error) => {
+                console.error("Failed to load public sets", error);
+                setLoadingPublic(false);
+            }
+        );
+
+        return () => unsubscribe();
+    }, []);
+
     // Keyboard shortcut to focus search (Cmd/Ctrl + K)
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -208,7 +254,7 @@ const DashboardPage = () => {
         if (trimmedId) {
             try {
                 const set = await getFlashcardSet(trimmedId);
-                if (set && set.shared) {
+                if (set && (set.shared || set.isPublic)) {
                     const joinedSetIds = JSON.parse(localStorage.getItem('joinedSetIds') || '[]');
                     if (!joinedSetIds.includes(trimmedId)) {
                         joinedSetIds.push(trimmedId);
@@ -224,13 +270,112 @@ const DashboardPage = () => {
                     }
                     router.push(`/sets/${trimmedId}/study`);
                 } else {
-                     toast({ title: "Error", description: "Set not found or is not shared.", variant: "destructive" });
+                     toast({ title: "Error", description: "Set not found or is not accessible.", variant: "destructive" });
                 }
             } catch(error) {
                 toast({ title: "Error", description: "Could not find the set.", variant: "destructive" });
             }
         }
     }
+
+    const handleJoinGroupSet = async (input: string) => {
+        if (!input.trim()) return;
+        
+        try {
+            // Parse the input - could be a set ID or a full URL
+            let setId = input.trim();
+            
+            // If it's a URL, extract the set ID
+            if (setId.includes('/sets/') && setId.includes('/study')) {
+                const urlMatch = setId.match(/\/sets\/([^\/]+)\/study/);
+                if (urlMatch) {
+                    setId = urlMatch[1];
+                }
+            }
+            
+            // Validate the set ID format (should be alphanumeric)
+            if (!/^[a-zA-Z0-9]+$/.test(setId)) {
+                toast({ title: "Invalid format", description: "Please enter a valid set ID or link.", variant: "destructive" });
+                return;
+            }
+            
+            // Check if set already exists in group sets
+            if (groupSets.find(set => set.id === setId)) {
+                toast({ title: "Already joined", description: "You've already joined this set.", variant: "destructive" });
+                return;
+            }
+            
+            // Fetch the set
+            const set = await getFlashcardSet(setId);
+            if (set) {
+                // Add to group sets
+                setGroupSets(prev => [...prev, set]);
+                
+                // Store in localStorage
+                const joinedGroupSetIds = JSON.parse(localStorage.getItem('joinedGroupSetIds') || '[]');
+                if (!joinedGroupSetIds.includes(setId)) {
+                    joinedGroupSetIds.push(setId);
+                    localStorage.setItem('joinedGroupSetIds', JSON.stringify(joinedGroupSetIds));
+                }
+                
+                toast({ title: "Success!", description: "Set joined successfully." });
+                setJoinSetId("");
+                setIsJoinDialogOpen(false);
+            } else {
+                toast({ title: "Set not found", description: "Could not find a set with that ID.", variant: "destructive" });
+            }
+        } catch (error) {
+            toast({ title: "Error", description: "Failed to join the set. Please check the ID and try again.", variant: "destructive" });
+        }
+    }
+
+    const handleRemoveGroupSet = (setIdToRemove: string) => {
+        setGroupSets(prev => prev.filter(set => set.id !== setIdToRemove));
+        
+        // Remove from localStorage
+        const joinedGroupSetIds = JSON.parse(localStorage.getItem('joinedGroupSetIds') || '[]');
+        const updatedIds = joinedGroupSetIds.filter((id: string) => id !== setIdToRemove);
+        localStorage.setItem('joinedGroupSetIds', JSON.stringify(updatedIds));
+        
+        toast({ title: "Set removed", description: "The group set has been removed from your dashboard." });
+    };
+
+    const handleTogglePublic = async (set: FlashcardSet) => {
+        if (!user) return;
+        
+        try {
+            const newPublicStatus = !set.isPublic;
+            await updateFlashcardSet(set.id, { isPublic: newPublicStatus });
+            
+            // Update local state
+            setSets(prev => prev.map(s => 
+                s.id === set.id ? { ...s, isPublic: newPublicStatus } : s
+            ));
+            
+            // Update public sets list
+            if (newPublicStatus) {
+                setPublicSets(prev => {
+                    if (!prev.find(s => s.id === set.id)) {
+                        return [...prev, { ...set, isPublic: newPublicStatus }];
+                    }
+                    return prev;
+                });
+            } else {
+                setPublicSets(prev => prev.filter(s => s.id !== set.id));
+            }
+            
+            toast({ 
+                title: "Success", 
+                description: `Set ${newPublicStatus ? 'made public' : 'made private'}.` 
+            });
+        } catch (error) {
+            toast({ 
+                title: "Error", 
+                description: "Failed to update set visibility.", 
+                variant: "destructive" 
+            });
+        }
+    };
 
     const handleRemoveSharedSet = (setIdToRemove: string) => {
         const joinedSetIds = JSON.parse(localStorage.getItem('joinedSetIds') || '[]');
@@ -357,14 +502,14 @@ const DashboardPage = () => {
                                  <Users className="h-4 w-4" />
                                  Group Sets
                                  <span className="ml-1 text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
-                                     0
+                                     {groupSets.length}
                                  </span>
                              </TabsTrigger>
                              <TabsTrigger value="public-sets" className="flex items-center gap-2">
                                  <Globe className="h-4 w-4" />
                                  Public Sets
                                  <span className="ml-1 text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
-                                     ∞
+                                     {publicSets.length}
                                  </span>
                              </TabsTrigger>
                          </TabsList>
@@ -390,7 +535,14 @@ const DashboardPage = () => {
                                                      <Card className="flex flex-col hover:shadow-xl hover:-translate-y-1 hover:border-primary/20 transition-all duration-300 ease-in-out cursor-pointer transform">
                                                          <CardHeader>
                                                              <div className="flex items-start justify-between">
-                                                                 <CardTitle className="pr-4">{set.title}</CardTitle>
+                                                                 <div className="flex-1">
+                                                                     <CardTitle className="pr-4">{set.title}</CardTitle>
+                                                                     {set.isPublic && (
+                                                                         <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full inline-block mt-1">
+                                                                             public
+                                                                         </span>
+                                                                     )}
+                                                                 </div>
                                                                  <DropdownMenu>
                                                                  <DropdownMenuTrigger asChild>
                                                                     <Button
@@ -406,49 +558,82 @@ const DashboardPage = () => {
                                                                     </Button>
                                                                 </DropdownMenuTrigger>
 
-                                                                    <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
-                                                                         <DropdownMenuItem asChild>
-                                                                             <Link href={`/sets/${set.id}/edit`}><Edit className="mr-2 h-4 w-4" />Edit</Link>
-                                                                         </DropdownMenuItem>
-                                                                         <DropdownMenuItem
-                                                                            onSelect={(e) => {
+                                                                                                                                        <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                                                                        {/* Study & Edit Actions */}
+                                                                        <DropdownMenuItem asChild>
+                                                                            <Link href={`/sets/${set.id}/edit`}>
+                                                                                <Edit className="mr-2 h-4 w-4" />
+                                                                                Edit
+                                                                            </Link>
+                                                                        </DropdownMenuItem>
+                                                                        
+                                                                        {/* Sharing & Visibility */}
+                                                                        <DropdownMenuItem
+                                                                            onClick={(e) => {
                                                                                 e.preventDefault();
                                                                                 e.stopPropagation();
-                                                                                handleDuplicate(set);
+                                                                                handleTogglePublic(set);
                                                                             }}
-                                                                            >
-                                                                            <CopyPlus className="mr-2 h-4 w-4" />Duplicate
-                                                                            </DropdownMenuItem>
-
-                                                                            <DropdownMenuItem
-                                                                            onSelect={(e) => {
+                                                                        >
+                                                                            {set.isPublic ? (
+                                                                                <>
+                                                                                    <Users className="mr-2 h-4 w-4" />
+                                                                                    Make private
+                                                                                </>
+                                                                            ) : (
+                                                                                <>
+                                                                                    <Globe className="mr-2 h-4 w-4" />
+                                                                                    Make public
+                                                                                </>
+                                                                            )}
+                                                                        </DropdownMenuItem>
+                                                                        
+                                                                        <DropdownMenuItem
+                                                                            onClick={(e) => {
                                                                                 e.preventDefault();
                                                                                 e.stopPropagation();
                                                                                 handleShare(set);
                                                                             }}
-                                                                            >
-                                                                            <Share2 className="mr-2 h-4 w-4" />Share
-                                                                            </DropdownMenuItem>
-
-                                                                            <DropdownMenuItem
-                                                                            onSelect={(e) => {
+                                                                        >
+                                                                            <Share2 className="mr-2 h-4 w-4" />
+                                                                            Share
+                                                                        </DropdownMenuItem>
+                                                                        
+                                                                        <DropdownMenuItem
+                                                                            onClick={(e) => {
                                                                                 e.preventDefault();
                                                                                 e.stopPropagation();
                                                                                 handleCopyId(set.id);
                                                                             }}
-                                                                            >
-                                                                            <Copy className="mr-2 h-4 w-4" />copy setID
-                                                                         </DropdownMenuItem>
-                                                                         <DropdownMenuItem
-                                                                            onSelect={(e) => {
+                                                                        >
+                                                                            <Copy className="mr-2 h-4 w-4" />
+                                                                            Copy set ID
+                                                                        </DropdownMenuItem>
+                                                                        
+                                                                        {/* Management Actions */}
+                                                                        <DropdownMenuItem
+                                                                            onClick={(e) => {
+                                                                                e.preventDefault();
+                                                                                e.stopPropagation();
+                                                                                handleDuplicate(set);
+                                                                            }}
+                                                                        >
+                                                                            <CopyPlus className="mr-2 h-4 w-4" />
+                                                                            Duplicate
+                                                                        </DropdownMenuItem>
+                                                                        
+                                                                        <DropdownMenuItem
+                                                                            onClick={(e) => {
                                                                                 e.preventDefault();
                                                                                 e.stopPropagation();
                                                                                 handleDeleteClick(set.id);
                                                                             }}
-                                                                            >
-                                                                            <Trash2 className="mr-2 h-4 w-4" />Delete
-                                                                         </DropdownMenuItem>
-                                                                     </DropdownMenuContent>
+                                                                            className="text-destructive"
+                                                                        >
+                                                                            <Trash2 className="mr-2 h-4 w-4" />
+                                                                            Delete
+                                                                        </DropdownMenuItem>
+                                                                    </DropdownMenuContent>
                                                                  </DropdownMenu>
                                                              </div>
                                                              <CardDescription>{Array.isArray(set.cards) ? set.cards.length : 0} cards</CardDescription>
@@ -591,52 +776,143 @@ const DashboardPage = () => {
                                      </Button>
                                  </div>
                                  
-                                 <div className="text-center py-12 border-2 border-dashed rounded-lg bg-card">
-                                     <Globe className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                                     <h3 className="text-lg font-semibold mb-2">explore public sets</h3>
-                                     <p className="text-muted-foreground mb-4">
-                                         discover and join public flashcard sets created by the community
-                                     </p>
-                                     <div className="flex gap-2 justify-center">
-                                         <Button variant="outline">
-                                             <Search className="mr-2 h-4 w-4" />
-                                             search public sets
-                                         </Button>
-                                         <Button variant="outline">
+                                 {loadingPublic ? (
+                                     <div className="flex items-center gap-2 text-muted-foreground">
+                                         <Loader2 className="h-5 w-5 animate-spin" />
+                                         <span>loading public sets...</span>
+                                     </div>
+                                 ) : publicSets.length > 0 ? (
+                                     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                                         {publicSets.map(set => (
+                                             <Link key={set.id} href={`/sets/${set.id}/study`} className="block">
+                                                 <Card className="flex flex-col hover:shadow-xl hover:-translate-y-1 hover:border-primary/20 transition-all duration-300 ease-in-out cursor-pointer transform">
+                                                     <CardHeader>
+                                                         <div className="space-y-2">
+                                                             <div className="flex items-start justify-between">
+                                                                 <CardTitle className="pr-4">{set.title}</CardTitle>
+                                                                 <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                                                                     public
+                                                                 </span>
+                                                             </div>
+                                                             <div className="flex items-center gap-2">
+                                                                 <span className="text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
+                                                                     by {set.creatorDisplayName || "some user on this app"}
+                                                                 </span>
+                                                             </div>
+                                                         </div>
+                                                         <CardDescription>{Array.isArray(set.cards) ? set.cards.length : 0} cards</CardDescription>
+                                                     </CardHeader>
+                                                     <CardContent className="flex-grow"></CardContent>
+                                                     <CardFooter className="flex flex-col gap-2">
+                                                         <Button className="w-full hover:shadow-lg hover:scale-105 transition-all duration-200 ease-in-out transform" onClick={() => router.push(`/sets/${set.id}/study`)}>
+                                                             <BookOpen className="mr-2 h-4 w-4" />
+                                                             Study
+                                                         </Button>
+                                                     </CardFooter>
+                                                 </Card>
+                                             </Link>
+                                         ))}
+                                     </div>
+                                 ) : (
+                                     <div className="text-center py-12 border-2 border-dashed rounded-lg bg-card">
+                                         <Globe className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                                         <h3 className="text-lg font-semibold mb-2">no public sets yet</h3>
+                                         <p className="text-muted-foreground mb-4">
+                                             be the first to make your sets public for the community to discover
+                                         </p>
+                                         <Button 
+                                             variant="outline"
+                                             onClick={() => setActiveTab("my-sets")}
+                                         >
                                              <BookOpen className="mr-2 h-4 w-4" />
-                                             popular subjects
+                                             create a set
                                          </Button>
                                      </div>
-                                 </div>
+                                 )}
                              </div>
                          </TabsContent>
                                                  <TabsContent value="group-sets">
                              <div className="space-y-6">
                                  <div className="flex items-center justify-between">
                                      <h2 className="text-2xl font-bold tracking-tight">group sets</h2>
-                                     <Button variant="outline" size="sm">
+                                     <Button 
+                                         variant="outline" 
+                                         size="sm"
+                                         onClick={() => setIsJoinDialogOpen(true)}
+                                     >
                                          <Users className="mr-2 h-4 w-4" />
-                                         join group
+                                         join by set ID
                                      </Button>
                                  </div>
                                  
-                                 <div className="text-center py-12 border-2 border-dashed rounded-lg bg-card">
-                                     <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                                     <h3 className="text-lg font-semibold mb-2">no group sets yet</h3>
-                                     <p className="text-muted-foreground mb-4">
-                                         join a group to access shared flashcard sets from your teachers and classmates
-                                     </p>
-                                     <div className="flex gap-2 justify-center">
-                                         <Button variant="outline">
+                                 {loadingGroup ? (
+                                     <div className="flex items-center gap-2 text-muted-foreground">
+                                         <Loader2 className="h-5 w-5 animate-spin" />
+                                         <span>loading group sets...</span>
+                                     </div>
+                                 ) : groupSets.length > 0 ? (
+                                     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                                         {groupSets.map(set => (
+                                             <Link key={set.id} href={`/sets/${set.id}/study`} className="block">
+                                                 <Card className="flex flex-col hover:shadow-xl hover:-translate-y-1 hover:border-primary/20 transition-all duration-300 ease-in-out cursor-pointer transform">
+                                                     <CardHeader>
+                                                         <div className="flex items-start justify-between">
+                                                             <CardTitle className="pr-4">{set.title}</CardTitle>
+                                                             <DropdownMenu>
+                                                                 <DropdownMenuTrigger asChild>
+                                                                     <Button 
+                                                                         variant="ghost" 
+                                                                         size="icon" 
+                                                                         className="h-8 w-8 flex-shrink-0 hover:shadow-md hover:scale-110 transition-all duration-200 ease-in-out transform" 
+                                                                         onClick={(e) => e.preventDefault()}
+                                                                     >
+                                                                         <MoreVertical className="h-4 w-4" />
+                                                                     </Button>
+                                                                 </DropdownMenuTrigger>
+                                                                 <DropdownMenuContent align="end">
+                                                                     <DropdownMenuItem 
+                                                                         onClick={(e) => {
+                                                                             e.preventDefault();
+                                                                             e.stopPropagation();
+                                                                             handleRemoveGroupSet(set.id);
+                                                                         }} 
+                                                                         className="text-destructive"
+                                                                     >
+                                                                         <UserX className="mr-2 h-4 w-4" />
+                                                                         remove from group sets
+                                                                     </DropdownMenuItem>
+                                                                 </DropdownMenuContent>
+                                                             </DropdownMenu>
+                                                         </div>
+                                                         <CardDescription>{Array.isArray(set.cards) ? set.cards.length : 0} cards</CardDescription>
+                                                     </CardHeader>
+                                                     <CardContent className="flex-grow"></CardContent>
+                                                     <CardFooter className="flex flex-col gap-2">
+                                                         <Button className="w-full hover:shadow-lg hover:scale-105 transition-all duration-200 ease-in-out transform" onClick={() => router.push(`/sets/${set.id}/study`)}>
+                                                             <BookOpen className="mr-2 h-4 w-4" />
+                                                             Study
+                                                         </Button>
+                                                     </CardFooter>
+                                                 </Card>
+                                             </Link>
+                                         ))}
+                                     </div>
+                                 ) : (
+                                     <div className="text-center py-12 border-2 border-dashed rounded-lg bg-card">
+                                         <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                                         <h3 className="text-lg font-semibold mb-2">no group sets yet</h3>
+                                         <p className="text-muted-foreground mb-4">
+                                             join sets by entering a set ID or sharing link
+                                         </p>
+                                         <Button 
+                                             variant="outline"
+                                             onClick={() => setIsJoinDialogOpen(true)}
+                                         >
                                              <Users className="mr-2 h-4 w-4" />
-                                             join with group code
-                                         </Button>
-                                         <Button variant="outline">
-                                             <Search className="mr-2 h-4 w-4" />
-                                             browse groups
+                                             join by set ID
                                          </Button>
                                      </div>
-                                 </div>
+                                 )}
                              </div>
                          </TabsContent>
                          
@@ -670,6 +946,31 @@ const DashboardPage = () => {
                   <AlertDialogCancel>cancel</AlertDialogCancel>
                   <AlertDialogAction onClick={handleConfirmDelete} className="bg-destructive hover:bg-destructive/90">
                     delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+
+            <AlertDialog open={isJoinDialogOpen} onOpenChange={setIsJoinDialogOpen}>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>join set</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    enter a set ID (e.g., dBa9EfTgiwk9lQMTrl38) or a full link (e.g., http://localhost:9002/sets/dBa9EfTgiwk9lQMTrl38/study)
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <div className="py-4">
+                  <Input
+                    placeholder="set ID or link"
+                    value={joinSetId}
+                    onChange={(e) => setJoinSetId(e.target.value)}
+                    className="w-full"
+                  />
+                </div>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={() => handleJoinGroupSet(joinSetId)}>
+                    join
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
