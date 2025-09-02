@@ -90,7 +90,8 @@ export default function LandingPage() {
       </main>
       <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 sm:px-6 lg:px-8 border-t relative z-10">
         <div className="container mx-auto flex flex-col gap-2 sm:flex-row items-center justify-between">
-          <p className="text-xs text-muted-foreground">made with &lt;3</p>
+          {/* <p className="text-xs text-muted-foreground">made with &lt;3</p> */}
+          <p className="text-xs text-muted-foreground"><a href="https://chairachananharder.com" target="_blank" rel="noopener noreferrer" className="hover:underline">made by chai</a></p>
           <nav className="flex gap-4 sm:gap-6">
             <Link href="/terms" className="text-xs hover:underline underline-offset-4" prefetch={false}>
               terms of service
