@@ -63,7 +63,7 @@ const DashboardPage = () => {
             }
             
             // Then, search in card keys and values
-            return set.cards.some(card => 
+            return Array.isArray(set.cards) && set.cards.some(card => 
                 card.front.toLowerCase().includes(query) || 
                 card.back.toLowerCase().includes(query)
             );
@@ -83,7 +83,7 @@ const DashboardPage = () => {
             }
             
             // Then, search in card keys and values
-            return set.cards.some(card => 
+            return Array.isArray(set.cards) && set.cards.some(card => 
                 card.front.toLowerCase().includes(query) || 
                 card.back.toLowerCase().includes(query)
             );
@@ -97,10 +97,26 @@ const DashboardPage = () => {
 
     useEffect(() => {
         if (user) {
-            const unsubscribe = getFlashcardSets(user.uid, (data) => {
-                setSets(data);
-                setLoading(false);
-            });
+            const unsubscribe = getFlashcardSets(
+                user.uid,
+                (data) => {
+                    setSets(data);
+                    setLoading(false);
+                },
+                (error) => {
+                    console.error("Failed to load flashcard sets", error);
+                    // Best-effort error surface; common cases are permission-denied or missing index
+                    const code = (error as any)?.code as string | undefined;
+                    let description = "Failed to load your sets.";
+                    if (code === "permission-denied") {
+                        description = "permission denied: check Firestore rules.";
+                    } else if (code === "failed-precondition") {
+                        description = "missing required index: create the suggested Firestore index.";
+                    }
+                    toast({ title: "Error", description, variant: "destructive" });
+                    setLoading(false);
+                }
+            );
 
             // Fetch shared sets from local storage
             const joinedSetIds = JSON.parse(localStorage.getItem('joinedSetIds') || '[]');
@@ -236,7 +252,7 @@ const DashboardPage = () => {
                       onSearchChange={setSearchQuery}
                       searchInputRef={searchInputRef}
                     />
-                                    <main className="flex-1 container mx-auto p-4 sm:p-6 lg:p-8 text-center relative z-10">
+                <main className="flex-1 container mx-auto p-4 sm:p-6 lg:p-8 text-center relative z-10">
                     <Loader2 className="h-8 w-8 animate-spin mx-auto mt-12" />
                     <p className="text-muted-foreground mt-2">loading your sets...</p>
                 </main>
@@ -435,16 +451,16 @@ const DashboardPage = () => {
                                                                      </DropdownMenuContent>
                                                                  </DropdownMenu>
                                                              </div>
-                                                             <CardDescription>{set.cards.length} cards</CardDescription>
+                                                             <CardDescription>{Array.isArray(set.cards) ? set.cards.length : 0} cards</CardDescription>
                                                              {searchQuery && (
                                                                  <div className="text-xs text-muted-foreground">
                                                                      {set.title.toLowerCase().includes(searchQuery.toLowerCase()) ? (
                                                                          <span>matches title</span>
                                                                      ) : (
-                                                                         <span>matches {set.cards.filter(card => 
+                                                                         <span>matches {Array.isArray(set.cards) ? set.cards.filter(card => 
                                                                              card.front.toLowerCase().includes(searchQuery.toLowerCase()) || 
                                                                              card.back.toLowerCase().includes(searchQuery.toLowerCase())
-                                                                         ).length} cards</span>
+                                                                         ).length : 0} cards</span>
                                                                      )}
                                                                  </div>
                                                              )}
@@ -525,16 +541,16 @@ const DashboardPage = () => {
                                                                     </DropdownMenuContent>
                                                                 </DropdownMenu>
                                                             </div>
-                                                            <CardDescription>{set.cards.length} cards</CardDescription>
+                                                            <CardDescription>{Array.isArray(set.cards) ? set.cards.length : 0} cards</CardDescription>
                                                             {searchQuery && (
                                                                 <div className="text-xs text-muted-foreground">
                                                                     {set.title.toLowerCase().includes(searchQuery.toLowerCase()) ? (
                                                                         <span>matches title</span>
                                                                     ) : (
-                                                                        <span>matches {set.cards.filter(card => 
+                                                                        <span>matches {Array.isArray(set.cards) ? set.cards.filter(card => 
                                                                             card.front.toLowerCase().includes(searchQuery.toLowerCase()) || 
                                                                             card.back.toLowerCase().includes(searchQuery.toLowerCase())
-                                                                        ).length} cards</span>
+                                                                        ).length : 0} cards</span>
                                                                     )}
                                                                 </div>
                                                             )}

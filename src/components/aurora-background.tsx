@@ -19,8 +19,8 @@ export default function AuroraBackground({ className = "" }: AuroraBackgroundPro
     <div className={`fixed inset-0 pointer-events-none z-0 ${className}`}>
       <Aurora 
         colorStops={['#5227FF', '#7cff67', '#5227FF']}
-        amplitude={1.2}
-        blend={0.6}
+        amplitude={0.7}
+        blend={0.5}
         speed={0.8}
       />
     </div>

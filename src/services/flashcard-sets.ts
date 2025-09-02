@@ -49,16 +49,35 @@ export const createFlashcardSet = async (
 // Get all flashcard sets for a user, ordered by creation date
 export const getFlashcardSets = (
   userId: string,
-  callback: (sets: FlashcardSet[]) => void
+  callback: (sets: FlashcardSet[]) => void,
+  onError?: (error: unknown) => void
 ) => {
-  const q = query(setsCollection, where("userId", "==", userId), orderBy("createdAt", "desc"));
-  return onSnapshot(q, (querySnapshot) => {
-    const sets: FlashcardSet[] = [];
-    querySnapshot.forEach((doc) => {
-      sets.push({ id: doc.id, ...doc.data() } as FlashcardSet);
-    });
-    callback(sets);
-  });
+  const q = query(
+    setsCollection,
+    where("userId", "==", userId),
+    orderBy("createdAt", "desc")
+  );
+  return onSnapshot(
+    q,
+    (querySnapshot) => {
+      const sets: FlashcardSet[] = [];
+      querySnapshot.forEach((docSnap) => {
+        const data = docSnap.data() as any;
+        sets.push({
+          id: docSnap.id,
+          userId: data?.userId ?? "",
+          title: data?.title ?? "Untitled",
+          cards: Array.isArray(data?.cards) ? data.cards : [],
+          createdAt: data?.createdAt,
+          shared: Boolean(data?.shared),
+        } as FlashcardSet);
+      });
+      callback(sets);
+    },
+    (error) => {
+      if (onError) onError(error);
+    }
+  );
 };
 
 // Get a single flashcard set by ID
@@ -67,7 +86,15 @@ export const getFlashcardSet = async (setId: string): Promise<FlashcardSet | nul
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
-        return { id: docSnap.id, ...docSnap.data() } as FlashcardSet;
+        const data = docSnap.data() as any;
+        return {
+          id: docSnap.id,
+          userId: data?.userId ?? "",
+          title: data?.title ?? "Untitled",
+          cards: Array.isArray(data?.cards) ? data.cards : [],
+          createdAt: data?.createdAt,
+          shared: Boolean(data?.shared),
+        } as FlashcardSet;
     } else {
         return null;
     }

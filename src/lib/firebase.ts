@@ -22,7 +22,7 @@
 
 // for firebase.ts
 
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
@@ -41,8 +41,8 @@ const firebaseConfig = {
   measurementId: "G-0DM61FVYK4",
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+// Initialize Firebase (guard against re-initialization during dev HMR)
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 
 // Export Firebase services you’ll use
 export const auth = getAuth(app);
