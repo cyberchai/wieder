@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useRouter } from 'next/navigation';
 import { useAuth, ProtectedRoute } from '@/providers/auth-provider';
+import { useTheme } from '@/providers/theme-provider';
 import { createFlashcardSet } from '@/services/flashcard-sets';
 import Header from '@/components/header';
 import { Button } from '@/components/ui/button';
@@ -44,6 +45,7 @@ export default function CreateSetPage() {
   const router = useRouter();
   const { user } = useAuth();
   const { toast } = useToast();
+  const { theme } = useTheme();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [importText, setImportText] = useState("");
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
@@ -194,7 +196,11 @@ export default function CreateSetPage() {
                     <Input
                       id="title"
                       {...register('title')}
-                      className="mt-2 text-xl p-4"
+                      className={`mt-2 text-xl p-4 ${
+                        theme === 'confesh' 
+                          ? 'bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800' 
+                          : 'bg-background border-border'
+                      }`}
                       placeholder="e.g. German Vocabulary"
                       autoComplete="off"
                       autoCorrect="off"
@@ -206,7 +212,11 @@ export default function CreateSetPage() {
 
                   <div className="space-y-6">
                     {fields.map((field, index) => (
-                      <div key={field.id} className="flex gap-4 items-start p-4 border rounded-lg bg-background">
+                      <div key={field.id} className={`flex gap-4 items-start p-4 border rounded-lg ${
+                        theme === 'confesh' 
+                          ? 'bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800' 
+                          : 'bg-background border-border'
+                      }`}>
                          <div className="font-bold text-lg text-muted-foreground pt-2">{index + 1}</div>
                         <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
@@ -215,7 +225,11 @@ export default function CreateSetPage() {
                               id={`cards.${index}.front`}
                               {...register(`cards.${index}.front`)}
                               placeholder="e.g. wie geht's?"
-                              className="mt-1 resize-none"
+                              className={`mt-1 resize-none ${
+                                theme === 'confesh' 
+                                  ? 'bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800' 
+                                  : 'bg-background border-border'
+                              }`}
                               autoComplete="off"
                               autoCorrect="off"
                               autoCapitalize="off"
@@ -229,7 +243,11 @@ export default function CreateSetPage() {
                               id={`cards.${index}.back`}
                               {...register(`cards.${index}.back`)}
                               placeholder="e.g. how are you?"
-                              className="mt-1 resize-none"
+                              className={`mt-1 resize-none ${
+                                theme === 'confesh' 
+                                  ? 'bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800' 
+                                  : 'bg-background border-border'
+                              }`}
                               onKeyDown={(e) => handleKeyDown(e, index)}
                               autoComplete="off"
                               autoCorrect="off"
