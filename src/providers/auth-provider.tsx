@@ -7,6 +7,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { Skeleton } from '@/components/ui/skeleton';
 import { createOrUpdateUserProfile } from '@/services/users';
+import { setAnalyticsUserId } from '@/lib/analytics';
 
 type AuthContextType = {
   user: User | null;
@@ -30,6 +31,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             email: user.email || '',
             photoURL: user.photoURL || undefined,
           });
+          
+          // Set user ID in Google Analytics
+          setAnalyticsUserId(user.uid);
         } catch (error) {
           console.error('Failed to create/update user profile:', error);
         }

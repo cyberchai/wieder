@@ -34,6 +34,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useSoundEffects } from "@/hooks/use-sound-effects";
+import { trackUserEngagement, trackPageView } from "@/lib/analytics";
 
 
 const DashboardPage = () => {
@@ -55,6 +57,14 @@ const DashboardPage = () => {
     const [activeTab, setActiveTab] = useState("my-sets");
     const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false);
     const searchInputRef = useRef<HTMLInputElement>(null);
+    const { handleNavigationClick, enableSounds } = useSoundEffects();
+
+    // Track page view
+    useEffect(() => {
+        if (user) {
+            trackPageView('dashboard', user.uid);
+        }
+    }, [user]);
 
     // Filtered sets based on search query
     const filteredSets = useMemo(() => {
@@ -95,6 +105,26 @@ const DashboardPage = () => {
             );
         });
     }, [sharedSets, searchQuery]);
+
+    // Filtered public sets based on search query
+    const filteredPublicSets = useMemo(() => {
+        if (!searchQuery.trim()) return publicSets;
+        
+        const query = searchQuery.toLowerCase().trim();
+        
+        return publicSets.filter(set => {
+            // First, search in set title
+            if (set.title.toLowerCase().includes(query)) {
+                return true;
+            }
+            
+            // Then, search in card keys and values
+            return Array.isArray(set.cards) && set.cards.some(card => 
+                card.front.toLowerCase().includes(query) || 
+                card.back.toLowerCase().includes(query)
+            );
+        });
+    }, [publicSets, searchQuery]);
 
     // Combined my sets and shared sets for the "my sets" tab
     const allMySets = useMemo(() => {
@@ -214,6 +244,13 @@ const DashboardPage = () => {
         if (deletingId) {
             try {
                 await deleteFlashcardSet(deletingId);
+                // Track deletion
+                if (user) {
+                    trackUserEngagement('delete_flashcard_set', { 
+                        set_id: deletingId,
+                        action: 'delete'
+                    }, user.uid);
+                }
                 toast({ title: "Success", description: "Set deleted successfully." });
             } catch (error) {
                 toast({ title: "Error", description: "Failed to delete set.", variant: "destructive" });
@@ -228,6 +265,14 @@ const DashboardPage = () => {
         try {
           const shareLink = `${window.location.origin}/sets/${set.id}/study`;
           navigator.clipboard.writeText(shareLink);
+          // Track sharing
+          if (user) {
+              trackUserEngagement('share_flashcard_set', { 
+                  set_id: set.id,
+                  set_title: set.title,
+                  action: 'share'
+              }, user.uid);
+          }
           toast({ title: "Copied to clipboard!", description: "Share link has been copied." });
         } catch (error) {
           toast({ title: "Error", description: "Could not copy share link.", variant: "destructive" });
@@ -236,6 +281,13 @@ const DashboardPage = () => {
 
     const handleCopyId = (setId: string) => {
         navigator.clipboard.writeText(setId);
+        // Track copying ID
+        if (user) {
+            trackUserEngagement('copy_set_id', { 
+                set_id: setId,
+                action: 'copy_id'
+            }, user.uid);
+        }
         toast({ title: "Copied!", description: "Set ID has been copied to your clipboard." });
     };
 
@@ -243,6 +295,12 @@ const DashboardPage = () => {
         if (!user) return;
         try {
             await duplicateFlashcardSet(set);
+            // Track duplication
+            trackUserEngagement('duplicate_flashcard_set', { 
+                set_id: set.id,
+                set_title: set.title,
+                action: 'duplicate'
+            }, user.uid);
             toast({ title: "Success", description: "Set duplicated successfully." });
         } catch (error) {
             toast({ title: "Error", description: "Failed to duplicate set.", variant: "destructive" });
@@ -260,6 +318,15 @@ const DashboardPage = () => {
                     if (!joinedSetIds.includes(trimmedId)) {
                         joinedSetIds.push(trimmedId);
                         localStorage.setItem('joinedSetIds', JSON.stringify(joinedSetIds));
+                        
+                        // Track joining set
+                        if (user) {
+                            trackUserEngagement('join_flashcard_set', { 
+                                set_id: trimmedId,
+                                set_title: set.title,
+                                action: 'join'
+                            }, user.uid);
+                        }
                         
                         setSharedSets(prev => {
                             const newSharedSets = [...prev];
@@ -339,6 +406,12 @@ const DashboardPage = () => {
         localStorage.setItem('joinedGroupSetIds', JSON.stringify(updatedIds));
         
         toast({ title: "Set removed", description: "The group set has been removed from your dashboard." });
+    };
+
+    const handleTabChange = (value: string) => {
+        enableSounds(); // Enable sounds on first user interaction
+        handleNavigationClick(); // Play navigation sound
+        setActiveTab(value);
     };
 
     const handleTogglePublic = async (set: FlashcardSet) => {
@@ -423,9 +496,11 @@ const DashboardPage = () => {
                         {user && (
                             <>
                             <h1 className="text-3xl font-bold tracking-tight">
-                                {`${user.displayName || user.email}'s big brain operation`}
+                                {`${(user.displayName || user.email)?.toLowerCase()}'s big brain operation`}
                             </h1>
-                            <p className="text-muted-foreground">welcome back!</p>
+                            <p className="text-muted-foreground">
+                                <b>{new Date().toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase()}&rsquo;s grind</b>
+                            </p>
                             </>
                         )}
                         </div>
@@ -472,8 +547,8 @@ const DashboardPage = () => {
                                 <div className="flex items-center gap-2">
                                     <Search className="h-4 w-4 text-muted-foreground" />
                                     <p className="text-sm text-muted-foreground">
-                                        {`found ${filteredSets.length + filteredSharedSets.length} result${
-                                            filteredSets.length + filteredSharedSets.length !== 1 ? "s" : ""
+                                        {`found ${filteredSets.length + filteredSharedSets.length + filteredPublicSets.length} result${
+                                            filteredSets.length + filteredSharedSets.length + filteredPublicSets.length !== 1 ? "s" : ""
                                         } for "${searchQuery}"`}
                                     </p>
 
@@ -490,7 +565,7 @@ const DashboardPage = () => {
                         </div>
                     )}
                     
-                                         <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-8">
+                                         <Tabs value={activeTab} onValueChange={handleTabChange} className="mb-8">
                          <TabsList className="grid w-full grid-cols-3">
                              <TabsTrigger value="my-sets" className="flex items-center gap-2">
                                  <BookOpen className="h-4 w-4" />
@@ -782,9 +857,9 @@ const DashboardPage = () => {
                                          <Loader2 className="h-5 w-5 animate-spin" />
                                          <span>loading public sets...</span>
                                      </div>
-                                 ) : publicSets.length > 0 ? (
+                                 ) : filteredPublicSets.length > 0 ? (
                                      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                                         {publicSets.map(set => (
+                                         {filteredPublicSets.map(set => (
                                              <Link key={set.id} href={`/sets/${set.id}/study`} className="block">
                                                  <Card className="flex flex-col hover:shadow-xl hover:-translate-y-1 hover:border-primary/20 transition-all duration-300 ease-in-out cursor-pointer transform">
                                                      <CardHeader>
@@ -802,6 +877,18 @@ const DashboardPage = () => {
                                                              </div>
                                                          </div>
                                                          <CardDescription>{Array.isArray(set.cards) ? set.cards.length : 0} cards</CardDescription>
+                                                         {searchQuery && (
+                                                             <div className="text-xs text-muted-foreground">
+                                                                 {set.title.toLowerCase().includes(searchQuery.toLowerCase()) ? (
+                                                                     <span>matches title</span>
+                                                                 ) : (
+                                                                     <span>matches {Array.isArray(set.cards) ? set.cards.filter(card => 
+                                                                         card.front.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                                                                         card.back.toLowerCase().includes(searchQuery.toLowerCase())
+                                                                     ).length : 0} cards</span>
+                                                                 )}
+                                                             </div>
+                                                         )}
                                                      </CardHeader>
                                                      <CardContent className="flex-grow"></CardContent>
                                                      <CardFooter className="flex flex-col gap-2">
@@ -813,6 +900,20 @@ const DashboardPage = () => {
                                                  </Card>
                                              </Link>
                                          ))}
+                                     </div>
+                                 ) : searchQuery ? (
+                                     <div className="text-center py-12 border-2 border-dashed rounded-lg bg-card">
+                                         <Globe className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                                         <h3 className="text-lg font-semibold mb-2">no public sets found</h3>
+                                         <p className="text-muted-foreground mb-4">
+                                             try adjusting your search terms
+                                         </p>
+                                         <Button 
+                                             variant="outline"
+                                             onClick={() => setSearchQuery("")}
+                                         >
+                                             clear search
+                                         </Button>
                                      </div>
                                  ) : (
                                      <div className="text-center py-12 border-2 border-dashed rounded-lg bg-card">

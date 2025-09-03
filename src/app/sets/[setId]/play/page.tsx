@@ -16,6 +16,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useWindowSize } from "@/hooks/use-window-size";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import RainDrops from "@/components/rain-drops";
+import { useSoundEffects } from "@/hooks/use-sound-effects";
 
 interface FallingWord {
   id: string;
@@ -34,6 +36,7 @@ export default function PlayPage() {
   const { user } = useAuth();
   const { toast } = useToast();
   const { width: windowWidth, height: windowHeight } = useWindowSize();
+  const { handleCorrectAnswer, handleToggleOn, enableSounds } = useSoundEffects();
 
   const gameAreaRef = useRef<HTMLDivElement>(null);
   const wordRef = useRef<HTMLDivElement>(null);
@@ -46,6 +49,7 @@ export default function PlayPage() {
   );
   const [shuffledCards, setShuffledCards] = useState<CardType[]>([]);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
+  const [gameEndReason, setGameEndReason] = useState<"success" | "failure" | null>(null);
 
   const [fallingWord, setFallingWord] = useState<FallingWord | null>(null);
   const [score, setScore] = useState(0);
@@ -54,6 +58,7 @@ export default function PlayPage() {
   const [typed, setTyped] = useState(""); // live typing shown on screen
   const [acceptGeneralAnswers, setAcceptGeneralAnswers] = useState(false);
   const [matchMode, setMatchMode] = useState<MatchMode>("definition"); // toggle term/definition
+  const headerHeight = 72; // Header height estimate
 
   // prevents double life-loss for the same missed word
   const missedHandledRef = useRef(false);
@@ -111,8 +116,11 @@ export default function PlayPage() {
     const idx = startIndex ?? currentCardIndex;
 
     if (idx >= list.length) {
+      enableSounds(); // Enable sounds on first user interaction
       setGameState("gameover");
+      setGameEndReason("success");
       setFallingWord(null);
+      handleToggleOn(); // Play game over sound
       return;
     }
 
@@ -161,7 +169,12 @@ export default function PlayPage() {
 
           setLives((l) => {
             const nl = Math.max(0, l - 1);
-            if (nl <= 0) setGameState("gameover");
+            if (nl <= 0) {
+              enableSounds(); // Enable sounds on first user interaction
+              setGameState("gameover");
+              setGameEndReason("failure");
+              handleToggleOn(); // Play game over sound
+            }
             return nl;
           });
 
@@ -331,9 +344,11 @@ export default function PlayPage() {
     if (gameState !== "playing" || !fallingWord) return;
     
     if (typed.length > 0 && isAnswerCorrect(typed, currentTarget)) {
+      enableSounds(); // Enable sounds on first user interaction
       setScore((s) => s + 10);
       setTyped("");
       toast({ title: "Correct!", className: "bg-green-100 dark:bg-green-900/50" });
+      handleCorrectAnswer(); // Play correct answer sound
       spawnNewWord();
     }
   }, [
@@ -343,6 +358,8 @@ export default function PlayPage() {
     fallingWord,
     spawnNewWord,
     toast,
+    handleCorrectAnswer,
+    enableSounds,
   ]);
 
   // Global key listener to capture typing; Enter clears input if wrong
@@ -382,6 +399,8 @@ export default function PlayPage() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [gameState, typed, currentTarget, toast]);
 
+
+
   const startGame = () => {
     const newCards = shuffleCards(set?.cards || []);
 
@@ -391,13 +410,17 @@ export default function PlayPage() {
     setFallingWord(null);
     setShuffledCards(newCards);
     setCurrentCardIndex(0);
+    setGameEndReason(null);
 
     if (newCards.length > 0) {
       setGameState("playing");
       // use the local deck directly so we don't depend on async state
       spawnNewWord(newCards, 0);
     } else {
+      enableSounds(); // Enable sounds on first user interaction
       setGameState("gameover");
+      setGameEndReason("failure");
+      handleToggleOn(); // Play game over sound
     }
   };
 
@@ -405,6 +428,7 @@ export default function PlayPage() {
     setGameState("idle");
     setTyped("");
     setFallingWord(null);
+    setGameEndReason(null);
   };
 
   if (loading) {
@@ -506,9 +530,12 @@ export default function PlayPage() {
 
               {gameState === "gameover" && (
                 <div className="text-center flex flex-col items-center justify-center h-full w-full">
-                  <h2 className="text-3xl font-bold mb-4">womp womp game over!</h2>
+                  <h2 className="text-3xl font-bold mb-4">
+                    {gameEndReason === "success" ? "congrats, game over!" : "womp womp game over!"}
+                  </h2>
                   <p className="text-xl text-muted-foreground mb-6">
-                    final score: {score}
+                    <b>final score: {score}</b>
+                    {/* {gameEndReason === "success" && ` - you completed the set with ${lives} ${lives === 1 ? 'life' : 'lives'} remaining! 🏆`} */}
                   </p>
                   <Button onClick={startGame} size="lg">
                     <RefreshCw className="mr-2 h-4 w-4" />
@@ -526,6 +553,13 @@ export default function PlayPage() {
                       lives: {"❤️".repeat(Math.max(0, lives))}
                     </p>
                   </div>
+
+                  {/* Rain drops animation */}
+                  <RainDrops 
+                    score={score} 
+                    isPlaying={gameState === "playing"} 
+                    headerHeight={headerHeight}
+                  />
 
                   {/* Falling prompt (always show the *other* side on the tile) */}
                   {fallingWord && (

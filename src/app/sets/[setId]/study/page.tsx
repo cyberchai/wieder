@@ -12,12 +12,15 @@ import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { ResponsiveText } from '@/components/responsive-text';
+import { useSoundEffects } from '@/hooks/use-sound-effects';
 
 export default function StudyPage() {
   const params = useParams();
   const setId = params.setId as string;
   const router = useRouter();
   const { user } = useAuth();
+  const { handleHoverStart, handleHoverEnd, handleToggleOn, handleToggleOff, enableSounds } = useSoundEffects();
 
   const [set, setSet] = useState<FlashcardSet | null>(null);
   const [loading, setLoading] = useState(true);
@@ -118,6 +121,7 @@ export default function StudyPage() {
   }, [handleKeyDown]);
 
   const handleNext = () => {
+    enableSounds(); // Enable sounds on first user interaction
     if (currentIndex < shuffledCards.length - 1) {
       setIsTransitioning(true);
       setTimeout(() => {
@@ -129,6 +133,7 @@ export default function StudyPage() {
   };
 
   const handlePrevious = () => {
+    enableSounds(); // Enable sounds on first user interaction
     if (currentIndex > 0) {
       setIsTransitioning(true);
       setTimeout(() => {
@@ -140,6 +145,7 @@ export default function StudyPage() {
   };
 
   const handleFlip = () => {
+    enableSounds(); // Enable sounds on first user interaction
     setIsFlipped(prev => !prev);
   };
 
@@ -158,8 +164,24 @@ export default function StudyPage() {
   };
 
   const handleReverseToggle = (checked: boolean) => {
+    enableSounds(); // Enable sounds on first user interaction
+    if (checked) {
+      handleToggleOn();
+    } else {
+      handleToggleOff();
+    }
     setIsReversed(checked);
     handleShuffle();
+  };
+
+  const handleProgressToggle = (checked: boolean) => {
+    enableSounds(); // Enable sounds on first user interaction
+    if (checked) {
+      handleToggleOn();
+    } else {
+      handleToggleOff();
+    }
+    setShowProgress(checked);
   };
 
   if (loading) {
@@ -221,7 +243,7 @@ export default function StudyPage() {
                     </Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Switch id="progress-toggle" checked={showProgress} onCheckedChange={setShowProgress} />
+                    <Switch id="progress-toggle" checked={showProgress} onCheckedChange={handleProgressToggle} />
                     <Label htmlFor="progress-toggle" className="flex items-center gap-2 cursor-pointer">
                       <div className="w-4 h-1 bg-current rounded-full"/>
                       progress
@@ -299,9 +321,11 @@ export default function StudyPage() {
                       }}
                     >
                       <div className="text-center">
-                        <div className="text-3xl font-bold leading-relaxed">
-                          {frontText}
-                        </div>
+                        <ResponsiveText 
+                          text={frontText}
+                          className="font-bold leading-relaxed"
+                          baseFontSize="text-3xl"
+                        />
                       </div>
                     </CardContent>
 
@@ -319,9 +343,11 @@ export default function StudyPage() {
                       }}
                     >
                       <div className="text-center">
-                        <div className="text-3xl font-medium leading-relaxed">
-                          {backText}
-                        </div>
+                        <ResponsiveText 
+                          text={backText}
+                          className="font-medium leading-relaxed"
+                          baseFontSize="text-3xl"
+                        />
                       </div>
                     </CardContent>
                   </Card>
@@ -363,6 +389,11 @@ export default function StudyPage() {
                   <Button 
                     variant="outline" 
                     onClick={() => router.push(`/sets/${setId}/practice`)}
+                    onMouseEnter={() => {
+                      enableSounds();
+                      handleHoverStart();
+                    }}
+                    onMouseLeave={handleHoverEnd}
                     className="flex items-center gap-2"
                   >
                     <BookOpen className="h-4 w-4" />
@@ -372,6 +403,11 @@ export default function StudyPage() {
                   <Button 
                     variant="outline" 
                     onClick={() => router.push(`/sets/${setId}/play`)}
+                    onMouseEnter={() => {
+                      enableSounds();
+                      handleHoverStart();
+                    }}
+                    onMouseLeave={handleHoverEnd}
                     className="flex items-center gap-2"
                   >
                     <Gamepad2 className="h-4 w-4" />
@@ -381,6 +417,11 @@ export default function StudyPage() {
                   <Button 
                     variant="outline" 
                     onClick={() => router.push(`/sets/${setId}/test`)}
+                    onMouseEnter={() => {
+                      enableSounds();
+                      handleHoverStart();
+                    }}
+                    onMouseLeave={handleHoverEnd}
                     className="flex items-center gap-2"
                   >
                     <FileText className="h-4 w-4" />

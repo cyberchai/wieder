@@ -15,6 +15,7 @@ import { cn } from '@/lib/utils';
 import Confetti from 'react-confetti';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { useSoundEffects } from '@/hooks/use-sound-effects';
 
 export default function PracticePage() {
   const params = useParams();
@@ -22,6 +23,7 @@ export default function PracticePage() {
   const router = useRouter();
   const { user } = useAuth();
   const inputRef = useRef<HTMLInputElement>(null);
+  const { handleCorrectAnswer, handleToggleOn, handleToggleOff, enableSounds } = useSoundEffects();
 
   const [set, setSet] = useState<FlashcardSet | null>(null);
   const [loading, setLoading] = useState(true);
@@ -39,6 +41,7 @@ export default function PracticePage() {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [attempts, setAttempts] = useState(0);
   const [autoplayTimer, setAutoplayTimer] = useState<NodeJS.Timeout | null>(null);
+  const [retryCardIds, setRetryCardIds] = useState<Set<string>>(new Set());
 
   const shuffleCards = useCallback((cards: CardType[]) => {
     return [...cards].sort(() => Math.random() - 0.5);
@@ -69,6 +72,7 @@ export default function PracticePage() {
         }
         setSet(fetchedSet);
         setShuffledCards(shuffleCards(fetchedSet.cards));
+        setRetryCardIds(new Set());
       } else {
         router.push('/dashboard');
       }
@@ -163,29 +167,40 @@ export default function PracticePage() {
     e.preventDefault();
     if (!currentCard || feedback) return;
     
+    enableSounds(); // Enable sounds on first user interaction
     const userAnswerClean = lenientMode ? cleanString(userAnswer) : userAnswer.trim().toLowerCase();
     const answerTextClean = lenientMode ? cleanString(answerText) : answerText.trim().toLowerCase();
 
     if (userAnswerClean === answerTextClean) {
       setFeedback('correct');
+      handleCorrectAnswer(); // Play correct answer sound
     } else {
       setFeedback('try-again');
-      setShuffledCards(prev => [...prev, currentCard]);
+      // Only append the card if it hasn't been added as a retry card yet
+      if (!retryCardIds.has(currentCard.id)) {
+        setRetryCardIds(prev => new Set(prev).add(currentCard.id));
+        setShuffledCards(prev => [...prev, currentCard]);
+      }
     }
   };
 
   const handleMultipleChoiceSelect = (selectedAnswer: string) => {
     if (feedback || !currentCard) return;
     
+    enableSounds(); // Enable sounds on first user interaction
     setSelectedOption(selectedAnswer);
     
     if (selectedAnswer === answerText) {
       setFeedback('correct');
       setAttempts(0);
+      handleCorrectAnswer(); // Play correct answer sound
     } else {
       setAttempts(prev => prev + 1);
-      // Move the card to the end of the practice list for retry later
-      setShuffledCards(prev => [...prev, currentCard]);
+      // Only append the card if it hasn't been added as a retry card yet
+      if (!retryCardIds.has(currentCard.id)) {
+        setRetryCardIds(prev => new Set(prev).add(currentCard.id));
+        setShuffledCards(prev => [...prev, currentCard]);
+      }
     }
   };
 
@@ -198,21 +213,10 @@ export default function PracticePage() {
       setSelectedOption(null);
       setAttempts(0);
     } else {
-      // Check if there are any cards that were moved to the end for retry
-      const originalCardCount = set?.cards.length || 0;
-      if (shuffledCards.length > originalCardCount) {
-        // There are retry cards, continue practicing
-        setCurrentIndex(currentIndex + 1);
-        setUserAnswer('');
-        setFeedback(null);
-        setSelectedOption(null);
-        setAttempts(0);
-      } else {
-        // No more cards to practice, finish the session
-        setIsFinished(true);
-        setShowConfetti(true);
-        setTimeout(() => setShowConfetti(false), 5000);
-      }
+      // We've reached the last card, finish the session
+      setIsFinished(true);
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 5000);
     }
   };
 
@@ -235,6 +239,7 @@ export default function PracticePage() {
     setShowConfetti(false);
     setSelectedOption(null);
     setAttempts(0);
+    setRetryCardIds(new Set());
   }
 
   const handleRestart = () => {
@@ -250,15 +255,42 @@ export default function PracticePage() {
   }
 
   const handleReverseToggle = (checked: boolean) => {
+    enableSounds(); // Enable sounds on first user interaction
+    if (checked) {
+      handleToggleOn();
+    } else {
+      handleToggleOff();
+    }
     setIsReversed(checked);
     handleShuffle();
   }
+
+  const handleLenientModeToggle = (checked: boolean) => {
+    enableSounds(); // Enable sounds on first user interaction
+    if (checked) {
+      handleToggleOn();
+    } else {
+      handleToggleOff();
+    }
+    setLenientMode(checked);
+  };
+
+  const handleAutoplayToggle = (checked: boolean) => {
+    enableSounds(); // Enable sounds on first user interaction
+    if (checked) {
+      handleToggleOn();
+    } else {
+      handleToggleOff();
+    }
+    setAutoplay(checked);
+  };
 
   const handleModeToggle = () => {
     setMultipleChoiceMode(!multipleChoiceMode);
     setFeedback(null);
     setSelectedOption(null);
     setAttempts(0);
+    setRetryCardIds(new Set());
   }
 
   if (loading) {
@@ -318,13 +350,13 @@ export default function PracticePage() {
                     </Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Switch id="lenient-mode" checked={lenientMode} onCheckedChange={setLenientMode} />
+                    <Switch id="lenient-mode" checked={lenientMode} onCheckedChange={handleLenientModeToggle} />
                     <Label htmlFor="lenient-mode" className="cursor-pointer">
                       lenient mode
                     </Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Switch id="autoplay-mode" checked={autoplay} onCheckedChange={setAutoplay} />
+                    <Switch id="autoplay-mode" checked={autoplay} onCheckedChange={handleAutoplayToggle} />
                     <Label htmlFor="autoplay-mode" className="flex items-center gap-2 cursor-pointer">
                       {autoplay ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
                       autoplay

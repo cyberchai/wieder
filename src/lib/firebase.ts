@@ -28,7 +28,7 @@ import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
 // Optional: only if you're using Analytics
-import { getAnalytics, isSupported } from "firebase/analytics";
+import { getAnalytics, isSupported, type Analytics } from "firebase/analytics";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -50,7 +50,10 @@ export const db = getFirestore(app);
 export const storage = getStorage(app);
 
 // Optional analytics setup
-let analytics;
+let analytics: Analytics | undefined;
 isSupported().then((yes) => {
   if (yes) analytics = getAnalytics(app);
 });
+
+// Export analytics instance
+export { analytics };

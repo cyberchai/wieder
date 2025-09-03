@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, KeyboardEvent } from 'react';
+import { useState, useRef, KeyboardEvent, useEffect } from 'react';
 import { useFieldArray, useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -14,9 +14,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import { Trash2, PlusCircle, Loader2, ArrowLeft, Upload } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Trash2, PlusCircle, Loader2, ArrowLeft, Upload, FileText, Link as LinkIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
+import { trackUserEngagement, trackPageView } from '@/lib/analytics';
 import {
   Dialog,
   DialogContent,
@@ -49,6 +51,17 @@ export default function CreateSetPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [importText, setImportText] = useState("");
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("manual");
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [googleDriveLink, setGoogleDriveLink] = useState("");
+  const [isDragOver, setIsDragOver] = useState(false);
+
+  // Track page view
+  useEffect(() => {
+    if (user) {
+      trackPageView('create_set', user.uid);
+    }
+  }, [user]);
 
 
   const {
@@ -78,6 +91,14 @@ export default function CreateSetPage() {
     setIsSubmitting(true);
     try {
       await createFlashcardSet(user.uid, data.title, data.cards);
+      
+      // Track set creation
+      trackUserEngagement('create_flashcard_set', { 
+        set_title: data.title,
+        card_count: data.cards.length,
+        action: 'create'
+      }, user.uid);
+      
       toast({ title: 'yay!', description: 'your new set has been created.' });
       router.push('/dashboard');
     } catch (error) {
@@ -126,6 +147,58 @@ export default function CreateSetPage() {
     }
   };
 
+  const handleFileUpload = (file: File) => {
+    if (file.type === 'application/pdf') {
+      setUploadedFile(file);
+      toast({ title: 'File uploaded!', description: `${file.name} is ready for processing.` });
+    } else {
+      toast({
+        title: 'Invalid file type',
+        description: 'Please upload a PDF file.',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    const files = Array.from(e.dataTransfer.files);
+    if (files.length > 0) {
+      handleFileUpload(files[0]);
+    }
+  };
+
+  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      handleFileUpload(files[0]);
+    }
+  };
+
+  const handleGoogleDriveLink = () => {
+    if (googleDriveLink.trim()) {
+      toast({ title: 'Google Drive link added!', description: 'Link processing will be implemented soon.' });
+      setGoogleDriveLink("");
+    } else {
+      toast({
+        title: 'Invalid link',
+        description: 'Please enter a valid Google Drive link.',
+        variant: 'destructive',
+      });
+    }
+  };
+
 
   return (
     <ProtectedRoute>
@@ -160,13 +233,13 @@ export default function CreateSetPage() {
                       )}
                       <Dialog open={isImportDialogOpen} onOpenChange={setIsImportDialogOpen}>
                         <DialogTrigger asChild>
-                           <Button variant="outline"><Upload className="mr-2 h-4 w-4" />import</Button>
+                           <Button variant="outline"><Upload className="mr-2 h-4 w-4" />import from quizlet</Button>
                         </DialogTrigger>
                         <DialogContent className="sm:max-w-[425px]">
                           <DialogHeader>
-                            <DialogTitle>import set from quizlet</DialogTitle>
+                            <DialogTitle>import set from quizlet via copy paste</DialogTitle>
                             <DialogDescription>
-                              paste your tab-separated list below. each line should have a term, a tab, then a definition.
+                              <b> to copy and paste your set from Quizlet (in Quizlet, go to your set &gt; 3 dots &gt; export (make sure tab and new line are selected) &gt; copy text)</b>. input will automatically be formatted as term tab definition. paste your tab-separated list in box below.
                             </DialogDescription>
                           </DialogHeader>
                           <div className="grid gap-4 py-4">
@@ -210,82 +283,180 @@ export default function CreateSetPage() {
                     {errors.title && <p className="text-destructive mt-1">{errors.title.message}</p>}
                   </div>
 
-                  <div className="space-y-6">
-                    {fields.map((field, index) => (
-                      <div key={field.id} className={`flex gap-4 items-start p-4 border rounded-lg ${
-                        theme === 'confesh' 
-                          ? 'bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800' 
-                          : 'bg-background border-border'
-                      }`}>
-                         <div className="font-bold text-lg text-muted-foreground pt-2">{index + 1}</div>
-                        <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                            <Label htmlFor={`cards.${index}.front`}>Front</Label>
-                            <Textarea
-                              id={`cards.${index}.front`}
-                              {...register(`cards.${index}.front`)}
-                              placeholder="e.g. wie geht's?"
-                              className={`mt-1 resize-none ${
-                                theme === 'confesh' 
-                                  ? 'bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800' 
-                                  : 'bg-background border-border'
-                              }`}
-                              autoComplete="off"
-                              autoCorrect="off"
-                              autoCapitalize="off"
-                              spellCheck="false"
-                            />
-                            {errors.cards?.[index]?.front && <p className="text-destructive mt-1">{errors.cards[index]?.front?.message}</p>}
+                  <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                    <TabsList className="grid w-full grid-cols-2">
+                      <TabsTrigger value="manual">Manual Entry</TabsTrigger>
+                      <TabsTrigger value="upload">Upload File</TabsTrigger>
+                    </TabsList>
+                    
+                    <TabsContent value="manual" className="mt-6">
+                      <div className="space-y-6">
+                        {fields.map((field, index) => (
+                          <div key={field.id} className={`flex gap-4 items-start p-4 border rounded-lg ${
+                            theme === 'confesh' 
+                              ? 'bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800' 
+                              : 'bg-background border-border'
+                          }`}>
+                             <div className="font-bold text-lg text-muted-foreground pt-2">{index + 1}</div>
+                            <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div>
+                                <Label htmlFor={`cards.${index}.front`}>Front</Label>
+                                <Textarea
+                                  id={`cards.${index}.front`}
+                                  {...register(`cards.${index}.front`)}
+                                  placeholder="e.g. wie geht's?"
+                                  className={`mt-1 resize-none ${
+                                    theme === 'confesh' 
+                                      ? 'bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800' 
+                                      : 'bg-background border-border'
+                                  }`}
+                                  autoComplete="off"
+                                  autoCorrect="off"
+                                  autoCapitalize="off"
+                                  spellCheck="false"
+                                />
+                                {errors.cards?.[index]?.front && <p className="text-destructive mt-1">{errors.cards[index]?.front?.message}</p>}
+                              </div>
+                              <div>
+                                <Label htmlFor={`cards.${index}.back`}>Back</Label>
+                                <Textarea
+                                  id={`cards.${index}.back`}
+                                  {...register(`cards.${index}.back`)}
+                                  placeholder="e.g. how are you?"
+                                  className={`mt-1 resize-none ${
+                                    theme === 'confesh' 
+                                      ? 'bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800' 
+                                      : 'bg-background border-border'
+                                  }`}
+                                  onKeyDown={(e) => handleKeyDown(e, index)}
+                                  autoComplete="off"
+                                  autoCorrect="off"
+                                  autoCapitalize="off"
+                                  spellCheck="false"
+                                />
+                                 {errors.cards?.[index]?.back && <p className="text-destructive mt-1">{errors.cards[index]?.back?.message}</p>}
+                              </div>
+                            </div>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => remove(index)}
+                              disabled={fields.length <= 1}
+                              className="mt-6 text-muted-foreground hover:text-destructive"
+                            >
+                              <Trash2 className="h-5 w-5" />
+                            </Button>
                           </div>
-                          <div>
-                            <Label htmlFor={`cards.${index}.back`}>Back</Label>
-                            <Textarea
-                              id={`cards.${index}.back`}
-                              {...register(`cards.${index}.back`)}
-                              placeholder="e.g. how are you?"
-                              className={`mt-1 resize-none ${
-                                theme === 'confesh' 
-                                  ? 'bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800' 
-                                  : 'bg-background border-border'
-                              }`}
-                              onKeyDown={(e) => handleKeyDown(e, index)}
-                              autoComplete="off"
-                              autoCorrect="off"
-                              autoCapitalize="off"
-                              spellCheck="false"
-                            />
-                             {errors.cards?.[index]?.back && <p className="text-destructive mt-1">{errors.cards[index]?.back?.message}</p>}
-                          </div>
-                        </div>
+                        ))}
+                      </div>
+
+                      <div className="flex justify-between items-center mt-6">
                         <Button
                           type="button"
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => remove(index)}
-                          disabled={fields.length <= 1}
-                          className="mt-6 text-muted-foreground hover:text-destructive"
+                          variant="outline"
+                          onClick={() => append({ front: '', back: '' })}
                         >
-                          <Trash2 className="h-5 w-5" />
+                          <PlusCircle className="mr-2 h-4 w-4" />
+                          add card
+                        </Button>
+
+                        <Button type="submit" size="lg" disabled={isSubmitting}>
+                          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                          create set
                         </Button>
                       </div>
-                    ))}
-                  </div>
+                    </TabsContent>
 
-                  <div className="flex justify-between items-center mt-6">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => append({ front: '', back: '' })}
-                    >
-                      <PlusCircle className="mr-2 h-4 w-4" />
-                      add card
-                    </Button>
+                    <TabsContent value="upload" className="mt-6">
+                      <div className="space-y-6">
+                        {/* PDF Upload Section */}
+                        <div className="space-y-4">
+                          <h3 className="text-lg font-semibold flex items-center gap-2">
+                            <FileText className="h-5 w-5" />
+                            Upload PDF
+                          </h3>
+                          
+                          <div
+                            className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+                              isDragOver 
+                                ? 'border-primary bg-primary/5' 
+                                : 'border-muted-foreground/25 hover:border-muted-foreground/50'
+                            }`}
+                            onDragOver={handleDragOver}
+                            onDragLeave={handleDragLeave}
+                            onDrop={handleDrop}
+                          >
+                            <Upload className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+                            <p className="text-lg font-medium mb-2">Drop your PDF here</p>
+                            <p className="text-sm text-muted-foreground mb-4">or click to browse</p>
+                            <input
+                              type="file"
+                              accept=".pdf"
+                              onChange={handleFileInput}
+                              className="hidden"
+                              id="pdf-upload"
+                            />
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() => document.getElementById('pdf-upload')?.click()}
+                            >
+                              Choose File
+                            </Button>
+                          </div>
+                          
+                          {uploadedFile && (
+                            <div className="p-4 border rounded-lg bg-muted/50">
+                              <p className="font-medium">Uploaded: {uploadedFile.name}</p>
+                              <p className="text-sm text-muted-foreground">
+                                File size: {(uploadedFile.size / 1024 / 1024).toFixed(2)} MB
+                              </p>
+                            </div>
+                          )}
+                        </div>
 
-                    <Button type="submit" size="lg" disabled={isSubmitting}>
-                      {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                      create set
-                    </Button>
-                  </div>
+                        {/* Google Drive Section */}
+                        <div className="space-y-4">
+                          <h3 className="text-lg font-semibold flex items-center gap-2">
+                            <LinkIcon className="h-5 w-5" />
+                            Google Drive Link
+                          </h3>
+                          
+                          <div className="space-y-3">
+                            <Input
+                              type="url"
+                              placeholder="https://drive.google.com/file/d/..."
+                              value={googleDriveLink}
+                              onChange={(e) => setGoogleDriveLink(e.target.value)}
+                              className={`${
+                                theme === 'confesh' 
+                                  ? 'bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800' 
+                                  : 'bg-background border-border'
+                              }`}
+                            />
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={handleGoogleDriveLink}
+                              disabled={!googleDriveLink.trim()}
+                            >
+                              Add Google Drive File
+                            </Button>
+                          </div>
+                        </div>
+
+                        <div className="pt-4 border-t">
+                          {/* <p className="text-sm text-muted-foreground">
+                            File processing will be implemented soon. For now, you can upload files and they will be stored for future processing.
+                          </p> */}
+                          <p className="text-sm text-muted-foreground">
+                            this feature took a bit of a backseat for now, will be implemented later.
+                          </p>
+                        </div>
+                      </div>
+                    </TabsContent>
+                  </Tabs>
                 </form>
               </CardContent>
             </Card>
