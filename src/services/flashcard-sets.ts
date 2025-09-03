@@ -65,13 +65,13 @@ export const getFlashcardSets = (
     (querySnapshot) => {
       const sets: FlashcardSet[] = [];
       querySnapshot.forEach((docSnap) => {
-        const data = docSnap.data() as any;
+        const data = docSnap.data() as Partial<FlashcardSet>;
         sets.push({
           id: docSnap.id,
           userId: data?.userId ?? "",
           title: data?.title ?? "Untitled",
           cards: Array.isArray(data?.cards) ? data.cards : [],
-          createdAt: data?.createdAt,
+          createdAt: data?.createdAt || new Date(),
           shared: Boolean(data?.shared),
           isPublic: Boolean(data?.isPublic),
         } as FlashcardSet);
@@ -90,13 +90,13 @@ export const getFlashcardSet = async (setId: string): Promise<FlashcardSet | nul
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
-        const data = docSnap.data() as any;
+        const data = docSnap.data() as Partial<FlashcardSet>;
         const set: FlashcardSet = {
           id: docSnap.id,
           userId: data?.userId ?? "",
           title: data?.title ?? "Untitled",
           cards: Array.isArray(data?.cards) ? data.cards : [],
-          createdAt: data?.createdAt,
+          createdAt: data?.createdAt || new Date(),
           shared: Boolean(data?.shared),
           isPublic: Boolean(data?.isPublic),
         };
@@ -162,13 +162,13 @@ export const getPublicFlashcardSets = (
             
             // Process each set and fetch creator display names
             for (const docSnap of querySnapshot.docs) {
-                const data = docSnap.data() as any;
+                const data = docSnap.data() as Partial<FlashcardSet>;
                 const set: FlashcardSet = {
                     id: docSnap.id,
                     userId: data?.userId ?? "",
                     title: data?.title ?? "Untitled",
                     cards: Array.isArray(data?.cards) ? data.cards : [],
-                    createdAt: data?.createdAt,
+                    createdAt: data?.createdAt || new Date(),
                     shared: Boolean(data?.shared),
                     isPublic: Boolean(data?.isPublic),
                 };

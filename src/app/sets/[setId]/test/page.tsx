@@ -137,8 +137,8 @@ export default function TestPage() {
             setLoading(true);
             const fetchedSet = await getFlashcardSet(setId);
             if (fetchedSet) {
-                // Allow access if: user owns the set, set is shared, or set is public
-        if (!fetchedSet.shared && !fetchedSet.isPublic && fetchedSet.userId !== user?.uid) {
+                // Allow access if: user owns the set or set is shared
+        if (!fetchedSet.shared && fetchedSet.userId !== user?.uid) {
                     toast({ title: "Unauthorized", description: "You don't have access to this set." });
                     return router.push('/dashboard');
                 }
@@ -268,6 +268,10 @@ export default function TestPage() {
                                                         id={q.id} 
                                                         onChange={(e) => handleAnswerChange(q.id, e.target.value)} 
                                                         placeholder="type your answer..."
+                                                        autoComplete="off"
+                                                        autoCorrect="off"
+                                                        autoCapitalize="off"
+                                                        spellCheck="false"
                                                     />
                                                 )}
                                             </div>

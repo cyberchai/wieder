@@ -89,7 +89,11 @@ export default function EditSetPage() {
     }
     setIsSubmitting(true);
     try {
-      await updateFlashcardSet(setId, data.title, data.cards, data.shared);
+      await updateFlashcardSet(setId, {
+        title: data.title,
+        cards: data.cards,
+        shared: data.shared
+      });
       toast({ title: 'yay!', description: 'your set has been updated.' });
       router.push('/dashboard');
     } catch (error) {

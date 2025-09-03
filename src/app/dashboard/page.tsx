@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { PlusCircle, MoreVertical, Loader2, Trash2, Edit, Share2, Copy, Link as LinkIcon, CopyPlus, Gamepad2, Users, FileText, UserX, Search, BookOpen, Globe, Users2 } from "lucide-react";
 import Link from "next/link";
+import { FirebaseError } from "firebase/app";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -111,7 +112,7 @@ const DashboardPage = () => {
                 (error) => {
                     console.error("Failed to load flashcard sets", error);
                     // Best-effort error surface; common cases are permission-denied or missing index
-                    const code = (error as any)?.code as string | undefined;
+                    const code = error instanceof FirebaseError ? error.code : undefined;
                     let description = "Failed to load your sets.";
                     if (code === "permission-denied") {
                         description = "permission denied: check Firestore rules.";

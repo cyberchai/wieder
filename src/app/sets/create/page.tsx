@@ -161,6 +161,10 @@ export default function CreateSetPage() {
                               value={importText}
                               onChange={e => setImportText(e.target.value)}
                               className="h-48"
+                              autoComplete="off"
+                              autoCorrect="off"
+                              autoCapitalize="off"
+                              spellCheck="false"
                             />
                         </div>
                         <DialogFooter>
@@ -179,6 +183,10 @@ export default function CreateSetPage() {
                       {...register('title')}
                       className="mt-2 text-xl p-4"
                       placeholder="e.g. German Vocabulary"
+                      autoComplete="off"
+                      autoCorrect="off"
+                      autoCapitalize="off"
+                      spellCheck="false"
                     />
                     {errors.title && <p className="text-destructive mt-1">{errors.title.message}</p>}
                   </div>
@@ -195,6 +203,10 @@ export default function CreateSetPage() {
                               {...register(`cards.${index}.front`)}
                               placeholder="e.g. wie geht's?"
                               className="mt-1 resize-none"
+                              autoComplete="off"
+                              autoCorrect="off"
+                              autoCapitalize="off"
+                              spellCheck="false"
                             />
                             {errors.cards?.[index]?.front && <p className="text-destructive mt-1">{errors.cards[index]?.front?.message}</p>}
                           </div>
@@ -206,6 +218,10 @@ export default function CreateSetPage() {
                               placeholder="e.g. how are you?"
                               className="mt-1 resize-none"
                               onKeyDown={(e) => handleKeyDown(e, index)}
+                              autoComplete="off"
+                              autoCorrect="off"
+                              autoCapitalize="off"
+                              spellCheck="false"
                             />
                              {errors.cards?.[index]?.back && <p className="text-destructive mt-1">{errors.cards[index]?.back?.message}</p>}
                           </div>
