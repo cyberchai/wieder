@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth, ProtectedRoute } from '@/providers/auth-provider';
-import { getFlashcardSet, type FlashcardSet, type Card as CardType } from '@/services/flashcard-sets';
+import { getFlashcardSet, type FlashcardSet, type Card as CardType, updateFlashcardSet } from '@/services/flashcard-sets';
 import Header from '@/components/header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -27,10 +27,42 @@ export default function StudyPage() {
   const [isReversed, setIsReversed] = useState(false);
   const [showProgress, setShowProgress] = useState(true);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [editingCard, setEditingCard] = useState<number | null>(null);
+  const [editTerm, setEditTerm] = useState('');
+  const [editDefinition, setEditDefinition] = useState('');
 
   const shuffleCards = useCallback((cards: CardType[]) => {
     return [...cards].sort(() => Math.random() - 0.5);
   }, []);
+
+  const handleSaveCard = async (cardIndex: number) => {
+    if (!set) return;
+    
+    try {
+      // Create updated cards array
+      const updatedCards = [...set.cards];
+      updatedCards[cardIndex] = {
+        ...updatedCards[cardIndex],
+        front: editTerm,
+        back: editDefinition
+      };
+
+      // Update database
+      await updateFlashcardSet(setId, { cards: updatedCards });
+      
+      // Update local state
+      setSet(prev => prev ? { ...prev, cards: updatedCards } : null);
+      setShuffledCards(prev => shuffleCards(updatedCards));
+      
+      // Exit edit mode
+      setEditingCard(null);
+      setEditTerm('');
+      setEditDefinition('');
+    } catch (error) {
+      console.error('Failed to update card:', error);
+      // You could add a toast notification here for error feedback
+    }
+  };
 
   useEffect(() => {
     const fetchSet = async () => {
@@ -355,11 +387,121 @@ export default function StudyPage() {
                     Test
                   </Button>
                 </div>
-              </div>
-            </div>
-          </div>
+
+                {/* All Cards List */}
+                <div className="w-full max-w-4xl mt-8">
+                  <div className="text-center mb-6">
+                    <h3 className="text-xl font-semibold text-foreground">All Cards in Set</h3>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {set.cards.length} card{set.cards.length !== 1 ? 's' : ''}
+                    </p>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    {set.cards.map((card, index) => (
+                      <Card key={index} className="hover:shadow-md transition-shadow">
+                        <CardContent className="p-4">
+                          <div className="flex items-stretch">
+                            <div className="flex-1 pr-4">
+                              <div className="space-y-2">
+                                <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                                  Term
+                                </div>
+                                {editingCard === index ? (
+                                  <input
+                                    type="text"
+                                    value={editTerm}
+                                    onChange={(e) => setEditTerm(e.target.value)}
+                                    className="w-full p-2 border rounded-md text-base font-medium"
+                                    autoFocus
+                                  />
+                                ) : (
+                                  <div 
+                                    className="text-base font-medium text-foreground break-words cursor-pointer hover:bg-muted/50 p-1 rounded transition-colors"
+                                    onDoubleClick={() => {
+                                      setEditingCard(index);
+                                      setEditTerm(card.front);
+                                      setEditDefinition(card.back);
+                                    }}
+                                  >
+                                    {card.front}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                            <div className="w-px bg-border mx-2 flex-shrink-0" />
+                            <div className="flex-1 pl-4">
+                              <div className="space-y-2">
+                                <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                                  Definition
+                                </div>
+                                {editingCard === index ? (
+                                  <input
+                                    type="text"
+                                    value={editDefinition}
+                                    onChange={(e) => setEditDefinition(e.target.value)}
+                                    className="w-full p-2 border rounded-md text-base"
+                                  />
+                                ) : (
+                                  <div 
+                                    className="text-base text-foreground break-words cursor-pointer hover:bg-muted/50 p-1 rounded transition-colors"
+                                    onDoubleClick={() => {
+                                      setEditingCard(index);
+                                      setEditTerm(card.front);
+                                      setEditDefinition(card.back);
+                                    }}
+                                  >
+                                    {card.back}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                          
+                          {/* Edit Actions */}
+                          {editingCard === index && (
+                            <div className="flex justify-end gap-2 mt-4 pt-4 border-t">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  setEditingCard(null);
+                                  setEditTerm('');
+                                  setEditDefinition('');
+                                }}
+                              >
+                                Cancel
+                              </Button>
+                              <Button
+                                size="sm"
+                                onClick={() => handleSaveCard(index)}
+                              >
+                                Save
+                              </Button>
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                  
+                    {/* Return to Top Button */}
+                    <div className="flex justify-center mt-6">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                      className="flex items-center gap-2"
+                    >
+                      ↑ Return to Top
+                    </Button>
+                  </div>
+                </div> {/* end E: All Cards List */}
+              </div> {/* end C: inner max-w-2xl column */}
+            </div> {/* end B: center row */}
+          </div> {/* end A: main max-w-4xl column */}
         </main>
-      </div>
+      </div> {/* end outer page container */}
     </ProtectedRoute>
   );
 }

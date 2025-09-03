@@ -144,38 +144,51 @@ export default function CreateSetPage() {
                         <CardTitle className="text-3xl">new set</CardTitle>
                         <CardDescription>give your set a title and add your flashcards below.</CardDescription>
                     </div>
-                    <Dialog open={isImportDialogOpen} onOpenChange={setIsImportDialogOpen}>
-                      <DialogTrigger asChild>
-                         <Button variant="outline"><Upload className="mr-2 h-4 w-4" />import</Button>
-                      </DialogTrigger>
-                      <DialogContent className="sm:max-w-[425px]">
-                        <DialogHeader>
-                          <DialogTitle>import set from quizlet</DialogTitle>
-                          <DialogDescription>
-                            paste your tab-separated list below. each line should have a term, a tab, then a definition.
-                          </DialogDescription>
-                        </DialogHeader>
-                        <div className="grid gap-4 py-4">
-                           <Textarea
-                              placeholder="arbeiten	to work..."
-                              value={importText}
-                              onChange={e => setImportText(e.target.value)}
-                              className="h-48"
-                              autoComplete="off"
-                              autoCorrect="off"
-                              autoCapitalize="off"
-                              spellCheck="false"
-                            />
-                        </div>
-                        <DialogFooter>
-                          <Button onClick={handleImport}>import cards</Button>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog>
+                    <div className="flex gap-3">
+                      {fields.length >= 5 && (
+                        <Button 
+                          type="submit" 
+                          onClick={handleSubmit(onSubmit)}
+                          disabled={isSubmitting}
+                          className="min-w-[120px]"
+                        >
+                          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                          create set
+                        </Button>
+                      )}
+                      <Dialog open={isImportDialogOpen} onOpenChange={setIsImportDialogOpen}>
+                        <DialogTrigger asChild>
+                           <Button variant="outline"><Upload className="mr-2 h-4 w-4" />import</Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[425px]">
+                          <DialogHeader>
+                            <DialogTitle>import set from quizlet</DialogTitle>
+                            <DialogDescription>
+                              paste your tab-separated list below. each line should have a term, a tab, then a definition.
+                            </DialogDescription>
+                          </DialogHeader>
+                          <div className="grid gap-4 py-4">
+                             <Textarea
+                                placeholder="arbeiten	to work..."
+                                value={importText}
+                                onChange={e => setImportText(e.target.value)}
+                                className="h-48"
+                                autoComplete="off"
+                                autoCorrect="off"
+                                autoCapitalize="off"
+                                spellCheck="false"
+                              />
+                          </div>
+                          <DialogFooter>
+                            <Button onClick={handleImport}>import cards</Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
+                    </div>
                 </div>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleSubmit(onSubmit)}>
+                <form>
                   <div className="mb-8">
                     <Label htmlFor="title" className="text-lg font-semibold">Set Title</Label>
                     <Input
@@ -240,17 +253,16 @@ export default function CreateSetPage() {
                     ))}
                   </div>
 
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => append({ front: '', back: '' })}
-                    className="mt-6"
-                  >
-                    <PlusCircle className="mr-2 h-4 w-4" />
-                    add card
-                  </Button>
+                  <div className="flex justify-between items-center mt-6">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => append({ front: '', back: '' })}
+                    >
+                      <PlusCircle className="mr-2 h-4 w-4" />
+                      add card
+                    </Button>
 
-                  <div className="flex justify-end mt-8">
                     <Button type="submit" size="lg" disabled={isSubmitting}>
                       {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                       create set
