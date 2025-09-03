@@ -376,8 +376,8 @@ export default function PlayPage() {
           e.preventDefault();
           setTyped("");
           toast({
-            title: "Try again",
-            description: "That wasn't it—keep typing!",
+            title: "try again",
+            description: "that wasn't it, keep trying!",
           });
         }
         return;
