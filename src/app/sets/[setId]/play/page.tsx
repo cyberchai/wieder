@@ -455,7 +455,7 @@ export default function PlayPage() {
                 {/* Toggle which side to type */}
                 <div className="flex items-center gap-2">
                   <Label htmlFor="mode-toggle" className="whitespace-nowrap">
-                    type {matchMode === "definition" ? "definition" : "term"}
+                    flip to {matchMode === "definition" ? "definition" : "term"}
                   </Label>
                   <Switch
                     id="mode-toggle"
@@ -493,10 +493,10 @@ export default function PlayPage() {
             >
               {gameState === "idle" && (
                 <div className="text-center flex flex-col items-center justify-center h-full w-full">
-                  <h2 className="text-3xl font-bold mb-4">get ready!</h2>
+                  <h2 className="text-3xl font-bold mb-4">lock in!</h2>
                   <p className="text-muted-foreground mb-6 px-4">
-                    type the {matchMode}. the word falls—don&apos;t let it hit the bottom.
-                    {acceptGeneralAnswers && " Smart scoring accepts answers with 87%+ similarity."}
+                    type the {matchMode}. the word falls, don&apos;t let it hit the bottom.
+                    {acceptGeneralAnswers && " smart scoring accepts answers with 87%+ similarity."}
                   </p>
                   <Button onClick={startGame} size="lg">
                     start game
@@ -506,7 +506,7 @@ export default function PlayPage() {
 
               {gameState === "gameover" && (
                 <div className="text-center flex flex-col items-center justify-center h-full w-full">
-                  <h2 className="text-3xl font-bold mb-4">game over!</h2>
+                  <h2 className="text-3xl font-bold mb-4">womp womp game over!</h2>
                   <p className="text-xl text-muted-foreground mb-6">
                     final score: {score}
                   </p>
