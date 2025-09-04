@@ -16,7 +16,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Trash2, PlusCircle, Loader2, ArrowLeft, Upload, FileText, Link as LinkIcon } from 'lucide-react';
+import { Trash2, PlusCircle, Loader2, ArrowLeft, Upload, FileText, Link as LinkIcon, X, Tag } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { trackUserEngagement, trackPageView } from '@/lib/analytics';
@@ -40,6 +40,7 @@ const setSchema = z.object({
       })
     )
     .min(1, 'you must have at least one card'),
+  tags: z.array(z.string()).optional(),
 });
 
 type SetFormData = z.infer<typeof setSchema>;
@@ -62,6 +63,15 @@ export default function CreateSetPage() {
   const [customTermDefinitionSeparator, setCustomTermDefinitionSeparator] = useState("");
   const [rowSeparator, setRowSeparator] = useState("newline");
   const [customRowSeparator, setCustomRowSeparator] = useState("");
+  
+  // Tag state
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [customTag, setCustomTag] = useState("");
+  
+  // Predefined tags
+  const predefinedTags = [
+    'tech', 'finance', 'language', 'german', 'french', 'mandarin', 'thai', 'science'
+  ];
 
   // Track page view
   useEffect(() => {
@@ -82,6 +92,7 @@ export default function CreateSetPage() {
     defaultValues: {
       title: '',
       cards: [{ front: '', back: '' }],
+      tags: [],
     },
   });
 
@@ -97,7 +108,7 @@ export default function CreateSetPage() {
     }
     setIsSubmitting(true);
     try {
-      await createFlashcardSet(user.uid, data.title, data.cards);
+      await createFlashcardSet(user.uid, data.title, data.cards, data.tags);
       
       // Track set creation
       trackUserEngagement('create_flashcard_set', { 
@@ -281,6 +292,30 @@ export default function CreateSetPage() {
     }
   };
 
+  // Tag handling functions
+  const addTag = (tag: string) => {
+    const trimmedTag = tag.trim().toLowerCase();
+    if (trimmedTag && !selectedTags.includes(trimmedTag)) {
+      const newTags = [...selectedTags, trimmedTag];
+      setSelectedTags(newTags);
+      setValue('tags', newTags);
+      setCustomTag("");
+    }
+  };
+
+  const removeTag = (tagToRemove: string) => {
+    const newTags = selectedTags.filter(tag => tag !== tagToRemove);
+    setSelectedTags(newTags);
+    setValue('tags', newTags);
+  };
+
+  const handleCustomTagSubmit = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      addTag(customTag);
+    }
+  };
+
 
   return (
     <ProtectedRoute>
@@ -424,6 +459,83 @@ export default function CreateSetPage() {
                       spellCheck="false"
                     />
                     {errors.title && <p className="text-destructive mt-1">{errors.title.message}</p>}
+                  </div>
+
+                  {/* Tags Section */}
+                  <div className="mb-8">
+                    <Label className="text-lg font-semibold flex items-center gap-2">
+                      <Tag className="h-5 w-5" />
+                      Tags
+                    </Label>
+                    <p className="text-sm text-muted-foreground mt-1 mb-4">
+                      Add tags to help organize and filter your sets later
+                    </p>
+                    
+                    {/* Selected Tags */}
+                    {selectedTags.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {selectedTags.map((tag) => (
+                          <div
+                            key={tag}
+                            className="flex items-center gap-1 px-3 py-1 bg-primary/10 text-primary rounded-full text-sm"
+                          >
+                            {tag}
+                            <button
+                              type="button"
+                              onClick={() => removeTag(tag)}
+                              className="hover:bg-primary/20 rounded-full p-0.5"
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Predefined Tags */}
+                    <div className="mb-4">
+                      <Label className="text-sm font-medium mb-2 block">Predefined tags:</Label>
+                      <div className="flex flex-wrap gap-2">
+                        {predefinedTags
+                          .filter(tag => !selectedTags.includes(tag))
+                          .map((tag) => (
+                            <button
+                              key={tag}
+                              type="button"
+                              onClick={() => addTag(tag)}
+                              className="px-3 py-1 text-sm border border-border rounded-full hover:bg-muted transition-colors"
+                            >
+                              {tag}
+                            </button>
+                          ))}
+                      </div>
+                    </div>
+
+                    {/* Custom Tag Input */}
+                    <div>
+                      <Label className="text-sm font-medium mb-2 block">Add custom tag:</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          placeholder="Type a custom tag and press Enter"
+                          value={customTag}
+                          onChange={(e) => setCustomTag(e.target.value)}
+                          onKeyDown={handleCustomTagSubmit}
+                          className={`${
+                            theme === 'confesh' 
+                              ? 'bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800' 
+                              : 'bg-background border-border'
+                          }`}
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => addTag(customTag)}
+                          disabled={!customTag.trim()}
+                        >
+                          Add
+                        </Button>
+                      </div>
+                    </div>
                   </div>
 
                   <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">

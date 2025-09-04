@@ -29,6 +29,7 @@ export interface FlashcardSet {
   shared: boolean;
   isPublic?: boolean;
   creatorDisplayName?: string;
+  tags?: string[];
 }
 
 const setsCollection = collection(db, "flashcardSets");
@@ -37,7 +38,8 @@ const setsCollection = collection(db, "flashcardSets");
 export const createFlashcardSet = async (
   userId: string,
   title: string,
-  cards: Omit<Card, "id">[]
+  cards: Omit<Card, "id">[],
+  tags?: string[]
 ) => {
   const newCards = cards.map((card, index) => ({ ...card, id: `${Date.now()}-${index}` }));
   return await addDoc(setsCollection, {
@@ -46,6 +48,7 @@ export const createFlashcardSet = async (
     cards: newCards,
     createdAt: serverTimestamp(),
     shared: true, // Default to shared
+    tags: tags || [],
   });
 };
 
@@ -74,6 +77,7 @@ export const getFlashcardSets = (
           createdAt: data?.createdAt || new Date(),
           shared: Boolean(data?.shared),
           isPublic: Boolean(data?.isPublic),
+          tags: Array.isArray(data?.tags) ? data.tags : [],
         } as FlashcardSet);
       });
       callback(sets);
@@ -99,6 +103,7 @@ export const getFlashcardSet = async (setId: string): Promise<FlashcardSet | nul
           createdAt: data?.createdAt || new Date(),
           shared: Boolean(data?.shared),
           isPublic: Boolean(data?.isPublic),
+          tags: Array.isArray(data?.tags) ? data.tags : [],
         };
         
         // Fetch creator display name if this is a public set
@@ -121,7 +126,7 @@ export const getFlashcardSet = async (setId: string): Promise<FlashcardSet | nul
 // Update a flashcard set
 export const updateFlashcardSet = async (
     setId: string,
-    updates: Partial<Pick<FlashcardSet, 'title' | 'cards' | 'shared' | 'isPublic'>>
+    updates: Partial<Pick<FlashcardSet, 'title' | 'cards' | 'shared' | 'isPublic' | 'tags'>>
   ) => {
     const setDoc = doc(db, "flashcardSets", setId);
     return await updateDoc(setDoc, updates);
@@ -142,6 +147,7 @@ export const duplicateFlashcardSet = async (set: FlashcardSet) => {
         createdAt: serverTimestamp(),
         shared: true,
         isPublic: false, // Default to private
+        tags: set.tags || [],
     });
 };
 
@@ -171,6 +177,7 @@ export const getPublicFlashcardSets = (
                     createdAt: data?.createdAt || new Date(),
                     shared: Boolean(data?.shared),
                     isPublic: Boolean(data?.isPublic),
+                    tags: Array.isArray(data?.tags) ? data.tags : [],
                 };
                 
                 // Fetch creator display name

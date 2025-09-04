@@ -13,7 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import { Trash2, PlusCircle, Loader2, ArrowLeft } from 'lucide-react';
+import { Trash2, PlusCircle, Loader2, ArrowLeft, X, Tag } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -30,6 +30,7 @@ const setSchema = z.object({
     )
     .min(1, 'You must have at least one card'),
   shared: z.boolean(),
+  tags: z.array(z.string()).optional(),
 });
 
 type SetFormData = z.infer<typeof setSchema>;
@@ -43,12 +44,22 @@ export default function EditSetPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isShared, setIsShared] = useState(false);
+  
+  // Tag state
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [customTag, setCustomTag] = useState("");
+  
+  // Predefined tags
+  const predefinedTags = [
+    'tech', 'finance', 'language', 'german', 'french', 'mandarin', 'thai', 'science'
+  ];
 
   const {
     register,
     control,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm<SetFormData>({
     resolver: zodResolver(setSchema),
@@ -56,6 +67,7 @@ export default function EditSetPage() {
       title: '',
       cards: [],
       shared: false,
+      tags: [],
     },
   });
 
@@ -70,7 +82,8 @@ export default function EditSetPage() {
     const fetchSet = async () => {
       const set = await getFlashcardSet(setId);
       if (set && set.userId === user.uid) {
-        reset({ title: set.title, cards: set.cards, shared: set.shared });
+        reset({ title: set.title, cards: set.cards, shared: set.shared, tags: set.tags || [] });
+        setSelectedTags(set.tags || []);
         setIsShared(set.shared);
       } else {
         toast({ title: "Error", description: "Set not found or you don't have permission to edit it.", variant: "destructive" });
@@ -92,7 +105,8 @@ export default function EditSetPage() {
       await updateFlashcardSet(setId, {
         title: data.title,
         cards: data.cards,
-        shared: data.shared
+        shared: data.shared,
+        tags: data.tags
       });
       toast({ title: 'yay!', description: 'your set has been updated.' });
       router.push('/dashboard');
@@ -110,6 +124,30 @@ export default function EditSetPage() {
         const nextFrontInput = document.querySelector<HTMLInputElement>(`input[name="cards.${index + 1}.front"]`);
         nextFrontInput?.focus();
       }, 0);
+    }
+  };
+
+  // Tag handling functions
+  const addTag = (tag: string) => {
+    const trimmedTag = tag.trim().toLowerCase();
+    if (trimmedTag && !selectedTags.includes(trimmedTag)) {
+      const newTags = [...selectedTags, trimmedTag];
+      setSelectedTags(newTags);
+      setValue('tags', newTags);
+      setCustomTag("");
+    }
+  };
+
+  const removeTag = (tagToRemove: string) => {
+    const newTags = selectedTags.filter(tag => tag !== tagToRemove);
+    setSelectedTags(newTags);
+    setValue('tags', newTags);
+  };
+
+  const handleCustomTagSubmit = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      addTag(customTag);
     }
   };
 
@@ -155,8 +193,21 @@ export default function EditSetPage() {
             </Button>
             <Card>
               <CardHeader>
-                <CardTitle className="text-3xl">edit set</CardTitle>
-                <CardDescription>modify your set&rsquo;s title and flashcards below.</CardDescription>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <CardTitle className="text-3xl">edit set</CardTitle>
+                    <CardDescription>modify your set&rsquo;s title and flashcards below.</CardDescription>
+                  </div>
+                  <Button 
+                    type="submit" 
+                    onClick={handleSubmit(onSubmit)}
+                    disabled={isSubmitting}
+                    className="min-w-[120px]"
+                  >
+                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    save changes
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit(onSubmit)}>
@@ -168,6 +219,78 @@ export default function EditSetPage() {
                       className="mt-2 text-xl p-4"
                     />
                     {errors.title && <p className="text-destructive mt-1">{errors.title.message}</p>}
+                  </div>
+
+                  {/* Tags Section */}
+                  <div className="mb-8">
+                    <Label className="text-lg font-semibold flex items-center gap-2">
+                      <Tag className="h-5 w-5" />
+                      Tags
+                    </Label>
+                    <p className="text-sm text-muted-foreground mt-1 mb-4">
+                      Add tags to help organize and filter your sets later
+                    </p>
+                    
+                    {/* Selected Tags */}
+                    {selectedTags.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {selectedTags.map((tag) => (
+                          <div
+                            key={tag}
+                            className="flex items-center gap-1 px-3 py-1 bg-primary/10 text-primary rounded-full text-sm"
+                          >
+                            {tag}
+                            <button
+                              type="button"
+                              onClick={() => removeTag(tag)}
+                              className="hover:bg-primary/20 rounded-full p-0.5"
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Predefined Tags */}
+                    <div className="mb-4">
+                      <Label className="text-sm font-medium mb-2 block">Predefined tags:</Label>
+                      <div className="flex flex-wrap gap-2">
+                        {predefinedTags
+                          .filter(tag => !selectedTags.includes(tag))
+                          .map((tag) => (
+                            <button
+                              key={tag}
+                              type="button"
+                              onClick={() => addTag(tag)}
+                              className="px-3 py-1 text-sm border border-border rounded-full hover:bg-muted transition-colors"
+                            >
+                              {tag}
+                            </button>
+                          ))}
+                      </div>
+                    </div>
+
+                    {/* Custom Tag Input */}
+                    <div>
+                      <Label className="text-sm font-medium mb-2 block">Add custom tag:</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          placeholder="Type a custom tag and press Enter"
+                          value={customTag}
+                          onChange={(e) => setCustomTag(e.target.value)}
+                          onKeyDown={handleCustomTagSubmit}
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => addTag(customTag)}
+                          disabled={!customTag.trim()}
+                        >
+                          Add
+                        </Button>
+                      </div>
+                    </div>
                   </div>
 
                   <div className="space-y-6">

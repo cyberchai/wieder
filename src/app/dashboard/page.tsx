@@ -7,7 +7,7 @@ import AuroraBackground from "@/components/aurora-background";
 import DashboardParticlesBackground from "@/components/dashboard-particles-background";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { PlusCircle, MoreVertical, Loader2, Trash2, Edit, Share2, Copy, Link as LinkIcon, CopyPlus, Gamepad2, Users, FileText, UserX, Search, BookOpen, Globe, Users2 } from "lucide-react";
+import { PlusCircle, MoreVertical, Loader2, Trash2, Edit, Share2, Copy, Link as LinkIcon, CopyPlus, Gamepad2, Users, FileText, UserX, Search, BookOpen, Globe, Users2, Tag, Filter, X } from "lucide-react";
 import Link from "next/link";
 import { FirebaseError } from "firebase/app";
 import {
@@ -56,8 +56,27 @@ const DashboardPage = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const [activeTab, setActiveTab] = useState("my-sets");
     const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false);
+    const [selectedTagFilter, setSelectedTagFilter] = useState<string | null>(null);
+    const [isTagFilterOpen, setIsTagFilterOpen] = useState(false);
+    const [tagFilterInput, setTagFilterInput] = useState("");
     const searchInputRef = useRef<HTMLInputElement>(null);
     const { handleNavigationClick, enableSounds } = useSoundEffects();
+
+    // Tag filter functions
+    const handleTagFilter = (tag: string | null) => {
+        setSelectedTagFilter(tag);
+        setIsTagFilterOpen(false);
+        setTagFilterInput("");
+    };
+
+    const clearTagFilter = () => {
+        setSelectedTagFilter(null);
+        setTagFilterInput("");
+    };
+
+    const handleTagInputChange = (value: string) => {
+        setTagFilterInput(value);
+    };
 
     // Track page view
     useEffect(() => {
@@ -78,7 +97,14 @@ const DashboardPage = () => {
                 return true;
             }
             
-            // Then, search in card keys and values
+            // Then, search in tags
+            if (Array.isArray(set.tags) && set.tags.some(tag => 
+                tag.toLowerCase().includes(query)
+            )) {
+                return true;
+            }
+            
+            // Finally, search in card keys and values
             return Array.isArray(set.cards) && set.cards.some(card => 
                 card.front.toLowerCase().includes(query) || 
                 card.back.toLowerCase().includes(query)
@@ -98,7 +124,14 @@ const DashboardPage = () => {
                 return true;
             }
             
-            // Then, search in card keys and values
+            // Then, search in tags
+            if (Array.isArray(set.tags) && set.tags.some(tag => 
+                tag.toLowerCase().includes(query)
+            )) {
+                return true;
+            }
+            
+            // Finally, search in card keys and values
             return Array.isArray(set.cards) && set.cards.some(card => 
                 card.front.toLowerCase().includes(query) || 
                 card.back.toLowerCase().includes(query)
@@ -106,25 +139,62 @@ const DashboardPage = () => {
         });
     }, [sharedSets, searchQuery]);
 
-    // Filtered public sets based on search query
-    const filteredPublicSets = useMemo(() => {
-        if (!searchQuery.trim()) return publicSets;
-        
-        const query = searchQuery.toLowerCase().trim();
-        
-        return publicSets.filter(set => {
-            // First, search in set title
-            if (set.title.toLowerCase().includes(query)) {
-                return true;
+    // Get all unique tags from public sets
+    const availableTags = useMemo(() => {
+        const tagSet = new Set<string>();
+        publicSets.forEach(set => {
+            if (Array.isArray(set.tags)) {
+                set.tags.forEach(tag => tagSet.add(tag));
             }
-            
-            // Then, search in card keys and values
-            return Array.isArray(set.cards) && set.cards.some(card => 
-                card.front.toLowerCase().includes(query) || 
-                card.back.toLowerCase().includes(query)
-            );
         });
-    }, [publicSets, searchQuery]);
+        return Array.from(tagSet).sort();
+    }, [publicSets]);
+
+    // Filter tags based on input
+    const filteredTags = useMemo(() => {
+        if (!tagFilterInput.trim()) return availableTags;
+        return availableTags.filter(tag => 
+            tag.toLowerCase().includes(tagFilterInput.toLowerCase())
+        );
+    }, [availableTags, tagFilterInput]);
+
+    // Filtered public sets based on search query and tag filter
+    const filteredPublicSets = useMemo(() => {
+        let filtered = publicSets;
+        
+        // Apply tag filter first
+        if (selectedTagFilter) {
+            filtered = filtered.filter(set => 
+                Array.isArray(set.tags) && set.tags.includes(selectedTagFilter)
+            );
+        }
+        
+        // Then apply search query
+        if (searchQuery.trim()) {
+            const query = searchQuery.toLowerCase().trim();
+            filtered = filtered.filter(set => {
+                // First, search in set title
+                if (set.title.toLowerCase().includes(query)) {
+                    return true;
+                }
+                
+                // Then, search in tags
+                if (Array.isArray(set.tags) && set.tags.some(tag => 
+                    tag.toLowerCase().includes(query)
+                )) {
+                    return true;
+                }
+                
+                // Finally, search in card keys and values
+                return Array.isArray(set.cards) && set.cards.some(card => 
+                    card.front.toLowerCase().includes(query) || 
+                    card.back.toLowerCase().includes(query)
+                );
+            });
+        }
+        
+        return filtered;
+    }, [publicSets, searchQuery, selectedTagFilter]);
 
     // Combined my sets and shared sets for the "my sets" tab
     const allMySets = useMemo(() => {
@@ -844,13 +914,89 @@ const DashboardPage = () => {
                          
                          <TabsContent value="public-sets">
                              <div className="space-y-6">
-                                 <div className="flex items-center justify-between">
-                                     <h2 className="text-2xl font-bold tracking-tight">public sets</h2>
-                                     <Button variant="outline" size="sm">
-                                         <Globe className="mr-2 h-4 w-4" />
-                                         browse all
-                                     </Button>
-                                 </div>
+                                                                 <div className="flex items-center justify-between">
+                                    <h2 className="text-2xl font-bold tracking-tight">public sets</h2>
+                                    <div className="flex items-center gap-2">
+                                        {selectedTagFilter && (
+                                            <div className="flex items-center gap-1 px-3 py-1 bg-primary/10 text-primary rounded-full text-sm">
+                                                <Tag className="h-3 w-3" />
+                                                {selectedTagFilter}
+                                                <button
+                                                    onClick={clearTagFilter}
+                                                    className="hover:bg-primary/20 rounded-full p-0.5"
+                                                >
+                                                    <X className="h-3 w-3" />
+                                                </button>
+                                            </div>
+                                        )}
+                                        <Popover open={isTagFilterOpen} onOpenChange={setIsTagFilterOpen}>
+                                            <PopoverTrigger asChild>
+                                                <Button variant="outline" size="sm">
+                                                    <Filter className="mr-2 h-4 w-4" />
+                                                    {selectedTagFilter ? 'filter by tag' : 'browse all'}
+                                                </Button>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-80 p-0" align="end">
+                                                <div className="p-4 space-y-3">
+                                                    <div className="flex items-center justify-between">
+                                                        <Label className="text-sm font-medium">Filter by tag</Label>
+                                                        {selectedTagFilter && (
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="sm"
+                                                                onClick={clearTagFilter}
+                                                                className="h-6 px-2 text-xs"
+                                                            >
+                                                                Clear
+                                                            </Button>
+                                                        )}
+                                                    </div>
+                                                    <Separator />
+                                                    
+                                                    {/* Text input for filtering tags */}
+                                                    <div className="space-y-2">
+                                                        <Input
+                                                            placeholder="Search tags..."
+                                                            value={tagFilterInput}
+                                                            onChange={(e) => handleTagInputChange(e.target.value)}
+                                                            className="h-8"
+                                                        />
+                                                    </div>
+                                                    
+                                                    {/* Tag options with proper spacing for hover animations */}
+                                                    <div className="space-y-1 max-h-48 overflow-y-auto -mx-2 px-2">
+                                                        <Button
+                                                            variant={selectedTagFilter === null ? "default" : "ghost"}
+                                                            size="sm"
+                                                            className="w-full justify-start text-xs hover:bg-muted/80 transition-colors rounded-md"
+                                                            onClick={() => handleTagFilter(null)}
+                                                        >
+                                                            All sets
+                                                        </Button>
+                                                        {filteredTags.length > 0 ? (
+                                                            filteredTags.map((tag) => (
+                                                                <Button
+                                                                    key={tag}
+                                                                    variant={selectedTagFilter === tag ? "default" : "ghost"}
+                                                                    size="sm"
+                                                                    className="w-full justify-start text-xs hover:bg-muted/80 transition-colors rounded-md"
+                                                                    onClick={() => handleTagFilter(tag)}
+                                                                >
+                                                                    <Tag className="mr-2 h-3 w-3" />
+                                                                    {tag}
+                                                                </Button>
+                                                            ))
+                                                        ) : (
+                                                            <div className="text-xs text-muted-foreground text-center py-2">
+                                                                No tags found
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </PopoverContent>
+                                        </Popover>
+                                    </div>
+                                </div>
                                  
                                  {loadingPublic ? (
                                      <div className="flex items-center gap-2 text-muted-foreground">

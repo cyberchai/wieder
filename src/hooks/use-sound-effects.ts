@@ -1,6 +1,13 @@
 import useSound from 'use-sound';
 import { useCallback, useRef } from 'react';
 
+// Extend Window to include Safari's prefixed AudioContext constructor
+declare global {
+  interface Window {
+    webkitAudioContext?: typeof AudioContext;
+  }
+}
+
 export const useSoundEffects = () => {
   // Mobile-specific audio options for better compatibility
   const audioOptions = {
@@ -10,6 +17,7 @@ export const useSoundEffects = () => {
     html5: true, // Use HTML5 audio for better mobile support
     format: ['mp3'], // Ensure MP3 format is used
   };
+
 
   const [playHoverSound, { stop: stopHoverSound }] = useSound('/sounds/rising-pops.mp3', { 
     ...audioOptions,
@@ -120,25 +128,27 @@ export const useSoundEffects = () => {
   }, [playNavigationSound]);
 
   // Function to enable sounds after first user interaction
-  const enableSounds = useCallback(() => {
-    hasUserInteracted.current = true;
-    
-    // Unlock AudioContext on mobile browsers
-    if (typeof window !== 'undefined') {
-      // Try to unlock AudioContext for mobile browsers
-      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-      if (AudioContext) {
-        try {
-          const audioContext = new AudioContext();
-          if (audioContext.state === 'suspended') {
-            audioContext.resume().catch(console.warn);
-          }
-        } catch (error) {
-          console.warn('Failed to unlock AudioContext:', error);
+  // Function to enable sounds after first user interaction
+const enableSounds = useCallback(() => {
+  hasUserInteracted.current = true;
+
+  if (typeof window !== 'undefined') {
+    // Prefer standard AudioContext, fall back to webkit-prefixed
+    const AudioContextCtor = window.AudioContext ?? window.webkitAudioContext;
+
+    if (AudioContextCtor) {
+      try {
+        const audioContext = new AudioContextCtor();
+        if (audioContext.state === 'suspended') {
+          void audioContext.resume().catch(console.warn);
         }
+      } catch (error) {
+        console.warn('Failed to unlock AudioContext:', error);
       }
     }
-  }, []);
+  }
+}, []);
+
 
   return {
     handleHoverStart,
