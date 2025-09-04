@@ -92,6 +92,12 @@ export default function StudyPage() {
   const currentCard = shuffledCards[currentIndex];
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    // Don't handle keyboard shortcuts when user is typing in an input field
+    const activeElement = document.activeElement;
+    if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')) {
+      return;
+    }
+
     switch (e.key) {
       case ' ':
         e.preventDefault();
@@ -171,7 +177,6 @@ export default function StudyPage() {
       handleToggleOff();
     }
     setIsReversed(checked);
-    handleShuffle();
   };
 
   const handleProgressToggle = (checked: boolean) => {
@@ -455,7 +460,7 @@ export default function StudyPage() {
                                     type="text"
                                     value={editTerm}
                                     onChange={(e) => setEditTerm(e.target.value)}
-                                    className="w-full p-2 border rounded-md text-base font-medium"
+                                    className="w-full p-2 border rounded-md text-base font-medium dark:text-black"
                                     autoFocus
                                   />
                                 ) : (
@@ -483,7 +488,7 @@ export default function StudyPage() {
                                     type="text"
                                     value={editDefinition}
                                     onChange={(e) => setEditDefinition(e.target.value)}
-                                    className="w-full p-2 border rounded-md text-base"
+                                    className="w-full p-2 border rounded-md text-base dark:text-black"
                                   />
                                 ) : (
                                   <div 

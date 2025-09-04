@@ -154,6 +154,17 @@
     color: hsl(142 76% 20%) !important; /* Dark dark green for checkmark icon */
   }
   
+  /* Smith Bears theme - make input text black for better visibility */
+  .skunks input[type="text"] {
+    color: hsl(0 0% 0%) !important; /* black text */
+  }
+  
+  /* Smith Bears theme - make red feedback text black for better legibility */
+  .skunks .text-yellow-700,
+  .skunks .dark\:text-yellow-300 {
+    color: hsl(0 0% 0%) !important; /* black text */
+  }
+  
   .bw .bg-accent {
     background-color: hsl(0 0% 0%) !important; /* black */
   }

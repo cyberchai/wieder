@@ -262,7 +262,6 @@ export default function PracticePage() {
       handleToggleOff();
     }
     setIsReversed(checked);
-    handleShuffle();
   }
 
   const handleLenientModeToggle = (checked: boolean) => {
