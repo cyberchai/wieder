@@ -133,6 +133,26 @@
   .bw .bg-primary {
     background-color: hsl(0 0% 0%) !important; /* black */
   }
+
+  /* Smith Bears (skunks) theme specific feedback color overrides */
+  .skunks .bg-green-100 {
+    background-color: hsl(142 76% 36%) !important; /* Darker green for better contrast */
+  }
+  .skunks .bg-red-100 {
+    background-color: hsl(0 84% 60%) !important; /* Darker red for better contrast */
+  }
+  .skunks .dark\:bg-green-900\/30 {
+    background-color: hsl(142 76% 36%) !important; /* Darker green for better contrast */
+  }
+  .skunks .dark\:bg-red-900\/30 {
+    background-color: hsl(0 84% 60%) !important; /* Darker red for better contrast */
+  }
+  .skunks .text-green-600 {
+    color: hsl(142 76% 20%) !important; /* Dark dark green for checkmark icon */
+  }
+  .skunks .dark\:text-green-400 {
+    color: hsl(142 76% 20%) !important; /* Dark dark green for checkmark icon */
+  }
   
   .bw .bg-accent {
     background-color: hsl(0 0% 0%) !important; /* black */

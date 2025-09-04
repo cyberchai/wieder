@@ -2,40 +2,42 @@ import useSound from 'use-sound';
 import { useCallback, useRef } from 'react';
 
 export const useSoundEffects = () => {
-  const [playHoverSound, { stop: stopHoverSound }] = useSound('/sounds/rising-pops.mp3', { 
-    volume: 0.5,
+  // Mobile-specific audio options for better compatibility
+  const audioOptions = {
+    volume: 0.6,
     preload: true,
-    // Disable autoplay to avoid AudioContext issues
-    autoplay: false
+    autoplay: false,
+    html5: true, // Use HTML5 audio for better mobile support
+    format: ['mp3'], // Ensure MP3 format is used
+  };
+
+  const [playHoverSound, { stop: stopHoverSound }] = useSound('/sounds/rising-pops.mp3', { 
+    ...audioOptions,
+    volume: 0.5,
   });
 
   const [playNavigationSound] = useSound('/sounds/rising-pops.mp3', { 
+    ...audioOptions,
     volume: 0.5,
-    preload: true,
-    // Disable autoplay to avoid AudioContext issues
-    autoplay: false
   });
 
-  const [playCorrectSound] = useSound('/sounds/correct.mp3', { 
-    volume: 0.6,
-    preload: true,
-    // Disable autoplay to avoid AudioContext issues
-    autoplay: false
-  });
+  const [playCorrectSound] = useSound('/sounds/correct.mp3', audioOptions);
 
   const [playToggleOnSound] = useSound('/sounds/taptoggle-on.mp3', { 
+    ...audioOptions,
     volume: 0.4,
-    preload: true,
-    // Disable autoplay to avoid AudioContext issues
-    autoplay: false
   });
 
   const [playToggleOffSound] = useSound('/sounds/taptoggle-off.mp3', { 
+    ...audioOptions,
     volume: 0.4,
-    preload: true,
-    // Disable autoplay to avoid AudioContext issues
-    autoplay: false
   });
+
+  const [playIncorrectSound] = useSound('/sounds/incorrectans.mp3', audioOptions);
+
+  const [playGameEndedSound] = useSound('/sounds/gameended.mp3', audioOptions);
+
+  const [playHeartLostSound] = useSound('/sounds/heartlost.mp3', audioOptions);
 
   const hasUserInteracted = useRef(false);
 
@@ -55,7 +57,11 @@ export const useSoundEffects = () => {
   const handleCorrectAnswer = useCallback(() => {
     // Only play sound if user has interacted with the page
     if (hasUserInteracted.current) {
-      playCorrectSound();
+      try {
+        playCorrectSound();
+      } catch (error) {
+        console.warn('Failed to play correct sound:', error);
+      }
     }
   }, [playCorrectSound]);
 
@@ -73,6 +79,39 @@ export const useSoundEffects = () => {
     }
   }, [playToggleOffSound]);
 
+  const handleIncorrectAnswer = useCallback(() => {
+    // Only play sound if user has interacted with the page
+    if (hasUserInteracted.current) {
+      try {
+        playIncorrectSound();
+      } catch (error) {
+        console.warn('Failed to play incorrect sound:', error);
+      }
+    }
+  }, [playIncorrectSound]);
+
+  const handleGameEnded = useCallback(() => {
+    // Only play sound if user has interacted with the page
+    if (hasUserInteracted.current) {
+      try {
+        playGameEndedSound();
+      } catch (error) {
+        console.warn('Failed to play game ended sound:', error);
+      }
+    }
+  }, [playGameEndedSound]);
+
+  const handleHeartLost = useCallback(() => {
+    // Only play sound if user has interacted with the page
+    if (hasUserInteracted.current) {
+      try {
+        playHeartLostSound();
+      } catch (error) {
+        console.warn('Failed to play heart lost sound:', error);
+      }
+    }
+  }, [playHeartLostSound]);
+
   const handleNavigationClick = useCallback(() => {
     // Only play sound if user has interacted with the page
     if (hasUserInteracted.current) {
@@ -83,6 +122,22 @@ export const useSoundEffects = () => {
   // Function to enable sounds after first user interaction
   const enableSounds = useCallback(() => {
     hasUserInteracted.current = true;
+    
+    // Unlock AudioContext on mobile browsers
+    if (typeof window !== 'undefined') {
+      // Try to unlock AudioContext for mobile browsers
+      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+      if (AudioContext) {
+        try {
+          const audioContext = new AudioContext();
+          if (audioContext.state === 'suspended') {
+            audioContext.resume().catch(console.warn);
+          }
+        } catch (error) {
+          console.warn('Failed to unlock AudioContext:', error);
+        }
+      }
+    }
   }, []);
 
   return {
@@ -91,6 +146,9 @@ export const useSoundEffects = () => {
     handleCorrectAnswer,
     handleToggleOn,
     handleToggleOff,
+    handleIncorrectAnswer,
+    handleGameEnded,
+    handleHeartLost,
     handleNavigationClick,
     enableSounds
   };

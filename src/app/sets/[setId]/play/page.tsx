@@ -14,8 +14,10 @@ import Link from "next/link";
 import { ArrowLeft, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useWindowSize } from "@/hooks/use-window-size";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import RainDrops from "@/components/rain-drops";
 import { useSoundEffects } from "@/hooks/use-sound-effects";
 
@@ -36,10 +38,12 @@ export default function PlayPage() {
   const { user } = useAuth();
   const { toast } = useToast();
   const { width: windowWidth, height: windowHeight } = useWindowSize();
-  const { handleCorrectAnswer, handleToggleOn, enableSounds } = useSoundEffects();
+  const isMobile = useIsMobile();
+  const { handleCorrectAnswer, handleToggleOn, handleIncorrectAnswer, handleGameEnded, handleHeartLost, enableSounds } = useSoundEffects();
 
   const gameAreaRef = useRef<HTMLDivElement>(null);
   const wordRef = useRef<HTMLDivElement>(null);
+  const mobileInputRef = useRef<HTMLInputElement>(null);
 
   const [set, setSet] = useState<FlashcardSet | null>(null);
   const [loading, setLoading] = useState(true);
@@ -66,7 +70,7 @@ export default function PlayPage() {
   // header height estimate so the play area fills the rest (adjust if your header height changes)
   const headerOffset = 72;
   const safePaddingX = 20; // keep words fully visible left/right
-  const fallSpeed = 1.25;  // tweak to taste
+  const fallSpeed = isMobile ? 0.625 : 1.25;  // half speed on mobile
 
   const fetchSet = useCallback(async () => {
     setLoading(true);
@@ -120,7 +124,7 @@ export default function PlayPage() {
       setGameState("gameover");
       setGameEndReason("success");
       setFallingWord(null);
-      handleToggleOn(); // Play game over sound
+      handleGameEnded(); // Play game ended sound
       return;
     }
 
@@ -169,11 +173,12 @@ export default function PlayPage() {
 
           setLives((l) => {
             const nl = Math.max(0, l - 1);
+            enableSounds(); // Enable sounds on first user interaction
+            handleHeartLost(); // Play heart lost sound
             if (nl <= 0) {
-              enableSounds(); // Enable sounds on first user interaction
               setGameState("gameover");
               setGameEndReason("failure");
-              handleToggleOn(); // Play game over sound
+              handleGameEnded(); // Play game ended sound
             }
             return nl;
           });
@@ -362,9 +367,9 @@ export default function PlayPage() {
     enableSounds,
   ]);
 
-  // Global key listener to capture typing; Enter clears input if wrong
+  // Global key listener to capture typing; Enter clears input if wrong (desktop only)
   useEffect(() => {
-    if (gameState !== "playing") return;
+    if (gameState !== "playing" || isMobile) return;
 
     const onKeyDown = (e: KeyboardEvent) => {
       // ignore modifier-only keys
@@ -374,11 +379,13 @@ export default function PlayPage() {
         // On Enter: if not correct yet, clear typed but keep listening
         if (typed !== "" && !isAnswerCorrect(typed, currentTarget)) {
           e.preventDefault();
+          enableSounds(); // Enable sounds on first user interaction
           setTyped("");
           toast({
             title: "try again",
             description: "that wasn't it, keep trying!",
           });
+          handleIncorrectAnswer(); // Play incorrect answer sound
         }
         return;
       }
@@ -397,7 +404,33 @@ export default function PlayPage() {
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [gameState, typed, currentTarget, toast]);
+  }, [gameState, typed, currentTarget, toast, isMobile]);
+
+  // Mobile input handling
+  const handleMobileInputFocus = () => {
+    enableSounds(); // Enable sounds immediately when input is focused
+  };
+
+  const handleMobileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setTyped(value.slice(0, 120)); // cap length
+    enableSounds(); // Enable sounds on first user interaction
+  };
+
+  const handleMobileInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      // On Enter: if not correct yet, clear input but keep listening
+      if (typed !== "" && !isAnswerCorrect(typed, currentTarget)) {
+        e.preventDefault();
+        setTyped("");
+        toast({
+          title: "try again",
+          description: "that wasn't it, keep trying!",
+        });
+        handleIncorrectAnswer(); // Play incorrect answer sound
+      }
+    }
+  };
 
 
 
@@ -412,15 +445,17 @@ export default function PlayPage() {
     setCurrentCardIndex(0);
     setGameEndReason(null);
 
+    // Enable sounds when starting the game (especially important for mobile)
+    enableSounds();
+
     if (newCards.length > 0) {
       setGameState("playing");
       // use the local deck directly so we don't depend on async state
       spawnNewWord(newCards, 0);
     } else {
-      enableSounds(); // Enable sounds on first user interaction
       setGameState("gameover");
       setGameEndReason("failure");
-      handleToggleOn(); // Play game over sound
+      handleGameEnded(); // Play game ended sound
     }
   };
 
@@ -574,20 +609,43 @@ export default function PlayPage() {
                     </div>
                   )}
 
-                  {/* Live typing display (replaces input). Big, centered lower. */}
-                  <div className="pointer-events-none select-none absolute left-1/2 -translate-x-1/2 bottom-12 text-center px-6">
-                    <div className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-wide">
-                      {typed || <span className="opacity-40">start typing…</span>}
+                  {/* Live typing display (desktop) or mobile input */}
+                  {isMobile ? (
+                    <div className="absolute left-1/2 -translate-x-1/2 bottom-12 w-full max-w-sm px-6">
+                      <Input
+                        ref={mobileInputRef}
+                        value={typed}
+                        onChange={handleMobileInputChange}
+                        onKeyDown={handleMobileInputKeyDown}
+                        onFocus={handleMobileInputFocus}
+                        placeholder="Type your answer..."
+                        className="text-lg h-12 text-center"
+                        autoFocus
+                      />
+                      <div className="text-sm opacity-60 mt-2 text-center">
+                        press <kbd className="px-2 py-1 rounded border">Enter</kbd> to clear if wrong
+                        {acceptGeneralAnswers && typed.length > 0 && (
+                          <div className="mt-1 text-xs opacity-50">
+                            similarity: {Math.round(calculateSimilarity(normalizeText(typed), currentTarget) * 100)}%
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    <div className="text-sm opacity-60 mt-2">
-                      press <kbd className="px-2 py-1 rounded border">Enter</kbd> to clear if wrong
-                      {acceptGeneralAnswers && typed.length > 0 && (
-                        <div className="mt-1 text-xs opacity-50">
-                          similarity: {Math.round(calculateSimilarity(normalizeText(typed), currentTarget) * 100)}%
-                        </div>
-                      )}
+                  ) : (
+                    <div className="pointer-events-none select-none absolute left-1/2 -translate-x-1/2 bottom-12 text-center px-6">
+                      <div className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-wide">
+                        {typed || <span className="opacity-40">start typing…</span>}
+                      </div>
+                      <div className="text-sm opacity-60 mt-2">
+                        press <kbd className="px-2 py-1 rounded border">Enter</kbd> to clear if wrong
+                        {acceptGeneralAnswers && typed.length > 0 && (
+                          <div className="mt-1 text-xs opacity-50">
+                            similarity: {Math.round(calculateSimilarity(normalizeText(typed), currentTarget) * 100)}%
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </>
               )}
             </div>
