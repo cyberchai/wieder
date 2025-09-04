@@ -24,9 +24,18 @@ export function ResponsiveText({
   const isMobile = useIsMobile();
   const [currentFontSize, setCurrentFontSize] = useState(baseFontSize);
 
+  // Check if text is longer than 200 characters
+  const isLongText = text.length > 200;
+
   const adjustFontSize = useCallback(() => {
     if (!isMobile || !textRef.current) {
       setCurrentFontSize(baseFontSize);
+      return;
+    }
+
+    // For long text, use a smaller base font size and enable scrolling
+    if (isLongText) {
+      setCurrentFontSize("text-lg");
       return;
     }
 
@@ -60,7 +69,7 @@ export function ResponsiveText({
     };
 
     findOptimalFontSize(fontSizeIndex);
-  }, [isMobile, baseFontSize]);
+  }, [isMobile, baseFontSize, isLongText]);
 
   useEffect(() => {
     if (isMobile) {
@@ -85,7 +94,13 @@ export function ResponsiveText({
       style={{
         wordBreak: 'break-word',
         overflowWrap: 'break-word',
-        hyphens: 'auto'
+        hyphens: 'auto',
+        // Enable scrolling for long text on mobile
+        ...(isMobile && isLongText && {
+          overflowY: 'auto',
+          maxHeight: '100%',
+          paddingRight: '8px' // Add some padding for scrollbar
+        })
       }}
     >
       {text}

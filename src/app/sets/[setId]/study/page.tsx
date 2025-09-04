@@ -317,10 +317,11 @@ export default function StudyPage() {
                         top: 0,
                         left: 0,
                         right: 0,
-                        bottom: 0
+                        bottom: 0,
+                        overflow: 'hidden' // Ensure card content doesn't overflow
                       }}
                     >
-                      <div className="text-center">
+                      <div className="text-center w-full h-full flex items-center justify-center">
                         <ResponsiveText 
                           text={frontText}
                           className="font-bold leading-relaxed"
@@ -339,10 +340,11 @@ export default function StudyPage() {
                         top: 0,
                         left: 0,
                         right: 0,
-                        bottom: 0
+                        bottom: 0,
+                        overflow: 'hidden' // Ensure card content doesn't overflow
                       }}
                     >
-                      <div className="text-center">
+                      <div className="text-center w-full h-full flex items-center justify-center">
                         <ResponsiveText 
                           text={backText}
                           className="font-medium leading-relaxed"
