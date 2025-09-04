@@ -15,6 +15,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Trash2, PlusCircle, Loader2, ArrowLeft, Upload, FileText, Link as LinkIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
@@ -55,6 +56,12 @@ export default function CreateSetPage() {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [googleDriveLink, setGoogleDriveLink] = useState("");
   const [isDragOver, setIsDragOver] = useState(false);
+  
+  // Parsing options state
+  const [termDefinitionSeparator, setTermDefinitionSeparator] = useState("tab");
+  const [customTermDefinitionSeparator, setCustomTermDefinitionSeparator] = useState("");
+  const [rowSeparator, setRowSeparator] = useState("newline");
+  const [customRowSeparator, setCustomRowSeparator] = useState("");
 
   // Track page view
   useEffect(() => {
@@ -119,31 +126,106 @@ export default function CreateSetPage() {
   };
   
   const handleImport = () => {
-    const lines = importText.split('\n').filter(line => line.trim() !== '');
+    // Helper function to convert escape sequences in custom separators
+    const convertEscapeSequences = (str: string): string => {
+      return str
+        .replace(/\\n/g, '\n')
+        .replace(/\\t/g, '\t')
+        .replace(/\\r/g, '\r')
+        .replace(/\\s/g, ' ')
+        .replace(/\\\\/g, '\\');
+    };
+
+    // Get the actual separator values
+    const getTermDefinitionSeparator = () => {
+      if (termDefinitionSeparator === "custom") {
+        return convertEscapeSequences(customTermDefinitionSeparator);
+      }
+      switch (termDefinitionSeparator) {
+        case "tab": return "\t";
+        case "comma": return ",";
+        default: return "\t";
+      }
+    };
+
+    const getRowSeparator = () => {
+      if (rowSeparator === "custom") {
+        return convertEscapeSequences(customRowSeparator);
+      }
+      switch (rowSeparator) {
+        case "newline": return "\n";
+        case "semicolon": return ";";
+        default: return "\n";
+      }
+    };
+
+    const termDefSep = getTermDefinitionSeparator();
+    const rowSep = getRowSeparator();
+
+    // Validate custom separators
+    if (termDefinitionSeparator === "custom" && !termDefSep.trim()) {
+      toast({
+        title: 'Import Error',
+        description: 'Please specify a custom term-definition separator',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (rowSeparator === "custom" && !rowSep.trim()) {
+      toast({
+        title: 'Import Error',
+        description: 'Please specify a custom row separator',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    const lines = importText.split(rowSep).filter(line => line.trim() !== '');
     const newCards: { front: string; back: string }[] = [];
     let error = false;
+    let errorDetails = '';
 
-    for (const line of lines) {
-      const parts = line.split('\t');
+    // Debug logging
+    console.log('Parsing with separators:', { termDefSep, rowSep });
+    console.log('Split into lines:', lines.length);
+    console.log('First few lines:', lines.slice(0, 3));
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      const parts = line.split(termDefSep);
+      
+      console.log(`Line ${i + 1}: "${line}" -> ${parts.length} parts:`, parts);
+      
       if (parts.length === 2) {
         newCards.push({ front: parts[0].trim(), back: parts[1].trim() });
+      } else if (parts.length > 2) {
+        // If there are more than 2 parts, the separator appears in the content
+        // Take the first part as front, and join the rest as back
+        const front = parts[0].trim();
+        const back = parts.slice(1).join(termDefSep).trim();
+        newCards.push({ front, back });
+        console.log(`Handled multiple separators: "${front}" -> "${back}"`);
       } else {
         error = true;
+        errorDetails = `Line ${i + 1}: "${line}" - Expected format: term${termDefSep}definition`;
         break;
       }
     }
 
     if (error) {
+      const separatorName = termDefinitionSeparator === "custom" ? "custom separator" : 
+                           termDefinitionSeparator === "tab" ? "tab character" : 
+                           termDefinitionSeparator === "comma" ? "comma" : "separator";
       toast({
         title: 'Import Error',
-        description: 'please make sure each line includes a tab character separating word and definition',
+        description: errorDetails || `Please make sure each row includes a ${separatorName} separating term and definition`,
         variant: 'destructive',
       });
     } else if (newCards.length > 0) {
       setValue('cards', newCards, { shouldValidate: true });
       toast({ title: 'Success!', description: `${newCards.length} cards imported.` });
       setIsImportDialogOpen(false);
-      setImportText("");
     }
   };
 
@@ -231,19 +313,76 @@ export default function CreateSetPage() {
                           create set
                         </Button>
                       )}
-                      <Dialog open={isImportDialogOpen} onOpenChange={setIsImportDialogOpen}>
+                      <Dialog open={isImportDialogOpen} onOpenChange={(open) => {
+                        setIsImportDialogOpen(open);
+                        if (!open) {
+                          // Reset parsing options when dialog is closed
+                          setTermDefinitionSeparator("tab");
+                          setCustomTermDefinitionSeparator("");
+                          setRowSeparator("newline");
+                          setCustomRowSeparator("");
+                          setImportText("");
+                        }
+                      }}>
                         <DialogTrigger asChild>
                            <Button variant="outline"><Upload className="mr-2 h-4 w-4" />import from quizlet</Button>
                         </DialogTrigger>
-                        <DialogContent className="sm:max-w-[425px]">
+                        <DialogContent className="sm:max-w-[600px]">
                           <DialogHeader>
                             <DialogTitle>import set from quizlet via copy paste</DialogTitle>
                             <DialogDescription>
-                              <b> to copy and paste your set from Quizlet (in Quizlet, go to your set &gt; 3 dots &gt; export (make sure tab and new line are selected) &gt; copy text)</b>. input will automatically be formatted as term tab definition. paste your tab-separated list in box below.
+                              <b> to copy and paste your set from Quizlet (in Quizlet, go to your set &gt; 3 dots &gt; export &gt; copy text)</b>. configure the parsing options below to match your data format, then paste your text in the box below.
                             </DialogDescription>
                           </DialogHeader>
                           <div className="grid gap-4 py-4">
-                             <Textarea
+                            {/* Parsing Options */}
+                            <div className="grid grid-cols-2 gap-4">
+                              <div className="space-y-2">
+                                <Label htmlFor="term-def-separator">Between term and definition:</Label>
+                                <Select value={termDefinitionSeparator} onValueChange={setTermDefinitionSeparator}>
+                                  <SelectTrigger>
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="tab">Tab</SelectItem>
+                                    <SelectItem value="comma">Comma</SelectItem>
+                                    <SelectItem value="custom">Custom (specify)</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                {termDefinitionSeparator === "custom" && (
+                                  <Input
+                                    placeholder="e.g., , or \\t or any character"
+                                    value={customTermDefinitionSeparator}
+                                    onChange={e => setCustomTermDefinitionSeparator(e.target.value)}
+                                  />
+                                )}
+                              </div>
+                              
+                              <div className="space-y-2">
+                                <Label htmlFor="row-separator">Between rows:</Label>
+                                <Select value={rowSeparator} onValueChange={setRowSeparator}>
+                                  <SelectTrigger>
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="newline">New line</SelectItem>
+                                    <SelectItem value="semicolon">Semicolon</SelectItem>
+                                    <SelectItem value="custom">Custom (specify)</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                {rowSeparator === "custom" && (
+                                  <Input
+                                    placeholder="e.g., ; or \\n or any character"
+                                    value={customRowSeparator}
+                                    onChange={e => setCustomRowSeparator(e.target.value)}
+                                  />
+                                )}
+                              </div>
+                            </div>
+                            
+                            <div className="space-y-2">
+                              <Label htmlFor="import-text">Paste your text here:</Label>
+                              <Textarea
                                 placeholder="arbeiten	to work..."
                                 value={importText}
                                 onChange={e => setImportText(e.target.value)}
@@ -253,6 +392,10 @@ export default function CreateSetPage() {
                                 autoCapitalize="off"
                                 spellCheck="false"
                               />
+                              <p className="text-xs text-muted-foreground">
+                                Tip: Use \\n for newline, \\t for tab, \\r for carriage return in custom separators
+                              </p>
+                            </div>
                           </div>
                           <DialogFooter>
                             <Button onClick={handleImport}>import cards</Button>
