@@ -2,6 +2,28 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Hide unwanted circle elements */
+circle[cx="316.5"][cy="316.5"][r="316.5"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+/* Alternative: Hide all circles with large radius */
+circle[r="316.5"] {
+  display: none !important;
+}
+
+/* Hide circles with specific fill patterns */
+circle[fill*="url(#a-cl-9)"] {
+  display: none !important;
+}
+
+/* Hide any SVG circles that might be causing issues */
+svg circle[fill*="url(#a-cl-9)"] {
+  display: none !important;
+}
+
 @layer base {
   .neilson {
     --background: 210 20% 98%; /* approx #f2f2f2 */
@@ -163,6 +185,22 @@
   .skunks .text-yellow-700,
   .skunks .dark\:text-yellow-300 {
     color: hsl(0 0% 0%) !important; /* black text */
+  }
+  
+  /* Smith Bears theme - context menu styling */
+  .skunks .context-menu {
+    background-color: hsl(0 0% 100%) !important; /* white background */
+    color: hsl(0 0% 0%) !important; /* black text */
+    border: 1px solid hsl(224 60% 40%) !important; /* theme border color */
+  }
+  
+  .skunks .context-menu button {
+    color: hsl(0 0% 0%) !important; /* black text */
+  }
+  
+  .skunks .context-menu button:hover {
+    background-color: hsl(41 98% 54%) !important; /* theme accent color on hover */
+    color: hsl(224 60% 22%) !important; /* theme background color for text on hover */
   }
   
   .bw .bg-accent {

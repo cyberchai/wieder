@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { ThemeProvider } from '@/providers/theme-provider';
 import { AuthProvider } from '@/providers/auth-provider';
+import { QueryProvider } from '@/providers/simple-query-provider';
 import { Toaster } from "@/components/ui/toaster";
 import { ThemedBody } from '@/components/themed-body';
 
@@ -62,14 +63,16 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <ThemeProvider>
-          <AuthProvider>
-            <ThemedBody>
-              {children}
-              <Toaster />
-            </ThemedBody>
-          </AuthProvider>
-        </ThemeProvider>
+        <QueryProvider>
+          <ThemeProvider>
+            <AuthProvider>
+              <ThemedBody>
+                {children}
+                <Toaster />
+              </ThemedBody>
+            </AuthProvider>
+          </ThemeProvider>
+        </QueryProvider>
       </body>
     </html>
   );

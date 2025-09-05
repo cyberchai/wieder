@@ -1,5 +1,6 @@
 import useSound from 'use-sound';
 import { useCallback, useRef } from 'react';
+import { useSettings } from './use-settings';
 
 // Extend Window to include Safari's prefixed AudioContext constructor
 declare global {
@@ -9,6 +10,8 @@ declare global {
 }
 
 export const useSoundEffects = () => {
+  const { settings } = useSettings();
+  
   // Mobile-specific audio options for better compatibility
   const audioOptions = {
     volume: 0.6,
@@ -50,82 +53,82 @@ export const useSoundEffects = () => {
   const hasUserInteracted = useRef(false);
 
   const handleHoverStart = useCallback(() => {
-    // Only play sound if user has interacted with the page
-    if (hasUserInteracted.current) {
+    // Only play sound if user has interacted with the page and sound is enabled
+    if (hasUserInteracted.current && settings.soundEnabled) {
       playHoverSound();
     }
-  }, [playHoverSound]);
+  }, [playHoverSound, settings.soundEnabled]);
 
   const handleHoverEnd = useCallback(() => {
-    if (hasUserInteracted.current) {
+    if (hasUserInteracted.current && settings.soundEnabled) {
       stopHoverSound();
     }
-  }, [stopHoverSound]);
+  }, [stopHoverSound, settings.soundEnabled]);
 
   const handleCorrectAnswer = useCallback(() => {
-    // Only play sound if user has interacted with the page
-    if (hasUserInteracted.current) {
+    // Only play sound if user has interacted with the page and sound is enabled
+    if (hasUserInteracted.current && settings.soundEnabled) {
       try {
         playCorrectSound();
       } catch (error) {
         console.warn('Failed to play correct sound:', error);
       }
     }
-  }, [playCorrectSound]);
+  }, [playCorrectSound, settings.soundEnabled]);
 
   const handleToggleOn = useCallback(() => {
-    // Only play sound if user has interacted with the page
-    if (hasUserInteracted.current) {
+    // Only play sound if user has interacted with the page and sound is enabled
+    if (hasUserInteracted.current && settings.soundEnabled) {
       playToggleOnSound();
     }
-  }, [playToggleOnSound]);
+  }, [playToggleOnSound, settings.soundEnabled]);
 
   const handleToggleOff = useCallback(() => {
-    // Only play sound if user has interacted with the page
-    if (hasUserInteracted.current) {
+    // Only play sound if user has interacted with the page and sound is enabled
+    if (hasUserInteracted.current && settings.soundEnabled) {
       playToggleOffSound();
     }
-  }, [playToggleOffSound]);
+  }, [playToggleOffSound, settings.soundEnabled]);
 
   const handleIncorrectAnswer = useCallback(() => {
-    // Only play sound if user has interacted with the page
-    if (hasUserInteracted.current) {
+    // Only play sound if user has interacted with the page and sound is enabled
+    if (hasUserInteracted.current && settings.soundEnabled) {
       try {
         playIncorrectSound();
       } catch (error) {
         console.warn('Failed to play incorrect sound:', error);
       }
     }
-  }, [playIncorrectSound]);
+  }, [playIncorrectSound, settings.soundEnabled]);
 
   const handleGameEnded = useCallback(() => {
-    // Only play sound if user has interacted with the page
-    if (hasUserInteracted.current) {
+    // Only play sound if user has interacted with the page and sound is enabled
+    if (hasUserInteracted.current && settings.soundEnabled) {
       try {
         playGameEndedSound();
       } catch (error) {
         console.warn('Failed to play game ended sound:', error);
       }
     }
-  }, [playGameEndedSound]);
+  }, [playGameEndedSound, settings.soundEnabled]);
 
   const handleHeartLost = useCallback(() => {
-    // Only play sound if user has interacted with the page
-    if (hasUserInteracted.current) {
+    // Only play sound if user has interacted with the page and sound is enabled
+    if (hasUserInteracted.current && settings.soundEnabled) {
       try {
         playHeartLostSound();
       } catch (error) {
         console.warn('Failed to play heart lost sound:', error);
       }
     }
-  }, [playHeartLostSound]);
+  }, [playHeartLostSound, settings.soundEnabled]);
 
   const handleNavigationClick = useCallback(() => {
-    // Only play sound if user has interacted with the page
-    if (hasUserInteracted.current) {
+    // Only play sound if user has interacted with the page and sound is enabled
+    if (hasUserInteracted.current && settings.soundEnabled) {
       playNavigationSound();
     }
-  }, [playNavigationSound]);
+  }, [playNavigationSound, settings.soundEnabled]);
 
   // Function to enable sounds after first user interaction
   // Function to enable sounds after first user interaction

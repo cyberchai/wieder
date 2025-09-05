@@ -110,7 +110,12 @@ export const getFlashcardSet = async (setId: string): Promise<FlashcardSet | nul
         if (set.isPublic && set.userId) {
           try {
             const userProfile = await getUserProfile(set.userId);
-            set.creatorDisplayName = userProfile?.displayName || "some user on this app";
+            // Check if the creator wants to show their name on public sets
+            if (userProfile?.settings?.showNameOnPublicSets !== false) {
+              set.creatorDisplayName = userProfile?.displayName || "some user on this app";
+            } else {
+              set.creatorDisplayName = "someone";
+            }
           } catch (error) {
             console.error(`Failed to fetch user profile for ${set.userId}:`, error);
             set.creatorDisplayName = "some user on this app";
@@ -151,6 +156,19 @@ export const duplicateFlashcardSet = async (set: FlashcardSet) => {
     });
 };
 
+// Duplicate a public set for the current user
+export const duplicatePublicSet = async (publicSet: FlashcardSet, currentUserId: string) => {
+    return await addDoc(setsCollection, {
+        userId: currentUserId,
+        title: `${publicSet.title} (Copy)`,
+        cards: publicSet.cards,
+        createdAt: serverTimestamp(),
+        shared: true,
+        isPublic: false, // Default to private
+        tags: publicSet.tags || [],
+    });
+};
+
 // Get all public flashcard sets
 export const getPublicFlashcardSets = (
     callback: (sets: FlashcardSet[]) => void,
@@ -184,7 +202,12 @@ export const getPublicFlashcardSets = (
                 if (set.userId) {
                     try {
                         const userProfile = await getUserProfile(set.userId);
-                        set.creatorDisplayName = userProfile?.displayName || "some user on this app";
+                        // Check if the creator wants to show their name on public sets
+                        if (userProfile?.settings?.showNameOnPublicSets !== false) {
+                            set.creatorDisplayName = userProfile?.displayName || "some user on this app";
+                        } else {
+                            set.creatorDisplayName = "someone";
+                        }
                     } catch (error) {
                         console.error(`Failed to fetch user profile for ${set.userId}:`, error);
                         set.creatorDisplayName = "some user on this app";

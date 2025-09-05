@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Label } from "@/components/ui/label";
+import { SettingsDialog } from "@/components/settings-dialog";
 
 export default function ProfilePage() {
     const { user } = useAuth();
@@ -50,17 +51,12 @@ export default function ProfilePage() {
                                     </div>
                                 </div>
 
-                                {/* <div className="space-y-2">
-                                  <Label>Theme</Label>
-                                  <div className="p-2 border rounded-md flex justify-between items-center">
-                                      <p className="text-muted-foreground">Select your preferred theme.</p>
-                                      <ThemeSwitcher />
-                                  </div>
-                                </div> */}
-                                
-                                <Button variant="destructive" onClick={handleSignOut} className="w-full sm:w-auto">
-                                    sign out
-                                </Button>
+                                <div className="flex flex-col sm:flex-row gap-3">
+                                    <SettingsDialog />
+                                    <Button variant="destructive" onClick={handleSignOut} className="w-full sm:w-auto">
+                                        sign out
+                                    </Button>
+                                </div>
                             </CardContent>
                         </Card>
                     </div>

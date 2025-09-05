@@ -8,11 +8,17 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 
+export interface UserSettings {
+  soundEnabled: boolean;
+  showNameOnPublicSets: boolean;
+}
+
 export interface UserProfile {
   uid: string;
   displayName: string;
   email: string;
   photoURL?: string;
+  settings?: UserSettings;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -61,6 +67,7 @@ export const getUserProfile = async (uid: string): Promise<UserProfile | null> =
         displayName: data.displayName || "some user on this app",
         email: data.email || "",
         photoURL: data.photoURL,
+        settings: data.settings,
         createdAt: data.createdAt?.toDate() || new Date(),
         updatedAt: data.updatedAt?.toDate() || new Date(),
       } as UserProfile;
@@ -69,5 +76,19 @@ export const getUserProfile = async (uid: string): Promise<UserProfile | null> =
   } catch (error) {
     console.error("Error getting user profile:", error);
     return null;
+  }
+};
+
+// Update user settings
+export const updateUserSettings = async (uid: string, settings: UserSettings) => {
+  try {
+    const userDoc = doc(usersCollection, uid);
+    await updateDoc(userDoc, {
+      settings,
+      updatedAt: new Date(),
+    });
+  } catch (error) {
+    console.error("Error updating user settings:", error);
+    throw error;
   }
 };

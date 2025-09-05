@@ -26,7 +26,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { getFlashcardSets, deleteFlashcardSet, updateFlashcardSet, duplicateFlashcardSet, getFlashcardSet, getPublicFlashcardSets, type FlashcardSet } from "@/services/flashcard-sets";
+import { getFlashcardSet, type FlashcardSet } from "@/services/flashcard-sets";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from 'next/navigation';
 import { Input } from "@/components/ui/input";
@@ -35,24 +35,52 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useSoundEffects } from "@/hooks/use-sound-effects";
+import { useSettings } from "@/hooks/use-settings";
 import { trackUserEngagement, trackPageView } from "@/lib/analytics";
+import { AdminCacheMonitor } from "@/components/admin-cache-monitor";
+import { SilentCircleHider } from "@/components/silent-element-hider";
+import {
+  useUserFlashcardSets,
+  usePublicFlashcardSets,
+  useSharedFlashcardSets,
+  useDeleteFlashcardSet,
+  useUpdateFlashcardSet,
+  useDuplicateFlashcardSet,
+  useDuplicatePublicSet,
+} from "@/hooks/use-flashcard-queries";
 
 
 const DashboardPage = () => {
     const { user } = useAuth();
     const { toast } = useToast();
     const router = useRouter();
-    const [sets, setSets] = useState<FlashcardSet[]>([]);
-    const [sharedSets, setSharedSets] = useState<FlashcardSet[]>([]);
+    
+    // React Query hooks - these handle all the state and loading for you!
+    const { 
+        data: sets = [], 
+        isLoading: loading, 
+        error: userSetsError 
+    } = useUserFlashcardSets();
+    
+    const { 
+        data: publicSets = [], 
+        isLoading: loadingPublic, 
+        error: publicSetsError 
+    } = usePublicFlashcardSets();
+    
+    const { 
+        data: sharedSets = [], 
+        isLoading: loadingShared 
+    } = useSharedFlashcardSets();
+
+    // Keep groupSets as is for now (it uses localStorage)
     const [groupSets, setGroupSets] = useState<FlashcardSet[]>([]);
-    const [publicSets, setPublicSets] = useState<FlashcardSet[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [loadingGroup, setLoadingGroup] = useState(true);
+    
+    // UI state variables
     const [deletingId, setDeletingId] = useState<string | null>(null);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [joinSetId, setJoinSetId] = useState("");
-    const [loadingShared, setLoadingShared] = useState(true);
-    const [loadingGroup, setLoadingGroup] = useState(true);
-    const [loadingPublic, setLoadingPublic] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
     const [activeTab, setActiveTab] = useState("my-sets");
     const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false);
@@ -61,6 +89,14 @@ const DashboardPage = () => {
     const [tagFilterInput, setTagFilterInput] = useState("");
     const searchInputRef = useRef<HTMLInputElement>(null);
     const { handleNavigationClick, enableSounds } = useSoundEffects();
+    const { settings } = useSettings();
+    const [contextMenu, setContextMenu] = useState<{ x: number; y: number; setId: string } | null>(null);
+
+    // React Query mutations
+    const deleteSetMutation = useDeleteFlashcardSet();
+    const updateSetMutation = useUpdateFlashcardSet();
+    const duplicateSetMutation = useDuplicateFlashcardSet();
+    const duplicatePublicSetMutation = useDuplicatePublicSet();
 
     // Tag filter functions
     const handleTagFilter = (tag: string | null) => {
@@ -201,57 +237,7 @@ const DashboardPage = () => {
         return [...filteredSets, ...filteredSharedSets];
     }, [filteredSets, filteredSharedSets]);
 
-    useEffect(() => {
-        if (user) {
-            const unsubscribe = getFlashcardSets(
-                user.uid,
-                (data) => {
-                    setSets(data);
-                    setLoading(false);
-                },
-                (error) => {
-                    console.error("Failed to load flashcard sets", error);
-                    // Best-effort error surface; common cases are permission-denied or missing index
-                    const code = error instanceof FirebaseError ? error.code : undefined;
-                    let description = "Failed to load your sets.";
-                    if (code === "permission-denied") {
-                        description = "permission denied: check Firestore rules.";
-                    } else if (code === "failed-precondition") {
-                        description = "missing required index: create the suggested Firestore index.";
-                    }
-                    toast({ title: "Error", description, variant: "destructive" });
-                    setLoading(false);
-                }
-            );
-
-            // Fetch shared sets from local storage
-            const joinedSetIds = JSON.parse(localStorage.getItem('joinedSetIds') || '[]');
-            if (joinedSetIds.length > 0) {
-                const fetchSharedSets = async () => {
-                    const fetchedSets: FlashcardSet[] = [];
-                    for (const setId of joinedSetIds) {
-                        try {
-                            const set = await getFlashcardSet(setId);
-                            if (set) {
-                                fetchedSets.push(set);
-                            }
-                        } catch (error) {
-                            console.error(`Failed to fetch shared set ${setId}`, error);
-                        }
-                    }
-                    setSharedSets(fetchedSets);
-                    setLoadingShared(false);
-                };
-                fetchSharedSets();
-            } else {
-                setLoadingShared(false);
-            }
-
-            return () => unsubscribe();
-        }
-    }, [user]);
-
-    // Load group sets from localStorage
+    // Load group sets from localStorage (keep this one as it uses localStorage)
     useEffect(() => {
         const joinedGroupSetIds = JSON.parse(localStorage.getItem('joinedGroupSetIds') || '[]');
         if (joinedGroupSetIds.length > 0) {
@@ -276,21 +262,8 @@ const DashboardPage = () => {
         }
     }, []);
 
-    // Load public sets
-    useEffect(() => {
-        const unsubscribe = getPublicFlashcardSets(
-            (data) => {
-                setPublicSets(data);
-                setLoadingPublic(false);
-            },
-            (error) => {
-                console.error("Failed to load public sets", error);
-                setLoadingPublic(false);
-            }
-        );
-
-        return () => unsubscribe();
-    }, []);
+    // React Query handles all the data fetching automatically!
+    // No need for the big useEffect blocks anymore 🎉
 
     // Keyboard shortcut to focus search (Cmd/Ctrl + K)
     useEffect(() => {
@@ -304,6 +277,18 @@ const DashboardPage = () => {
         document.addEventListener('keydown', handleKeyDown);
         return () => document.removeEventListener('keydown', handleKeyDown);
     }, []);
+
+    // Close context menu when clicking outside
+    useEffect(() => {
+        const handleClickOutside = () => {
+            setContextMenu(null);
+        };
+
+        if (contextMenu) {
+            document.addEventListener('click', handleClickOutside);
+            return () => document.removeEventListener('click', handleClickOutside);
+        }
+    }, [contextMenu]);
     
     const handleDeleteClick = (setId: string) => {
         setDeletingId(setId);
@@ -313,7 +298,7 @@ const DashboardPage = () => {
     const handleConfirmDelete = async () => {
         if (deletingId) {
             try {
-                await deleteFlashcardSet(deletingId);
+                await deleteSetMutation.mutateAsync(deletingId);
                 // Track deletion
                 if (user) {
                     trackUserEngagement('delete_flashcard_set', { 
@@ -321,9 +306,9 @@ const DashboardPage = () => {
                         action: 'delete'
                     }, user.uid);
                 }
-                toast({ title: "Success", description: "Set deleted successfully." });
+                // Toast is handled automatically by the mutation hook
             } catch (error) {
-                toast({ title: "Error", description: "Failed to delete set.", variant: "destructive" });
+                // Error handling is done in the mutation hook
             } finally {
                 setIsDeleteDialogOpen(false);
                 setDeletingId(null);
@@ -364,18 +349,57 @@ const DashboardPage = () => {
     const handleDuplicate = async (set: FlashcardSet) => {
         if (!user) return;
         try {
-            await duplicateFlashcardSet(set);
+            await duplicateSetMutation.mutateAsync(set);
             // Track duplication
             trackUserEngagement('duplicate_flashcard_set', { 
                 set_id: set.id,
                 set_title: set.title,
                 action: 'duplicate'
             }, user.uid);
-            toast({ title: "Success", description: "Set duplicated successfully." });
+            // Toast is handled automatically by the mutation hook
         } catch (error) {
-            toast({ title: "Error", description: "Failed to duplicate set.", variant: "destructive" });
+            // Error handling is done in the mutation hook
         }
     }
+
+    const handleDuplicatePublicSet = async (publicSet: FlashcardSet) => {
+        if (!user) return;
+        try {
+            await duplicatePublicSetMutation.mutateAsync(publicSet);
+            // Track duplication
+            trackUserEngagement('duplicate_public_set', { 
+                set_id: publicSet.id,
+                set_title: publicSet.title,
+                action: 'duplicate'
+            }, user.uid);
+            // Toast is handled automatically by the mutation hook
+        } catch (error) {
+            // Error handling is done in the mutation hook
+        }
+    }
+
+    const handleContextMenu = (e: React.MouseEvent, setId: string) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setContextMenu({
+            x: e.clientX,
+            y: e.clientY,
+            setId
+        });
+    };
+
+    const handleCloseContextMenu = () => {
+        setContextMenu(null);
+    };
+
+    const handleDuplicateFromContextMenu = async () => {
+        if (!contextMenu || !user) return;
+        const publicSet = publicSets.find(set => set.id === contextMenu.setId);
+        if (publicSet) {
+            await handleDuplicatePublicSet(publicSet);
+        }
+        setContextMenu(null);
+    };
 
     const handleJoinSet = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -397,14 +421,6 @@ const DashboardPage = () => {
                                 action: 'join'
                             }, user.uid);
                         }
-                        
-                        setSharedSets(prev => {
-                            const newSharedSets = [...prev];
-                            if(!newSharedSets.find(s => s.id === set.id)) {
-                                newSharedSets.push(set);
-                            }
-                            return newSharedSets;
-                        });
                     }
                     router.push(`/sets/${trimmedId}/study`);
                 } else {
@@ -489,35 +505,13 @@ const DashboardPage = () => {
         
         try {
             const newPublicStatus = !set.isPublic;
-            await updateFlashcardSet(set.id, { isPublic: newPublicStatus });
-            
-            // Update local state
-            setSets(prev => prev.map(s => 
-                s.id === set.id ? { ...s, isPublic: newPublicStatus } : s
-            ));
-            
-            // Update public sets list
-            if (newPublicStatus) {
-                setPublicSets(prev => {
-                    if (!prev.find(s => s.id === set.id)) {
-                        return [...prev, { ...set, isPublic: newPublicStatus }];
-                    }
-                    return prev;
-                });
-            } else {
-                setPublicSets(prev => prev.filter(s => s.id !== set.id));
-            }
-            
-            toast({ 
-                title: "Success", 
-                description: `Set ${newPublicStatus ? 'made public' : 'made private'}.` 
+            await updateSetMutation.mutateAsync({ 
+                setId: set.id, 
+                updates: { isPublic: newPublicStatus } 
             });
+            // Cache is automatically updated, toast is handled by mutation
         } catch (error) {
-            toast({ 
-                title: "Error", 
-                description: "Failed to update set visibility.", 
-                variant: "destructive" 
-            });
+            // Error handling is done in the mutation hook
         }
     };
 
@@ -525,7 +519,6 @@ const DashboardPage = () => {
         const joinedSetIds = JSON.parse(localStorage.getItem('joinedSetIds') || '[]');
         const updatedIds = joinedSetIds.filter((id: string) => id !== setIdToRemove);
         localStorage.setItem('joinedSetIds', JSON.stringify(updatedIds));
-        setSharedSets(prev => prev.filter(set => set.id !== setIdToRemove));
         toast({ title: "Set removed", description: "The shared set has been removed from your dashboard." });
     };
 
@@ -1006,45 +999,50 @@ const DashboardPage = () => {
                                  ) : filteredPublicSets.length > 0 ? (
                                      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                                          {filteredPublicSets.map(set => (
-                                             <Link key={set.id} href={`/sets/${set.id}/study`} className="block">
-                                                 <Card className="flex flex-col hover:shadow-xl hover:-translate-y-1 hover:border-primary/20 transition-all duration-300 ease-in-out cursor-pointer transform">
-                                                     <CardHeader>
-                                                         <div className="space-y-2">
-                                                             <div className="flex items-start justify-between">
-                                                                 <CardTitle className="pr-4">{set.title}</CardTitle>
-                                                                 <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-                                                                     public
-                                                                 </span>
+                                             <div key={set.id} className="relative">
+                                                 <Link href={`/sets/${set.id}/study`} className="block">
+                                                     <Card 
+                                                         className="flex flex-col hover:shadow-xl hover:-translate-y-1 hover:border-primary/20 transition-all duration-300 ease-in-out cursor-pointer transform"
+                                                         onContextMenu={(e) => handleContextMenu(e, set.id)}
+                                                     >
+                                                         <CardHeader>
+                                                             <div className="space-y-2">
+                                                                 <div className="flex items-start justify-between">
+                                                                     <CardTitle className="pr-4">{set.title}</CardTitle>
+                                                                     <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                                                                         public
+                                                                     </span>
+                                                                 </div>
+                                                                 <div className="flex items-center gap-2">
+                                                                     <span className="text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
+                                                                         by {set.creatorDisplayName || "some user on this app"}
+                                                                     </span>
+                                                                 </div>
                                                              </div>
-                                                             <div className="flex items-center gap-2">
-                                                                 <span className="text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
-                                                                     by {set.creatorDisplayName || "some user on this app"}
-                                                                 </span>
-                                                             </div>
-                                                         </div>
-                                                         <CardDescription>{Array.isArray(set.cards) ? set.cards.length : 0} cards</CardDescription>
-                                                         {searchQuery && (
-                                                             <div className="text-xs text-muted-foreground">
-                                                                 {set.title.toLowerCase().includes(searchQuery.toLowerCase()) ? (
-                                                                     <span>matches title</span>
-                                                                 ) : (
-                                                                     <span>matches {Array.isArray(set.cards) ? set.cards.filter(card => 
-                                                                         card.front.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                                                                         card.back.toLowerCase().includes(searchQuery.toLowerCase())
-                                                                     ).length : 0} cards</span>
-                                                                 )}
-                                                             </div>
-                                                         )}
-                                                     </CardHeader>
-                                                     <CardContent className="flex-grow"></CardContent>
-                                                     <CardFooter className="flex flex-col gap-2">
-                                                         <Button className="w-full hover:shadow-lg hover:scale-105 transition-all duration-200 ease-in-out transform" onClick={() => router.push(`/sets/${set.id}/study`)}>
-                                                             <BookOpen className="mr-2 h-4 w-4" />
-                                                             Study
-                                                         </Button>
-                                                     </CardFooter>
-                                                 </Card>
-                                             </Link>
+                                                             <CardDescription>{Array.isArray(set.cards) ? set.cards.length : 0} cards</CardDescription>
+                                                             {searchQuery && (
+                                                                 <div className="text-xs text-muted-foreground">
+                                                                     {set.title.toLowerCase().includes(searchQuery.toLowerCase()) ? (
+                                                                         <span>matches title</span>
+                                                                     ) : (
+                                                                         <span>matches {Array.isArray(set.cards) ? set.cards.filter(card => 
+                                                                             card.front.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                                                                             card.back.toLowerCase().includes(searchQuery.toLowerCase())
+                                                                         ).length : 0} cards</span>
+                                                                     )}
+                                                                 </div>
+                                                             )}
+                                                         </CardHeader>
+                                                         <CardContent className="flex-grow"></CardContent>
+                                                         <CardFooter className="flex flex-col gap-2">
+                                                             <Button className="w-full hover:shadow-lg hover:scale-105 transition-all duration-200 ease-in-out transform" onClick={() => router.push(`/sets/${set.id}/study`)}>
+                                                                 <BookOpen className="mr-2 h-4 w-4" />
+                                                                 Study
+                                                             </Button>
+                                                         </CardFooter>
+                                                     </Card>
+                                                 </Link>
+                                             </div>
                                          ))}
                                      </div>
                                  ) : searchQuery ? (
@@ -1223,6 +1221,32 @@ const DashboardPage = () => {
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
+
+            {/* Context Menu */}
+            {contextMenu && (
+                <div
+                    className="fixed z-50 bg-popover border rounded-md shadow-lg py-1 min-w-[160px] context-menu"
+                    style={{
+                        left: contextMenu.x,
+                        top: contextMenu.y,
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                >
+                    <button
+                        className="w-full px-3 py-2 text-sm text-left hover:bg-accent hover:text-accent-foreground flex items-center gap-2"
+                        onClick={handleDuplicateFromContextMenu}
+                    >
+                        <CopyPlus className="h-4 w-4" />
+                        Duplicate
+                    </button>
+                </div>
+            )}
+
+            {/* Admin Cache Monitor - only visible to admins */}
+            <AdminCacheMonitor />
+            
+            {/* Hide unwanted circle elements */}
+            <SilentCircleHider />
         </ProtectedRoute>
     )
 }
