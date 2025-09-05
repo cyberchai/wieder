@@ -69,7 +69,7 @@ export const useFlashcardSet = (setId: string) => {
 };
 
 // Hook to get public flashcard sets
-export const usePublicFlashcardSets = () => {
+export const usePublicFlashcardSets = (pageSize: number = 20) => {
   return useQuery({
     queryKey: flashcardQueryKeys.publicSets(),
     queryFn: () => {
@@ -82,7 +82,8 @@ export const usePublicFlashcardSets = () => {
           (error) => {
             unsubscribe();
             reject(error);
-          }
+          },
+          pageSize
         );
       });
     },
@@ -402,3 +403,4 @@ export const useOptimisticUpdateFlashcardSet = () => {
     },
   });
 };
+

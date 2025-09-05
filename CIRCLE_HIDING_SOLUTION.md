@@ -129,3 +129,4 @@ const selectors = [
 ```
 
 The solution is now active and should completely hide the unwanted circle elements from your dashboard! 🎉
+

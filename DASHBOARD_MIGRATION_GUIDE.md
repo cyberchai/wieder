@@ -292,3 +292,4 @@ Your dashboard will now:
 4. **Check console**: See performance metrics
 
 The migration is **minimal** - you're just replacing the data fetching logic while keeping everything else exactly the same!
+

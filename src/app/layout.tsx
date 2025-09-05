@@ -5,6 +5,7 @@ import { AuthProvider } from '@/providers/auth-provider';
 import { QueryProvider } from '@/providers/simple-query-provider';
 import { Toaster } from "@/components/ui/toaster";
 import { ThemedBody } from '@/components/themed-body';
+import { PerformanceDashboard } from '@/components/performance-dashboard';
 
 export const metadata: Metadata = {
   title: 'wieder - learning with flashcards',
@@ -69,6 +70,7 @@ export default function RootLayout({
               <ThemedBody>
                 {children}
                 <Toaster />
+                <PerformanceDashboard />
               </ThemedBody>
             </AuthProvider>
           </ThemeProvider>

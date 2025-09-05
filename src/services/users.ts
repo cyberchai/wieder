@@ -6,7 +6,12 @@ import {
   setDoc,
   updateDoc,
   serverTimestamp,
+  getDocs,
+  query,
+  where,
+  documentId,
 } from "firebase/firestore";
+import { withPerformanceMonitoring } from "@/lib/performance-monitor";
 
 export interface UserSettings {
   soundEnabled: boolean;
@@ -91,4 +96,48 @@ export const updateUserSettings = async (uid: string, settings: UserSettings) =>
     console.error("Error updating user settings:", error);
     throw error;
   }
+};
+
+// Batch fetch user profiles to avoid N+1 queries
+export const getUserProfilesBatch = async (uids: string[]): Promise<Map<string, UserProfile>> => {
+  if (uids.length === 0) return new Map();
+  
+  return withPerformanceMonitoring(
+    `getUserProfilesBatch(${uids.length} users)`,
+    async () => {
+      try {
+        // Firestore 'in' queries are limited to 10 items, so we need to batch them
+        const batchSize = 10;
+        const userProfiles = new Map<string, UserProfile>();
+        
+        for (let i = 0; i < uids.length; i += batchSize) {
+          const batch = uids.slice(i, i + batchSize);
+          const q = query(
+            usersCollection,
+            where(documentId(), 'in', batch)
+          );
+          
+          const querySnapshot = await getDocs(q);
+          querySnapshot.forEach((docSnap) => {
+            const data = docSnap.data();
+            const profile: UserProfile = {
+              uid: docSnap.id,
+              displayName: data.displayName || "some user on this app",
+              email: data.email || "",
+              photoURL: data.photoURL,
+              settings: data.settings,
+              createdAt: data.createdAt?.toDate() || new Date(),
+              updatedAt: data.updatedAt?.toDate() || new Date(),
+            };
+            userProfiles.set(docSnap.id, profile);
+          });
+        }
+        
+        return userProfiles;
+      } catch (error) {
+        console.error("Error batch fetching user profiles:", error);
+        return new Map();
+      }
+    }
+  );
 };

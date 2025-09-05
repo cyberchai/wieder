@@ -35,3 +35,4 @@ console.log('4. Update your mutation functions\n');
 
 console.log('🎯 The migration is minimal - you keep all your existing UI!');
 console.log('📊 You\'ll get automatic caching, better performance, and monitoring');
+

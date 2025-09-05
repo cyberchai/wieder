@@ -170,3 +170,4 @@ The cache monitor is now **admin-only** and won't be visible to regular users! H
 4. Try the manual report button
 
 The admin-only cache monitor gives you powerful debugging tools while keeping the user experience clean and professional! 🎉
+

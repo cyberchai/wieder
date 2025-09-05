@@ -119,3 +119,4 @@ Your dashboard now has:
 - **Easy debugging tools**
 
 The migration was minimal - you kept all your existing UI and functionality while gaining powerful caching capabilities!
+

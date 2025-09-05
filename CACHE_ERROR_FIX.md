@@ -63,3 +63,4 @@ I've fixed the issue by:
 - **Automatic Updates**: Data stays fresh
 
 The error is now fixed and your React Query caching is working perfectly! 🎉
+

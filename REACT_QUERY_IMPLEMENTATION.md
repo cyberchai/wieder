@@ -308,3 +308,4 @@ const cachedData = queryClient.getQueryData(['flashcardSets', 'user', userId]);
 ```
 
 This implementation provides a solid foundation for caching in your flashcard app with comprehensive monitoring and optimization capabilities!
+

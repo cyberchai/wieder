@@ -11,8 +11,9 @@ import {
   deleteDoc,
   serverTimestamp,
   orderBy,
+  limit,
 } from "firebase/firestore";
-import { getUserProfile } from "./users";
+import { getUserProfile, getUserProfilesBatch } from "./users";
 
 export interface Card {
   id: string;
@@ -109,12 +110,19 @@ export const getFlashcardSet = async (setId: string): Promise<FlashcardSet | nul
         // Fetch creator display name if this is a public set
         if (set.isPublic && set.userId) {
           try {
-            const userProfile = await getUserProfile(set.userId);
-            // Check if the creator wants to show their name on public sets
-            if (userProfile?.settings?.showNameOnPublicSets !== false) {
-              set.creatorDisplayName = userProfile?.displayName || "some user on this app";
+            // Use batch fetch even for single user to maintain consistency
+            const userProfiles = await getUserProfilesBatch([set.userId]);
+            const userProfile = userProfiles.get(set.userId);
+            
+            if (userProfile) {
+              // Check if the creator wants to show their name on public sets
+              if (userProfile.settings?.showNameOnPublicSets !== false) {
+                set.creatorDisplayName = userProfile.displayName || "some user on this app";
+              } else {
+                set.creatorDisplayName = "someone";
+              }
             } else {
-              set.creatorDisplayName = "someone";
+              set.creatorDisplayName = "some user on this app";
             }
           } catch (error) {
             console.error(`Failed to fetch user profile for ${set.userId}:`, error);
@@ -169,25 +177,31 @@ export const duplicatePublicSet = async (publicSet: FlashcardSet, currentUserId:
     });
 };
 
-// Get all public flashcard sets
+// Get all public flashcard sets with pagination
 export const getPublicFlashcardSets = (
     callback: (sets: FlashcardSet[]) => void,
-    onError?: (error: unknown) => void
+    onError?: (error: unknown) => void,
+    pageSize: number = 20
 ) => {
     const q = query(
         setsCollection,
         where("isPublic", "==", true),
-        orderBy("createdAt", "desc")
+        orderBy("createdAt", "desc"),
+        limit(pageSize)
     );
     return onSnapshot(
         q,
         async (querySnapshot) => {
             const sets: FlashcardSet[] = [];
             
-            // Process each set and fetch creator display names
+            // First, collect all user IDs to batch fetch user profiles
+            const userIds = new Set<string>();
+            const setsData: Partial<FlashcardSet>[] = [];
+            
+            // Process each set and collect user IDs
             for (const docSnap of querySnapshot.docs) {
                 const data = docSnap.data() as Partial<FlashcardSet>;
-                const set: FlashcardSet = {
+                const setData: Partial<FlashcardSet> = {
                     id: docSnap.id,
                     userId: data?.userId ?? "",
                     title: data?.title ?? "Untitled",
@@ -198,18 +212,30 @@ export const getPublicFlashcardSets = (
                     tags: Array.isArray(data?.tags) ? data.tags : [],
                 };
                 
-                // Fetch creator display name
+                if (setData.userId) {
+                    userIds.add(setData.userId);
+                }
+                setsData.push(setData);
+            }
+            
+            // Batch fetch all user profiles at once
+            const userProfiles = await getUserProfilesBatch(Array.from(userIds));
+            
+            // Now process sets with pre-fetched user profiles
+            for (const setData of setsData) {
+                const set: FlashcardSet = setData as FlashcardSet;
+                
+                // Get creator display name from batch-fetched profiles
                 if (set.userId) {
-                    try {
-                        const userProfile = await getUserProfile(set.userId);
+                    const userProfile = userProfiles.get(set.userId);
+                    if (userProfile) {
                         // Check if the creator wants to show their name on public sets
-                        if (userProfile?.settings?.showNameOnPublicSets !== false) {
-                            set.creatorDisplayName = userProfile?.displayName || "some user on this app";
+                        if (userProfile.settings?.showNameOnPublicSets !== false) {
+                            set.creatorDisplayName = userProfile.displayName || "some user on this app";
                         } else {
                             set.creatorDisplayName = "someone";
                         }
-                    } catch (error) {
-                        console.error(`Failed to fetch user profile for ${set.userId}:`, error);
+                    } else {
                         set.creatorDisplayName = "some user on this app";
                     }
                 }
