@@ -441,7 +441,7 @@ export default function CreateSetPage() {
                 </div>
               </CardHeader>
               <CardContent>
-                <form>
+                <form onSubmit={handleSubmit(onSubmit)}>
                   <div className="mb-8">
                     <Label htmlFor="title" className="text-lg font-semibold">Set Title</Label>
                     <Input

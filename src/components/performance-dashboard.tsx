@@ -58,7 +58,7 @@ export const PerformanceDashboard = () => {
   return (
     <div className="fixed bottom-4 right-4 z-50">
       {/* Only show button if not on dashboard page */}
-      {!isDashboardPage && (
+      {false && !isDashboardPage && (
         <Button
           onClick={() => setIsVisible(!isVisible)}
           variant="outline"
