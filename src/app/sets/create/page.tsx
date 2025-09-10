@@ -7,7 +7,7 @@ import * as z from 'zod';
 import { useRouter } from 'next/navigation';
 import { useAuth, ProtectedRoute } from '@/providers/auth-provider';
 import { useTheme } from '@/providers/theme-provider';
-import { createFlashcardSet } from '@/services/flashcard-sets';
+import { useCreateFlashcardSet } from '@/hooks/use-flashcard-queries';
 import Header from '@/components/header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -50,7 +50,7 @@ export default function CreateSetPage() {
   const { user } = useAuth();
   const { toast } = useToast();
   const { theme } = useTheme();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const createSetMutation = useCreateFlashcardSet();
   const [importText, setImportText] = useState("");
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("manual");
@@ -106,23 +106,16 @@ export default function CreateSetPage() {
       toast({ title: 'Error', description: 'you must be logged in to create a set.', variant: 'destructive' });
       return;
     }
-    setIsSubmitting(true);
-    try {
-      await createFlashcardSet(user.uid, data.title, data.cards, data.tags);
-      
-      // Track set creation
-      trackUserEngagement('create_flashcard_set', { 
-        set_title: data.title,
-        card_count: data.cards.length,
-        action: 'create'
-      }, user.uid);
-      
-      toast({ title: 'yay!', description: 'your new set has been created.' });
-      router.push('/dashboard');
-    } catch (error) {
-      toast({ title: 'Error', description: 'Failed to create set. Please try again.', variant: 'destructive' });
-      setIsSubmitting(false);
-    }
+    
+    createSetMutation.mutate({
+      title: data.title,
+      cards: data.cards,
+      tags: data.tags
+    }, {
+      onSuccess: () => {
+        router.push('/dashboard');
+      }
+    });
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>, index: number) => {
@@ -341,10 +334,10 @@ export default function CreateSetPage() {
                         <Button 
                           type="submit" 
                           onClick={handleSubmit(onSubmit)}
-                          disabled={isSubmitting}
+                          disabled={createSetMutation.isPending}
                           className="min-w-[120px]"
                         >
-                          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                          {createSetMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                           create set
                         </Button>
                       )}
@@ -616,8 +609,8 @@ export default function CreateSetPage() {
                           add card
                         </Button>
 
-                        <Button type="submit" size="lg" disabled={isSubmitting}>
-                          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        <Button type="submit" size="lg" disabled={createSetMutation.isPending}>
+                          {createSetMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                           create set
                         </Button>
                       </div>
