@@ -569,31 +569,12 @@ const DashboardPage = () => {
                         </div>
 
                         <div className="flex gap-2 items-center">
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <Button variant="outline"><LinkIcon className="mr-2 h-4 w-4"/>join set</Button>
-                                </PopoverTrigger>
-                                <PopoverContent>
-                                    <form onSubmit={handleJoinSet} className="grid gap-4">
-                                        <div className="space-y-2">
-                                            <h4 className="font-medium leading-none">join a shared set</h4>
-                                            <p className="text-sm text-muted-foreground">
-                                                paste the set id below to practice.
-                                            </p>
-                                        </div>
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="join-set-id" className="sr-only">set id</Label>
-                                            <Input
-                                                id="join-set-id"
-                                                placeholder="enter set id"
-                                                value={joinSetId}
-                                                onChange={(e) => setJoinSetId(e.target.value)}
-                                            />
-                                            <Button className="hover:shadow-lg hover:scale-105 transition-all duration-200 ease-in-out transform" type="submit">join</Button>
-                                        </div>
-                                    </form>
-                                </PopoverContent>
-                            </Popover>
+                            <Button 
+                                variant="outline"
+                                onClick={() => setIsJoinDialogOpen(true)}
+                            >
+                                <LinkIcon className="mr-2 h-4 w-4"/>join set
+                            </Button>
                             <Button className="hover:shadow-lg hover:scale-105 transition-all duration-200 ease-in-out transform" asChild>
                                 <Link href="/sets/create">
                                     <PlusCircle className="mr-2 h-4 w-4" />
