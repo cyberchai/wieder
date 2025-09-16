@@ -49,6 +49,7 @@ export const createFlashcardSet = async (
     cards: newCards,
     createdAt: serverTimestamp(),
     shared: true, // Default to shared
+    isPublic: false, // Default to private
     tags: tags || [],
   });
 };
@@ -152,9 +153,9 @@ export const deleteFlashcardSet = async (setId: string) => {
 };
 
 // Duplicate a flashcard set
-export const duplicateFlashcardSet = async (set: FlashcardSet) => {
+export const duplicateFlashcardSet = async (set: FlashcardSet, currentUserId: string) => {
     return await addDoc(setsCollection, {
-        userId: set.userId,
+        userId: currentUserId,
         title: `${set.title} (Copy)`,
         cards: set.cards,
         createdAt: serverTimestamp(),

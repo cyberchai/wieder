@@ -7,7 +7,8 @@ import AuroraBackground from "@/components/aurora-background";
 import DashboardParticlesBackground from "@/components/dashboard-particles-background";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { PlusCircle, MoreVertical, Loader2, Trash2, Edit, Share2, Copy, Link as LinkIcon, CopyPlus, Gamepad2, Users, FileText, UserX, Search, BookOpen, Globe, Users2, Tag, Filter, X } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { PlusCircle, MoreVertical, Loader2, Trash2, Edit, Share2, Copy, Link as LinkIcon, CopyPlus, Gamepad2, Users, FileText, UserX, Search, BookOpen, Globe, Users2, Tag, Filter, X, Play } from "lucide-react";
 import Link from "next/link";
 import { FirebaseError } from "firebase/app";
 import {
@@ -44,11 +45,16 @@ import {
   useUserFlashcardSets,
   usePublicFlashcardSets,
   useSharedFlashcardSets,
+  useGroupFlashcardSets,
   useDeleteFlashcardSet,
   useUpdateFlashcardSet,
   useDuplicateFlashcardSet,
   useDuplicatePublicSet,
   useFlashcardSet,
+  useJoinSharedSet,
+  useLeaveSharedSet,
+  useJoinGroupSet,
+  useLeaveGroupSet,
 } from "@/hooks/use-flashcard-queries";
 
 const DashboardPageWithReactQuery = () => {
@@ -86,12 +92,21 @@ const DashboardPageWithReactQuery = () => {
         data: sharedSets = [], 
         isLoading: loadingSharedSets 
     } = useSharedFlashcardSets();
+    
+    const { 
+        data: groupSets = [], 
+        isLoading: loadingGroupSets 
+    } = useGroupFlashcardSets();
 
     // Mutations
     const deleteSetMutation = useDeleteFlashcardSet();
     const updateSetMutation = useUpdateFlashcardSet();
     const duplicateSetMutation = useDuplicateFlashcardSet();
     const duplicatePublicSetMutation = useDuplicatePublicSet();
+    const joinSharedSetMutation = useJoinSharedSet();
+    const leaveSharedSetMutation = useLeaveSharedSet();
+    const joinGroupSetMutation = useJoinGroupSet();
+    const leaveGroupSetMutation = useLeaveGroupSet();
 
     // Tag filter functions
     const handleTagFilter = (tag: string | null) => {
@@ -374,20 +389,8 @@ const DashboardPageWithReactQuery = () => {
                 const { getFlashcardSet } = await import('@/services/flashcard-sets');
                 const set = await getFlashcardSet(trimmedId);
                 if (set && (set.shared || set.isPublic)) {
-                    const joinedSetIds = JSON.parse(localStorage.getItem('joinedSetIds') || '[]');
-                    if (!joinedSetIds.includes(trimmedId)) {
-                        joinedSetIds.push(trimmedId);
-                        localStorage.setItem('joinedSetIds', JSON.stringify(joinedSetIds));
-                        
-                        // Track joining set
-                        if (user) {
-                            trackUserEngagement('join_flashcard_set', { 
-                                set_id: trimmedId,
-                                set_title: set.title,
-                                action: 'join'
-                            }, user.uid);
-                        }
-                    }
+                    // Use Firebase mutation instead of localStorage
+                    await joinSharedSetMutation.mutateAsync(trimmedId);
                     router.push(`/sets/${trimmedId}/study`);
                 } else {
                      toast({ title: "Error", description: "Set not found or is not accessible.", variant: "destructive" });
@@ -419,10 +422,11 @@ const DashboardPageWithReactQuery = () => {
     };
 
     const handleRemoveSharedSet = (setIdToRemove: string) => {
-        const joinedSetIds = JSON.parse(localStorage.getItem('joinedSetIds') || '[]');
-        const updatedIds = joinedSetIds.filter((id: string) => id !== setIdToRemove);
-        localStorage.setItem('joinedSetIds', JSON.stringify(updatedIds));
-        toast({ title: "Set removed", description: "The shared set has been removed from your dashboard." });
+        leaveSharedSetMutation.mutate(setIdToRemove);
+    };
+
+    const handleRemoveGroupSet = (setIdToRemove: string) => {
+        leaveGroupSetMutation.mutate(setIdToRemove);
     };
 
     // Show loading state
@@ -544,7 +548,7 @@ const DashboardPageWithReactQuery = () => {
                                 <Users className="h-4 w-4" />
                                 Group Sets
                                 <span className="ml-1 text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
-                                    {sharedSets.length}
+                                    {groupSets.length}
                                 </span>
                             </TabsTrigger>
                             <TabsTrigger value="public-sets" className="flex items-center gap-2">
@@ -731,7 +735,89 @@ const DashboardPageWithReactQuery = () => {
                             </div>
                         </TabsContent>
                         
-                        {/* Other tabs would be similar but using the React Query data */}
+                        <TabsContent value="group-sets">
+                            <div className="space-y-6">
+                                <div className="flex items-center justify-between">
+                                    <h2 className="text-2xl font-bold tracking-tight">group sets</h2>
+                                    <Button 
+                                        variant="outline" 
+                                        size="sm"
+                                        onClick={() => setIsJoinDialogOpen(true)}
+                                    >
+                                        <Users className="mr-2 h-4 w-4" />
+                                        join by set ID
+                                    </Button>
+                                </div>
+                                
+                                {loadingGroupSets ? (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                        {Array.from({ length: 3 }).map((_, i) => (
+                                            <Card key={i} className="p-6">
+                                                <Skeleton className="h-4 w-3/4 mb-2" />
+                                                <Skeleton className="h-3 w-1/2 mb-4" />
+                                                <Skeleton className="h-8 w-full" />
+                                            </Card>
+                                        ))}
+                                    </div>
+                                ) : groupSets.length === 0 ? (
+                                    <div className="text-center py-12">
+                                        <Users className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+                                        <h3 className="text-lg font-semibold mb-2">No group sets yet</h3>
+                                        <p className="text-muted-foreground mb-4">
+                                            Join group sets by entering a set ID or link below.
+                                        </p>
+                                        <Button onClick={() => setIsJoinDialogOpen(true)}>
+                                            <Users className="mr-2 h-4 w-4" />
+                                            Join a Group Set
+                                        </Button>
+                                    </div>
+                                ) : (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                        {groupSets.map((set) => (
+                                            <Card key={set.id} className="p-6 hover:shadow-md transition-shadow">
+                                                <div className="flex items-start justify-between mb-4">
+                                                    <div className="flex-1">
+                                                        <h3 className="font-semibold text-lg mb-2 line-clamp-2">
+                                                            {set.title}
+                                                        </h3>
+                                                        <p className="text-sm text-muted-foreground mb-2">
+                                                            {set.cards.length} cards
+                                                        </p>
+                                                        {set.creatorDisplayName && (
+                                                            <p className="text-xs text-muted-foreground">
+                                                                by {set.creatorDisplayName}
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                                
+                                                <div className="flex gap-2">
+                                                    <Button 
+                                                        size="sm" 
+                                                        className="flex-1"
+                                                        onClick={() => {
+                                                            handleNavigationClick();
+                                                            router.push(`/sets/${set.id}/study`);
+                                                        }}
+                                                    >
+                                                        <Play className="mr-2 h-4 w-4" />
+                                                        Study
+                                                    </Button>
+                                                    <Button 
+                                                        size="sm" 
+                                                        variant="outline"
+                                                        onClick={() => handleRemoveGroupSet(set.id)}
+                                                    >
+                                                        <X className="h-4 w-4" />
+                                                    </Button>
+                                                </div>
+                                            </Card>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </TabsContent>
+                        
                         <TabsContent value="public-sets">
                             <div className="space-y-6">
                                 <div className="flex items-center justify-between">

@@ -24,6 +24,8 @@ export interface UserProfile {
   email: string;
   photoURL?: string;
   settings?: UserSettings;
+  joinedSetIds?: string[];
+  joinedGroupSetIds?: string[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -73,6 +75,8 @@ export const getUserProfile = async (uid: string): Promise<UserProfile | null> =
         email: data.email || "",
         photoURL: data.photoURL,
         settings: data.settings,
+        joinedSetIds: data.joinedSetIds || [],
+        joinedGroupSetIds: data.joinedGroupSetIds || [],
         createdAt: data.createdAt?.toDate() || new Date(),
         updatedAt: data.updatedAt?.toDate() || new Date(),
       } as UserProfile;
@@ -126,6 +130,8 @@ export const getUserProfilesBatch = async (uids: string[]): Promise<Map<string, 
               email: data.email || "",
               photoURL: data.photoURL,
               settings: data.settings,
+              joinedSetIds: data.joinedSetIds || [],
+              joinedGroupSetIds: data.joinedGroupSetIds || [],
               createdAt: data.createdAt?.toDate() || new Date(),
               updatedAt: data.updatedAt?.toDate() || new Date(),
             };
@@ -140,4 +146,130 @@ export const getUserProfilesBatch = async (uids: string[]): Promise<Map<string, 
       }
     }
   );
+};
+
+// Add a joined set ID to user's profile
+export const addJoinedSetId = async (uid: string, setId: string) => {
+  try {
+    const userDoc = doc(usersCollection, uid);
+    const userProfile = await getUserProfile(uid);
+    
+    if (!userProfile) {
+      throw new Error('User profile not found');
+    }
+    
+    const currentJoinedSetIds = userProfile.joinedSetIds || [];
+    if (!currentJoinedSetIds.includes(setId)) {
+      const updatedJoinedSetIds = [...currentJoinedSetIds, setId];
+      await updateDoc(userDoc, {
+        joinedSetIds: updatedJoinedSetIds,
+        updatedAt: new Date(),
+      });
+    }
+  } catch (error) {
+    console.error("Error adding joined set ID:", error);
+    throw error;
+  }
+};
+
+// Remove a joined set ID from user's profile
+export const removeJoinedSetId = async (uid: string, setId: string) => {
+  try {
+    const userDoc = doc(usersCollection, uid);
+    const userProfile = await getUserProfile(uid);
+    
+    if (!userProfile) {
+      throw new Error('User profile not found');
+    }
+    
+    const currentJoinedSetIds = userProfile.joinedSetIds || [];
+    const updatedJoinedSetIds = currentJoinedSetIds.filter(id => id !== setId);
+    
+    await updateDoc(userDoc, {
+      joinedSetIds: updatedJoinedSetIds,
+      updatedAt: new Date(),
+    });
+  } catch (error) {
+    console.error("Error removing joined set ID:", error);
+    throw error;
+  }
+};
+
+// Add a joined group set ID to user's profile
+export const addJoinedGroupSetId = async (uid: string, setId: string) => {
+  try {
+    const userDoc = doc(usersCollection, uid);
+    const userProfile = await getUserProfile(uid);
+    
+    if (!userProfile) {
+      throw new Error('User profile not found');
+    }
+    
+    const currentJoinedGroupSetIds = userProfile.joinedGroupSetIds || [];
+    if (!currentJoinedGroupSetIds.includes(setId)) {
+      const updatedJoinedGroupSetIds = [...currentJoinedGroupSetIds, setId];
+      await updateDoc(userDoc, {
+        joinedGroupSetIds: updatedJoinedGroupSetIds,
+        updatedAt: new Date(),
+      });
+    }
+  } catch (error) {
+    console.error("Error adding joined group set ID:", error);
+    throw error;
+  }
+};
+
+// Remove a joined group set ID from user's profile
+export const removeJoinedGroupSetId = async (uid: string, setId: string) => {
+  try {
+    const userDoc = doc(usersCollection, uid);
+    const userProfile = await getUserProfile(uid);
+    
+    if (!userProfile) {
+      throw new Error('User profile not found');
+    }
+    
+    const currentJoinedGroupSetIds = userProfile.joinedGroupSetIds || [];
+    const updatedJoinedGroupSetIds = currentJoinedGroupSetIds.filter(id => id !== setId);
+    
+    await updateDoc(userDoc, {
+      joinedGroupSetIds: updatedJoinedGroupSetIds,
+      updatedAt: new Date(),
+    });
+  } catch (error) {
+    console.error("Error removing joined group set ID:", error);
+    throw error;
+  }
+};
+
+// Migration function to move localStorage data to Firebase
+export const migrateJoinedSetsToFirebase = async (uid: string) => {
+  try {
+    // Check if migration has already been done
+    const userProfile = await getUserProfile(uid);
+    if (userProfile?.joinedSetIds || userProfile?.joinedGroupSetIds) {
+      return; // Already migrated
+    }
+    
+    const userDoc = doc(usersCollection, uid);
+    const joinedSetIds = JSON.parse(localStorage.getItem('joinedSetIds') || '[]');
+    const joinedGroupSetIds = JSON.parse(localStorage.getItem('joinedGroupSetIds') || '[]');
+    
+    if (joinedSetIds.length > 0 || joinedGroupSetIds.length > 0) {
+      await updateDoc(userDoc, {
+        joinedSetIds,
+        joinedGroupSetIds,
+        updatedAt: new Date(),
+      });
+      
+      // Clear localStorage after successful migration
+      localStorage.removeItem('joinedSetIds');
+      localStorage.removeItem('joinedGroupSetIds');
+      
+      console.log('Successfully migrated joined sets to Firebase');
+    }
+  } catch (error) {
+    console.error("Error migrating joined sets to Firebase:", error);
+    // Don't throw error to avoid breaking the app
+  }
 };

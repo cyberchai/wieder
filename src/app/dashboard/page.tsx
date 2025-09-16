@@ -43,10 +43,15 @@ import {
   useUserFlashcardSets,
   usePublicFlashcardSets,
   useSharedFlashcardSets,
+  useGroupFlashcardSets,
   useDeleteFlashcardSet,
   useUpdateFlashcardSet,
   useDuplicateFlashcardSet,
   useDuplicatePublicSet,
+  useJoinSharedSet,
+  useLeaveSharedSet,
+  useJoinGroupSet,
+  useLeaveGroupSet,
 } from "@/hooks/use-flashcard-queries";
 
 
@@ -72,10 +77,11 @@ const DashboardPage = () => {
         data: sharedSets = [], 
         isLoading: loadingShared 
     } = useSharedFlashcardSets();
-
-    // Keep groupSets as is for now (it uses localStorage)
-    const [groupSets, setGroupSets] = useState<FlashcardSet[]>([]);
-    const [loadingGroup, setLoadingGroup] = useState(true);
+    
+    const { 
+        data: groupSets = [], 
+        isLoading: loadingGroup 
+    } = useGroupFlashcardSets();
     
     // UI state variables
     const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -95,6 +101,10 @@ const DashboardPage = () => {
     // React Query mutations
     const deleteSetMutation = useDeleteFlashcardSet();
     const updateSetMutation = useUpdateFlashcardSet();
+    const joinSharedSetMutation = useJoinSharedSet();
+    const leaveSharedSetMutation = useLeaveSharedSet();
+    const joinGroupSetMutation = useJoinGroupSet();
+    const leaveGroupSetMutation = useLeaveGroupSet();
     const duplicateSetMutation = useDuplicateFlashcardSet();
     const duplicatePublicSetMutation = useDuplicatePublicSet();
 
@@ -237,30 +247,7 @@ const DashboardPage = () => {
         return [...filteredSets, ...filteredSharedSets];
     }, [filteredSets, filteredSharedSets]);
 
-    // Load group sets from localStorage (keep this one as it uses localStorage)
-    useEffect(() => {
-        const joinedGroupSetIds = JSON.parse(localStorage.getItem('joinedGroupSetIds') || '[]');
-        if (joinedGroupSetIds.length > 0) {
-            const fetchGroupSets = async () => {
-                const fetchedSets: FlashcardSet[] = [];
-                for (const setId of joinedGroupSetIds) {
-                    try {
-                        const set = await getFlashcardSet(setId);
-                        if (set) {
-                            fetchedSets.push(set);
-                        }
-                    } catch (error) {
-                        console.error(`Failed to fetch group set ${setId}`, error);
-                    }
-                }
-                setGroupSets(fetchedSets);
-                setLoadingGroup(false);
-            };
-            fetchGroupSets();
-        } else {
-            setLoadingGroup(false);
-        }
-    }, []);
+    // Group sets are now loaded via React Query hook useGroupFlashcardSets
 
     // React Query handles all the data fetching automatically!
     // No need for the big useEffect blocks anymore 🎉
@@ -408,20 +395,8 @@ const DashboardPage = () => {
             try {
                 const set = await getFlashcardSet(trimmedId);
                 if (set && (set.shared || set.isPublic)) {
-                    const joinedSetIds = JSON.parse(localStorage.getItem('joinedSetIds') || '[]');
-                    if (!joinedSetIds.includes(trimmedId)) {
-                        joinedSetIds.push(trimmedId);
-                        localStorage.setItem('joinedSetIds', JSON.stringify(joinedSetIds));
-                        
-                        // Track joining set
-                        if (user) {
-                            trackUserEngagement('join_flashcard_set', { 
-                                set_id: trimmedId,
-                                set_title: set.title,
-                                action: 'join'
-                            }, user.uid);
-                        }
-                    }
+                    // Use Firebase mutation instead of localStorage
+                    await joinSharedSetMutation.mutateAsync(trimmedId);
                     router.push(`/sets/${trimmedId}/study`);
                 } else {
                      toast({ title: "Error", description: "Set not found or is not accessible.", variant: "destructive" });
@@ -462,17 +437,8 @@ const DashboardPage = () => {
             // Fetch the set
             const set = await getFlashcardSet(setId);
             if (set) {
-                // Add to group sets
-                setGroupSets(prev => [...prev, set]);
-                
-                // Store in localStorage
-                const joinedGroupSetIds = JSON.parse(localStorage.getItem('joinedGroupSetIds') || '[]');
-                if (!joinedGroupSetIds.includes(setId)) {
-                    joinedGroupSetIds.push(setId);
-                    localStorage.setItem('joinedGroupSetIds', JSON.stringify(joinedGroupSetIds));
-                }
-                
-                toast({ title: "Success!", description: "Set joined successfully." });
+                // Use Firebase mutation instead of localStorage
+                await joinGroupSetMutation.mutateAsync(setId);
                 setJoinSetId("");
                 setIsJoinDialogOpen(false);
             } else {
@@ -484,14 +450,7 @@ const DashboardPage = () => {
     }
 
     const handleRemoveGroupSet = (setIdToRemove: string) => {
-        setGroupSets(prev => prev.filter(set => set.id !== setIdToRemove));
-        
-        // Remove from localStorage
-        const joinedGroupSetIds = JSON.parse(localStorage.getItem('joinedGroupSetIds') || '[]');
-        const updatedIds = joinedGroupSetIds.filter((id: string) => id !== setIdToRemove);
-        localStorage.setItem('joinedGroupSetIds', JSON.stringify(updatedIds));
-        
-        toast({ title: "Set removed", description: "The group set has been removed from your dashboard." });
+        leaveGroupSetMutation.mutate(setIdToRemove);
     };
 
     const handleTabChange = (value: string) => {
@@ -516,10 +475,7 @@ const DashboardPage = () => {
     };
 
     const handleRemoveSharedSet = (setIdToRemove: string) => {
-        const joinedSetIds = JSON.parse(localStorage.getItem('joinedSetIds') || '[]');
-        const updatedIds = joinedSetIds.filter((id: string) => id !== setIdToRemove);
-        localStorage.setItem('joinedSetIds', JSON.stringify(updatedIds));
-        toast({ title: "Set removed", description: "The shared set has been removed from your dashboard." });
+        leaveSharedSetMutation.mutate(setIdToRemove);
     };
 
 
@@ -1096,7 +1052,40 @@ const DashboardPage = () => {
                                                                          <MoreVertical className="h-4 w-4" />
                                                                      </Button>
                                                                  </DropdownMenuTrigger>
-                                                                 <DropdownMenuContent align="end">
+                                                                 <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                                                                     {/* Edit Action */}
+                                                                     <DropdownMenuItem asChild>
+                                                                         <Link href={`/sets/${set.id}/edit`}>
+                                                                             <Edit className="mr-2 h-4 w-4" />
+                                                                             edit set
+                                                                         </Link>
+                                                                     </DropdownMenuItem>
+                                                                     
+                                                                     {/* Copy Set ID */}
+                                                                     <DropdownMenuItem
+                                                                         onClick={(e) => {
+                                                                             e.preventDefault();
+                                                                             e.stopPropagation();
+                                                                             handleCopyId(set.id);
+                                                                         }}
+                                                                     >
+                                                                         <Copy className="mr-2 h-4 w-4" />
+                                                                         copy set ID
+                                                                     </DropdownMenuItem>
+                                                                     
+                                                                     {/* Duplicate Set */}
+                                                                     <DropdownMenuItem
+                                                                         onClick={(e) => {
+                                                                             e.preventDefault();
+                                                                             e.stopPropagation();
+                                                                             handleDuplicate(set);
+                                                                         }}
+                                                                     >
+                                                                         <CopyPlus className="mr-2 h-4 w-4" />
+                                                                         duplicate set
+                                                                     </DropdownMenuItem>
+                                                                     
+                                                                     {/* Remove from Group Sets */}
                                                                      <DropdownMenuItem 
                                                                          onClick={(e) => {
                                                                              e.preventDefault();

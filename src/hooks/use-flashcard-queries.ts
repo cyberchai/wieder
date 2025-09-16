@@ -11,6 +11,14 @@ import {
   type FlashcardSet,
   type Card
 } from '@/services/flashcard-sets';
+import { 
+  getUserProfile, 
+  addJoinedSetId, 
+  removeJoinedSetId, 
+  addJoinedGroupSetId, 
+  removeJoinedGroupSetId,
+  migrateJoinedSetsToFirebase 
+} from '@/services/users';
 import { useAuth } from '@/providers/auth-provider';
 import { useToast } from '@/hooks/use-toast';
 import { trackUserEngagement } from '@/lib/analytics';
@@ -30,30 +38,43 @@ export const useUserFlashcardSets = () => {
   
   return useQuery({
     queryKey: flashcardQueryKeys.userSets(user?.uid || ''),
-    queryFn: () => {
-      return new Promise<FlashcardSet[]>((resolve, reject) => {
-        if (!user) {
-          reject(new Error('User not authenticated'));
-          return;
-        }
-        
-        const unsubscribe = getFlashcardSets(
-          user.uid,
-          (sets) => {
-            unsubscribe();
-            resolve(sets);
-          },
-          (error) => {
-            unsubscribe();
-            reject(error);
-          }
-        );
+    queryFn: async () => {
+      if (!user) throw new Error('User not authenticated');
+      
+      // Use a direct query instead of the listener-based approach
+      const { collection, query, where, orderBy, getDocs } = await import('firebase/firestore');
+      const { db } = await import('@/lib/firebase');
+      
+      const setsCollection = collection(db, "flashcardSets");
+      const q = query(
+        setsCollection,
+        where("userId", "==", user.uid),
+        orderBy("createdAt", "desc")
+      );
+      
+      const querySnapshot = await getDocs(q);
+      const sets: FlashcardSet[] = [];
+      
+      querySnapshot.forEach((docSnap) => {
+        const data = docSnap.data() as Partial<FlashcardSet>;
+        sets.push({
+          id: docSnap.id,
+          userId: data?.userId ?? "",
+          title: data?.title ?? "Untitled",
+          cards: Array.isArray(data?.cards) ? data.cards : [],
+          createdAt: data?.createdAt || new Date(),
+          shared: Boolean(data?.shared),
+          isPublic: Boolean(data?.isPublic),
+          tags: Array.isArray(data?.tags) ? data.tags : [],
+        } as FlashcardSet);
       });
+      
+      return sets;
     },
     enabled: !!user,
-    staleTime: 2 * 60 * 1000, // 2 minutes
+    staleTime: 1 * 60 * 1000, // 1 minute
     gcTime: 10 * 60 * 1000, // 10 minutes
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: true,
   });
 };
 
@@ -93,14 +114,21 @@ export const usePublicFlashcardSets = (pageSize: number = 20) => {
   });
 };
 
-// Hook to get shared sets (from localStorage)
+// Hook to get shared sets (from Firebase)
 export const useSharedFlashcardSets = () => {
   const { user } = useAuth();
   
   return useQuery({
     queryKey: flashcardQueryKeys.sharedSets([]), // We'll update this dynamically
     queryFn: async () => {
-      const joinedSetIds = JSON.parse(localStorage.getItem('joinedSetIds') || '[]');
+      if (!user) return [];
+      
+      // Migrate localStorage data to Firebase on first load
+      await migrateJoinedSetsToFirebase(user.uid);
+      
+      const userProfile = await getUserProfile(user.uid);
+      const joinedSetIds = userProfile?.joinedSetIds || [];
+      
       if (joinedSetIds.length === 0) return [];
       
       const sets: FlashcardSet[] = [];
@@ -114,6 +142,41 @@ export const useSharedFlashcardSets = () => {
       }
       return sets;
     },
+    enabled: !!user,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 15 * 60 * 1000, // 15 minutes
+  });
+};
+
+// Hook to get group sets (from Firebase)
+export const useGroupFlashcardSets = () => {
+  const { user } = useAuth();
+  
+  return useQuery({
+    queryKey: [...flashcardQueryKeys.all, 'group', user?.uid || ''],
+    queryFn: async () => {
+      if (!user) return [];
+      
+      // Migrate localStorage data to Firebase on first load
+      await migrateJoinedSetsToFirebase(user.uid);
+      
+      const userProfile = await getUserProfile(user.uid);
+      const joinedGroupSetIds = userProfile?.joinedGroupSetIds || [];
+      
+      if (joinedGroupSetIds.length === 0) return [];
+      
+      const sets: FlashcardSet[] = [];
+      for (const setId of joinedGroupSetIds) {
+        try {
+          const set = await getFlashcardSet(setId);
+          if (set) sets.push(set);
+        } catch (error) {
+          console.error(`Failed to fetch group set ${setId}`, error);
+        }
+      }
+      return sets;
+    },
+    enabled: !!user,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 15 * 60 * 1000, // 15 minutes
   });
@@ -194,6 +257,11 @@ export const useUpdateFlashcardSet = () => {
         queryKey: flashcardQueryKeys.userSets(user?.uid || '') 
       });
       
+      // Invalidate group sets to reflect changes
+      queryClient.invalidateQueries({ 
+        queryKey: [...flashcardQueryKeys.all, 'group', user?.uid || ''] 
+      });
+      
       // If making public/private, invalidate public sets
       if (variables.updates.isPublic !== undefined) {
         queryClient.invalidateQueries({ 
@@ -272,7 +340,10 @@ export const useDuplicateFlashcardSet = () => {
   const { toast } = useToast();
   
   return useMutation({
-    mutationFn: duplicateFlashcardSet,
+    mutationFn: async (set: FlashcardSet) => {
+      if (!user) throw new Error('User not authenticated');
+      return duplicateFlashcardSet(set, user.uid);
+    },
     onSuccess: (_, originalSet) => {
       // Invalidate user sets to show the new duplicate
       queryClient.invalidateQueries({ 
@@ -399,6 +470,149 @@ export const useOptimisticUpdateFlashcardSet = () => {
       });
       queryClient.invalidateQueries({ 
         queryKey: flashcardQueryKeys.userSets(user?.uid || '') 
+      });
+      queryClient.invalidateQueries({ 
+        queryKey: [...flashcardQueryKeys.all, 'group', user?.uid || ''] 
+      });
+    },
+  });
+};
+
+// Mutation to join a shared set
+export const useJoinSharedSet = () => {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+  
+  return useMutation({
+    mutationFn: async (setId: string) => {
+      if (!user) throw new Error('User not authenticated');
+      return addJoinedSetId(user.uid, setId);
+    },
+    onSuccess: (_, setId) => {
+      // Invalidate shared sets query
+      queryClient.invalidateQueries({ 
+        queryKey: flashcardQueryKeys.sharedSets([]) 
+      });
+      
+      // Track joining set
+      if (user) {
+        trackUserEngagement('join_flashcard_set', { 
+          set_id: setId,
+          action: 'join'
+        }, user.uid);
+      }
+      
+      toast({ 
+        title: 'Success!', 
+        description: 'Set joined successfully.' 
+      });
+    },
+    onError: (error) => {
+      console.error('Failed to join set:', error);
+      toast({ 
+        title: 'Error', 
+        description: 'Failed to join set. Please try again.', 
+        variant: 'destructive' 
+      });
+    },
+  });
+};
+
+// Mutation to leave a shared set
+export const useLeaveSharedSet = () => {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+  
+  return useMutation({
+    mutationFn: async (setId: string) => {
+      if (!user) throw new Error('User not authenticated');
+      return removeJoinedSetId(user.uid, setId);
+    },
+    onSuccess: (_, setId) => {
+      // Invalidate shared sets query
+      queryClient.invalidateQueries({ 
+        queryKey: flashcardQueryKeys.sharedSets([]) 
+      });
+      
+      toast({ 
+        title: 'Set removed', 
+        description: 'The shared set has been removed from your dashboard.' 
+      });
+    },
+    onError: (error) => {
+      console.error('Failed to leave set:', error);
+      toast({ 
+        title: 'Error', 
+        description: 'Failed to leave set. Please try again.', 
+        variant: 'destructive' 
+      });
+    },
+  });
+};
+
+// Mutation to join a group set
+export const useJoinGroupSet = () => {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+  
+  return useMutation({
+    mutationFn: async (setId: string) => {
+      if (!user) throw new Error('User not authenticated');
+      return addJoinedGroupSetId(user.uid, setId);
+    },
+    onSuccess: (_, setId) => {
+      // Invalidate group sets query
+      queryClient.invalidateQueries({ 
+        queryKey: [...flashcardQueryKeys.all, 'group', user?.uid || ''] 
+      });
+      
+      toast({ 
+        title: 'Success!', 
+        description: 'Group set joined successfully.' 
+      });
+    },
+    onError: (error) => {
+      console.error('Failed to join group set:', error);
+      toast({ 
+        title: 'Error', 
+        description: 'Failed to join group set. Please try again.', 
+        variant: 'destructive' 
+      });
+    },
+  });
+};
+
+// Mutation to leave a group set
+export const useLeaveGroupSet = () => {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+  
+  return useMutation({
+    mutationFn: async (setId: string) => {
+      if (!user) throw new Error('User not authenticated');
+      return removeJoinedGroupSetId(user.uid, setId);
+    },
+    onSuccess: (_, setId) => {
+      // Invalidate group sets query
+      queryClient.invalidateQueries({ 
+        queryKey: [...flashcardQueryKeys.all, 'group', user?.uid || ''] 
+      });
+      
+      toast({ 
+        title: 'Set removed', 
+        description: 'The group set has been removed from your dashboard.' 
+      });
+    },
+    onError: (error) => {
+      console.error('Failed to leave group set:', error);
+      toast({ 
+        title: 'Error', 
+        description: 'Failed to leave group set. Please try again.', 
+        variant: 'destructive' 
       });
     },
   });

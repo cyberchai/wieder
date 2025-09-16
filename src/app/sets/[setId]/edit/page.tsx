@@ -81,12 +81,18 @@ export default function EditSetPage() {
     
     const fetchSet = async () => {
       const set = await getFlashcardSet(setId);
-      if (set && set.userId === user.uid) {
-        reset({ title: set.title, cards: set.cards, shared: set.shared, tags: set.tags || [] });
-        setSelectedTags(set.tags || []);
-        setIsShared(set.shared);
+      if (set) {
+        // Allow editing if: user owns the set OR set is not public (anyone can edit non-public sets)
+        if (set.userId === user.uid || !set.isPublic) {
+          reset({ title: set.title, cards: set.cards, shared: set.shared, tags: set.tags || [] });
+          setSelectedTags(set.tags || []);
+          setIsShared(set.shared);
+        } else {
+          toast({ title: "Error", description: "You can only edit your own sets or non-public sets.", variant: "destructive" });
+          router.push('/dashboard');
+        }
       } else {
-        toast({ title: "Error", description: "Set not found or you don't have permission to edit it.", variant: "destructive" });
+        toast({ title: "Error", description: "Set not found.", variant: "destructive" });
         router.push('/dashboard');
       }
       setIsLoading(false);
