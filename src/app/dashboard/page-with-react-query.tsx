@@ -774,43 +774,59 @@ const DashboardPageWithReactQuery = () => {
                                 ) : (
                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                         {groupSets.map((set) => (
-                                            <Card key={set.id} className="p-6 hover:shadow-md transition-shadow">
-                                                <div className="flex items-start justify-between mb-4">
-                                                    <div className="flex-1">
-                                                        <h3 className="font-semibold text-lg mb-2 line-clamp-2">
-                                                            {set.title}
-                                                        </h3>
-                                                        <p className="text-sm text-muted-foreground mb-2">
-                                                            {set.cards.length} cards
-                                                        </p>
-                                                        {set.creatorDisplayName && (
-                                                            <p className="text-xs text-muted-foreground">
-                                                                by {set.creatorDisplayName}
-                                                            </p>
-                                                        )}
+                                            <Card key={set.id} className="flex flex-col hover:shadow-md transition-shadow">
+                                                <CardHeader className="pb-4">
+                                                    <div className="flex items-start justify-between">
+                                                        <div className="flex-1">
+                                                            <CardTitle className="text-lg mb-2 line-clamp-2">
+                                                                {set.title}
+                                                            </CardTitle>
+                                                            <CardDescription className="mb-2">
+                                                                {set.cards.length} cards
+                                                            </CardDescription>
+                                                            {set.creatorDisplayName && (
+                                                                <p className="text-xs text-muted-foreground">
+                                                                    by {set.creatorDisplayName}
+                                                                </p>
+                                                            )}
+                                                        </div>
                                                     </div>
-                                                </div>
+                                                </CardHeader>
                                                 
-                                                <div className="flex gap-2">
-                                                    <Button 
-                                                        size="sm" 
-                                                        className="flex-1"
-                                                        onClick={() => {
-                                                            handleNavigationClick();
-                                                            router.push(`/sets/${set.id}/study`);
-                                                        }}
-                                                    >
-                                                        <Play className="mr-2 h-4 w-4" />
-                                                        Study
-                                                    </Button>
+                                                <CardFooter className="flex flex-col gap-2 pt-0">
                                                     <Button 
                                                         size="sm" 
                                                         variant="outline"
-                                                        onClick={() => handleRemoveGroupSet(set.id)}
+                                                        className="w-full"
+                                                        onClick={() => {
+                                                            handleNavigationClick();
+                                                            router.push(`/sets/${set.id}/edit`);
+                                                        }}
                                                     >
-                                                        <X className="h-4 w-4" />
+                                                        <Edit className="mr-2 h-4 w-4" />
+                                                        Collab
                                                     </Button>
-                                                </div>
+                                                    <div className="flex gap-2">
+                                                        <Button 
+                                                            size="sm" 
+                                                            className="flex-1"
+                                                            onClick={() => {
+                                                                handleNavigationClick();
+                                                                router.push(`/sets/${set.id}/study`);
+                                                            }}
+                                                        >
+                                                            <Play className="mr-2 h-4 w-4" />
+                                                            Study
+                                                        </Button>
+                                                        <Button 
+                                                            size="sm" 
+                                                            variant="outline"
+                                                            onClick={() => handleRemoveGroupSet(set.id)}
+                                                        >
+                                                            <X className="h-4 w-4" />
+                                                        </Button>
+                                                    </div>
+                                                </CardFooter>
                                             </Card>
                                         ))}
                                     </div>

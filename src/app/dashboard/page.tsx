@@ -1104,6 +1104,18 @@ const DashboardPage = () => {
                                                      </CardHeader>
                                                      <CardContent className="flex-grow"></CardContent>
                                                      <CardFooter className="flex flex-col gap-2">
+                                                         <Button 
+                                                             variant="outline" 
+                                                             className="w-full hover:shadow-lg hover:scale-105 transition-all duration-200 ease-in-out transform" 
+                                                             onClick={(e) => {
+                                                                 e.preventDefault();
+                                                                 e.stopPropagation();
+                                                                 router.push(`/sets/${set.id}/edit`);
+                                                             }}
+                                                         >
+                                                             <Edit className="mr-2 h-4 w-4" />
+                                                             Collab
+                                                         </Button>
                                                          <Button className="w-full hover:shadow-lg hover:scale-105 transition-all duration-200 ease-in-out transform" onClick={() => router.push(`/sets/${set.id}/study`)}>
                                                              <BookOpen className="mr-2 h-4 w-4" />
                                                              Study
