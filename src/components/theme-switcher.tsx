@@ -18,7 +18,7 @@ import {
 import { NeilsonIcon, ConfeshIcon, SkunksIcon, MatrixIcon } from "./theme-icons"
 
 // Allowed themes in your app (must match what your provider supports)
-const THEMES = ["neilson", "dark", "confesh", "skunks", "bw"] as const satisfies readonly Theme[]
+const THEMES = ["neilson", "dark", "confesh", "skunks", "bw", "fall"] as const satisfies readonly Theme[]
 
 // Runtime type guard: string -> Theme
 function isThemeName(v: string): v is Theme {
@@ -63,6 +63,14 @@ export function ThemeSwitcher() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
+        <DropdownMenuItem
+          onClick={() => handleThemeChange("fall")}
+          onMouseEnter={handleHoverStart}
+          onMouseLeave={handleHoverEnd}
+        >
+          <span className="mr-2 h-4 w-4 flex items-center justify-center">🍂</span>
+          <span>fall</span>
+        </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => handleThemeChange("neilson")}
           onMouseEnter={handleHoverStart}
