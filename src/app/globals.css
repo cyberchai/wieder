@@ -302,6 +302,7 @@ svg circle[fill*="url(#a-cl-9)"] {
   }
   body {
     @apply bg-background text-foreground;
+    font-family: 'Poppins', sans-serif;
   }
   .font-arial {
     font-family: Arial, sans-serif;
