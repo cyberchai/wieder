@@ -310,6 +310,14 @@ svg circle[fill*="url(#a-cl-9)"] {
 }
 
 @layer components {
+  /* Remove any border from header to blend with background */
+  header {
+    border-bottom: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+  }
+  
   .confesh-input {
     @apply bg-[hsl(var(--input))];
   }
