@@ -39,6 +39,7 @@ import { useSettings } from "@/hooks/use-settings";
 import { trackUserEngagement, trackPageView } from "@/lib/analytics";
 import { AdminCacheMonitor } from "@/components/admin-cache-monitor";
 import { SilentCircleHider } from "@/components/silent-element-hider";
+import { AnimatedSetCard } from "@/components/animated-set-card";
 import {
   useUserFlashcardSets,
   usePublicFlashcardSets,
@@ -608,7 +609,7 @@ const DashboardPage = () => {
                                          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                                              {filteredSets.map(set => (
                                                  <Link key={set.id} href={`/sets/${set.id}/study`} className="block">
-                                                     <Card className="flex flex-col hover:shadow-xl hover:-translate-y-1 hover:border-primary/20 transition-all duration-300 ease-in-out cursor-pointer transform">
+                                                     <AnimatedSetCard className="flex flex-col cursor-pointer">
                                                          <CardHeader>
                                                              <div className="flex items-start justify-between">
                                                                  <div className="flex-1">
@@ -733,7 +734,7 @@ const DashboardPage = () => {
                                                                  Study
                                                              </Button>
                                                          </CardFooter>
-                                                     </Card>
+                                                     </AnimatedSetCard>
                                                  </Link>
                                              ))}
                                          </div>
@@ -784,7 +785,7 @@ const DashboardPage = () => {
                                          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                                             {filteredSharedSets.map(set => (
                                                 <Link key={set.id} href={`/sets/${set.id}/study`} className="block">
-                                                    <Card className="flex flex-col hover:shadow-xl hover:-translate-y-1 hover:border-primary/20 transition-all duration-300 ease-in-out cursor-pointer transform">
+                                                    <AnimatedSetCard className="flex flex-col cursor-pointer">
                                                         <CardHeader>
                                                             <div className="flex items-start justify-between">
                                                                 <CardTitle className="pr-4">{set.title}</CardTitle>
@@ -823,11 +824,11 @@ const DashboardPage = () => {
                                                                 Study
                                                             </Button>
                                                         </CardFooter>
-                                                    </Card>
+                                                    </AnimatedSetCard>
                                                 </Link>
                                             ))}
                                         </div>
-                                     ) : searchQuery ? (
+                                    ) : searchQuery ? (
                                          <div className="flex flex-col items-center justify-center text-center p-8 border-2 border-dashed rounded-lg bg-card">
                                            <h4 className="text-lg font-semibold mb-2">no shared sets found</h4>
                                             <p className="text-muted-foreground">try adjusting your search terms.</p>
@@ -938,8 +939,8 @@ const DashboardPage = () => {
                                          {filteredPublicSets.map(set => (
                                              <div key={set.id} className="relative">
                                                  <Link href={`/sets/${set.id}/study`} className="block">
-                                                     <Card 
-                                                         className="flex flex-col hover:shadow-xl hover:-translate-y-1 hover:border-primary/20 transition-all duration-300 ease-in-out cursor-pointer transform"
+                                                     <AnimatedSetCard 
+                                                         className="flex flex-col cursor-pointer"
                                                          onContextMenu={(e) => handleContextMenu(e, set.id)}
                                                      >
                                                          <CardHeader>
@@ -977,7 +978,7 @@ const DashboardPage = () => {
                                                                  Study
                                                              </Button>
                                                          </CardFooter>
-                                                     </Card>
+                                                     </AnimatedSetCard>
                                                  </Link>
                                              </div>
                                          ))}
@@ -1037,7 +1038,7 @@ const DashboardPage = () => {
                                      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                                          {groupSets.map(set => (
                                              <Link key={set.id} href={`/sets/${set.id}/study`} className="block">
-                                                 <Card className="flex flex-col hover:shadow-xl hover:-translate-y-1 hover:border-primary/20 transition-all duration-300 ease-in-out cursor-pointer transform">
+                                                 <AnimatedSetCard className="flex flex-col cursor-pointer">
                                                      <CardHeader>
                                                          <div className="flex items-start justify-between">
                                                              <CardTitle className="pr-4">{set.title}</CardTitle>
@@ -1121,7 +1122,7 @@ const DashboardPage = () => {
                                                              Study
                                                          </Button>
                                                      </CardFooter>
-                                                 </Card>
+                                                 </AnimatedSetCard>
                                              </Link>
                                          ))}
                                      </div>
