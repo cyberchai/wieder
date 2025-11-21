@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ThemeSwitcher } from './theme-switcher';
 import { UserNav } from './user-nav';
+import { CountdownTimer } from './countdown-timer';
 import { IterationCcw, Search } from 'lucide-react';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
@@ -54,6 +55,7 @@ export default function Header({ searchQuery = "", onSearchChange, searchInputRe
 
           {/* Theme & Profile Section */}
           <div className="flex items-center space-x-2">
+             <CountdownTimer />
              <ThemeSwitcher />
              <UserNav />
           </div>
