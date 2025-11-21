@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from 'react';
 import Link from 'next/link';
 import { ThemeSwitcher } from './theme-switcher';
 import { UserNav } from './user-nav';
@@ -13,6 +16,8 @@ interface HeaderProps {
 }
 
 export default function Header({ searchQuery = "", onSearchChange, searchInputRef }: HeaderProps) {
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [isSearchHovered, setIsSearchHovered] = useState(false);
   return (
     <header className="sticky top-0 z-50 w-full border-b-0 border-none bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -26,15 +31,25 @@ export default function Header({ searchQuery = "", onSearchChange, searchInputRe
           </div>
 
           {/* Search Bar Section - Center (hidden on very small screens) */}
-          <div className="hidden sm:flex flex-1 justify-center max-w-md mx-4">
-            <div className="relative w-full">
+          <div className="hidden sm:flex flex-1 justify-center mx-4">
+            <div 
+              className={`relative transition-all duration-300 ease-in-out ${
+                isSearchFocused || isSearchHovered 
+                  ? 'w-full max-w-2xl' 
+                  : 'w-full max-w-md'
+              }`}
+              onMouseEnter={() => setIsSearchHovered(true)}
+              onMouseLeave={() => setIsSearchHovered(false)}
+            >
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 ref={searchInputRef}
                 placeholder="search sets, cards, and tags..."
                 value={searchQuery}
                 onChange={(e) => onSearchChange?.(e.target.value)}
-                className="pl-10 pr-4 py-2 w-full"
+                onFocus={() => setIsSearchFocused(true)}
+                onBlur={() => setIsSearchFocused(false)}
+                className="pl-10 pr-4 py-2 w-full transition-all duration-300"
               />
               {searchQuery && (
                 <Button
