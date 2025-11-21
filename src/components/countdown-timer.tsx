@@ -12,11 +12,98 @@ import {
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
 
+const TIMER_STORAGE_KEY = 'wieder-countdown-timer';
+
+interface TimerState {
+  endTimestamp: number; // Unix timestamp when timer should end
+  pausedAt: number | null; // Unix timestamp when paused, or null if not paused
+  pausedRemaining: number | null; // Remaining seconds when paused
+}
+
 export function CountdownTimer() {
   const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
   const [isPaused, setIsPaused] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const timerStateRef = useRef<TimerState | null>(null);
 
+  // Save timer state to localStorage
+  const saveTimerState = (state: TimerState | null) => {
+    if (state) {
+      localStorage.setItem(TIMER_STORAGE_KEY, JSON.stringify(state));
+      timerStateRef.current = state;
+    } else {
+      localStorage.removeItem(TIMER_STORAGE_KEY);
+      timerStateRef.current = null;
+    }
+  };
+
+  const clearTimerState = () => {
+    setTimeRemaining(null);
+    setIsPaused(false);
+    saveTimerState(null);
+  };
+
+  // Load timer state from localStorage on mount and sync periodically
+  useEffect(() => {
+    const loadTimerState = () => {
+      try {
+        const stored = localStorage.getItem(TIMER_STORAGE_KEY);
+        if (stored) {
+          const state: TimerState = JSON.parse(stored);
+          timerStateRef.current = state;
+
+          if (state.pausedAt !== null && state.pausedRemaining !== null) {
+            // Timer is paused
+            setTimeRemaining(state.pausedRemaining);
+            setIsPaused(true);
+          } else {
+            // Timer is running - calculate remaining time
+            const now = Date.now();
+            const remaining = Math.max(0, Math.floor((state.endTimestamp - now) / 1000));
+            if (remaining > 0) {
+              setTimeRemaining(remaining);
+              setIsPaused(false);
+            } else {
+              // Timer has expired
+              clearTimerState();
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Failed to load timer state:', error);
+        clearTimerState();
+      }
+    };
+
+    loadTimerState();
+
+    // Sync timer state when page becomes visible (handles tab switching)
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        loadTimerState();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // Periodic sync to catch any drift (every 10 seconds)
+    const syncInterval = setInterval(() => {
+      if (timerStateRef.current) {
+        const state = timerStateRef.current;
+        // Only sync if timer is running (not paused)
+        if (state.pausedAt === null) {
+          loadTimerState();
+        }
+      }
+    }, 10000);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      clearInterval(syncInterval);
+    };
+  }, []);
+
+  // Main timer effect
   useEffect(() => {
     if (timeRemaining === null || isPaused) {
       if (intervalRef.current) {
@@ -27,8 +114,7 @@ export function CountdownTimer() {
     }
 
     if (timeRemaining <= 0) {
-      setTimeRemaining(null);
-      setIsPaused(false);
+      clearTimerState();
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
@@ -41,7 +127,20 @@ export function CountdownTimer() {
         if (prev === null || prev <= 0) {
           return null;
         }
-        return prev - 1;
+        const newRemaining = prev - 1;
+        
+        // Update stored state if we have one
+        if (timerStateRef.current && !isPaused) {
+          const now = Date.now();
+          const newState: TimerState = {
+            endTimestamp: now + (newRemaining * 1000),
+            pausedAt: null,
+            pausedRemaining: null,
+          };
+          saveTimerState(newState);
+        }
+        
+        return newRemaining;
       });
     }, 1000);
 
@@ -54,17 +153,49 @@ export function CountdownTimer() {
   }, [timeRemaining, isPaused]);
 
   const startTimer = (minutes: number) => {
+    const now = Date.now();
+    const endTimestamp = now + (minutes * 60 * 1000);
+    const state: TimerState = {
+      endTimestamp,
+      pausedAt: null,
+      pausedRemaining: null,
+    };
+    saveTimerState(state);
     setTimeRemaining(minutes * 60);
     setIsPaused(false);
   };
 
   const togglePause = () => {
-    setIsPaused((prev) => !prev);
+    if (isPaused) {
+      // Resume: calculate new end timestamp based on remaining time
+      if (timeRemaining !== null) {
+        const now = Date.now();
+        const endTimestamp = now + (timeRemaining * 1000);
+        const state: TimerState = {
+          endTimestamp,
+          pausedAt: null,
+          pausedRemaining: null,
+        };
+        saveTimerState(state);
+        setIsPaused(false);
+      }
+    } else {
+      // Pause: store current remaining time
+      if (timeRemaining !== null) {
+        const now = Date.now();
+        const state: TimerState = {
+          endTimestamp: timerStateRef.current?.endTimestamp || now + (timeRemaining * 1000),
+          pausedAt: now,
+          pausedRemaining: timeRemaining,
+        };
+        saveTimerState(state);
+        setIsPaused(true);
+      }
+    }
   };
 
   const stopTimer = () => {
-    setTimeRemaining(null);
-    setIsPaused(false);
+    clearTimerState();
   };
 
   const formatTime = (seconds: number): string => {
@@ -139,4 +270,5 @@ export function CountdownTimer() {
     </div>
   );
 }
+
 
