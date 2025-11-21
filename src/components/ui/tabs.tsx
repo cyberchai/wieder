@@ -12,7 +12,7 @@ const TabsList = React.forwardRef<
   React.ElementRef<typeof TabsPrimitive.List>,
   React.ComponentPropsWithoutRef<typeof TabsPrimitive.List>
 >(({ className, ...props }, ref) => {
-  const tabsRef = React.useRef<HTMLDivElement>(null)
+  const tabsRef = React.useRef<HTMLDivElement | null>(null)
   const [underlineStyle, setUnderlineStyle] = React.useState({ left: 0, width: 0 })
 
   const updateUnderline = React.useCallback(() => {
@@ -56,16 +56,19 @@ const TabsList = React.forwardRef<
     }
   }, [updateUnderline])
 
+  // Combine refs
+  const setRefs = React.useCallback((node: HTMLDivElement | null) => {
+    tabsRef.current = node
+    if (typeof ref === 'function') {
+      ref(node)
+    } else if (ref) {
+      (ref as React.MutableRefObject<HTMLDivElement | null>).current = node
+    }
+  }, [ref])
+
   return (
     <TabsPrimitive.List
-      ref={(node) => {
-        if (typeof ref === 'function') {
-          ref(node)
-        } else if (ref) {
-          ref.current = node
-        }
-        tabsRef.current = node
-      }}
+      ref={setRefs}
       className={cn(
         "inline-flex h-10 items-center justify-center rounded-md tab-bar-bg p-1 text-muted-foreground relative",
         className

@@ -23,6 +23,15 @@ export function AnimatedSetCard({ children, className, onContextMenu }: Animated
     ]
   );
 
+  const cardBackground = useTransform(
+    shadowIntensity,
+    [0, 1],
+    [
+      "hsl(var(--card))",
+      "hsl(var(--primary) / 0.08)",
+    ]
+  );
+
   return (
     <motion.div
       className={cn("relative", className)}
@@ -46,9 +55,17 @@ export function AnimatedSetCard({ children, className, onContextMenu }: Animated
       {/* Animated gradient border wrapper */}
       <div className="animated-gradient-border-wrapper">
         {/* Card content */}
-        <Card className="relative bg-card border-0 shadow-none z-10">
-          {children}
-        </Card>
+        <motion.div
+          className="relative border-0 shadow-none z-10 rounded-lg"
+          style={{
+            backgroundColor: cardBackground,
+            transition: "background-color 0.3s ease-in-out",
+          }}
+        >
+          <Card className="relative bg-transparent border-0 shadow-none">
+            {children}
+          </Card>
+        </motion.div>
       </div>
     </motion.div>
   );

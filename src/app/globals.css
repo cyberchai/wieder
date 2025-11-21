@@ -390,19 +390,19 @@ svg circle[fill*="url(#a-cl-9)"] {
     border-radius: 0.5rem;
     background: linear-gradient(
       90deg,
-      hsl(var(--primary)),
-      hsl(var(--primary) / 0.7),
-      hsl(var(--primary) / 0.5),
-      hsl(var(--primary) / 0.7),
-      hsl(var(--primary)),
-      hsl(var(--primary) / 0.7),
-      hsl(var(--primary) / 0.5),
-      hsl(var(--primary) / 0.7),
-      hsl(var(--primary))
+      hsl(var(--primary) / 0.8),
+      hsl(var(--primary) / 0.76),
+      hsl(var(--primary) / 0.74),
+      hsl(var(--primary) / 0.76),
+      hsl(var(--primary) / 0.8),
+      hsl(var(--primary) / 0.76),
+      hsl(var(--primary) / 0.74),
+      hsl(var(--primary) / 0.76),
+      hsl(var(--primary) / 0.8)
     );
     background-size: 200% 100%;
     background-position: 0% 0%;
-    animation: gradientFlow 3s linear infinite;
+    animation: gradientFlow 15s linear infinite;
     z-index: 0;
     pointer-events: none;
   }
