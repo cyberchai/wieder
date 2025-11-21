@@ -25,6 +25,7 @@ import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
+import { useFlipTransition } from "@/providers/flip-transition-provider";
 import Link from "next/link";
 import { LogOut, User as UserIcon, MessageSquare } from "lucide-react";
 import { Textarea } from './ui/textarea';
@@ -34,14 +35,20 @@ export function UserNav() {
   const { user } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
+  const { triggerFlip } = useFlipTransition();
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState('');
 
   const handleSignOut = async () => {
     try {
       await signOut(auth);
-      router.push("/");
-      toast({ title: "Signed out successfully." });
+      // Trigger the reverse flashcard flip animation
+      triggerFlip();
+      // Navigate halfway through the flip animation
+      setTimeout(() => {
+        router.push("/");
+        toast({ title: "Signed out successfully." });
+      }, 400);
     } catch (error) {
       toast({ title: "Error signing out.", variant: "destructive" });
     }

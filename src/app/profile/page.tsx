@@ -9,6 +9,7 @@ import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
+import { useFlipTransition } from "@/providers/flip-transition-provider";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Label } from "@/components/ui/label";
 import { SettingsDialog } from "@/components/settings-dialog";
@@ -17,12 +18,18 @@ export default function ProfilePage() {
     const { user } = useAuth();
     const router = useRouter();
     const { toast } = useToast();
+    const { triggerFlip } = useFlipTransition();
 
     const handleSignOut = async () => {
         try {
             await signOut(auth);
-            router.push("/");
-            toast({ title: "Signed out successfully." });
+            // Trigger the reverse flashcard flip animation
+            triggerFlip();
+            // Navigate halfway through the flip animation
+            setTimeout(() => {
+                router.push("/");
+                toast({ title: "Signed out successfully." });
+            }, 400);
         } catch (error) {
             toast({ title: "Error signing out.", variant: "destructive" });
         }

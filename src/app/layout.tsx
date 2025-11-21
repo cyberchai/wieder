@@ -3,6 +3,8 @@ import './globals.css';
 import { ThemeProvider } from '@/providers/theme-provider';
 import { AuthProvider } from '@/providers/auth-provider';
 import { QueryProvider } from '@/providers/simple-query-provider';
+import { FlipTransitionProvider } from '@/providers/flip-transition-provider';
+import { FlashcardFlipTransition } from '@/components/flashcard-flip-transition';
 import { Toaster } from "@/components/ui/toaster";
 import { ThemedBody } from '@/components/themed-body';
 import { PerformanceDashboard } from '@/components/performance-dashboard';
@@ -64,11 +66,15 @@ export default function RootLayout({
         <QueryProvider>
           <ThemeProvider>
             <AuthProvider>
-              <ThemedBody>
-                {children}
-                <Toaster />
-                <PerformanceDashboard />
-              </ThemedBody>
+              <FlipTransitionProvider>
+                <FlashcardFlipTransition>
+                  <ThemedBody>
+                    {children}
+                    <Toaster />
+                    <PerformanceDashboard />
+                  </ThemedBody>
+                </FlashcardFlipTransition>
+              </FlipTransitionProvider>
             </AuthProvider>
           </ThemeProvider>
         </QueryProvider>

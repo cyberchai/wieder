@@ -366,4 +366,69 @@ svg circle[fill*="url(#a-cl-9)"] {
   .flip-transition {
     transition: transform 0.3s ease-in-out;
   }
+
+  /* Flashcard Flip Animation */
+  .flashcard-flip-wrapper {
+    width: 100%;
+    min-height: 100vh;
+    perspective: 1200px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .flashcard-flip-inner {
+    width: 100%;
+    min-height: 100vh;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    backface-visibility: hidden;
+    transform-origin: center center;
+  }
+
+  /* Forward flip (login) */
+  .flashcard-flip-active {
+    transform: rotateY(180deg);
+  }
+
+  .flashcard-flip-in {
+    animation: flipIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  /* Reverse flip (logout) */
+  .flashcard-flip-active-reverse {
+    transform: rotateY(-180deg);
+  }
+
+  .flashcard-flip-in-reverse {
+    animation: flipInReverse 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  @keyframes flipIn {
+    0% {
+      transform: rotateY(-180deg);
+      opacity: 0.3;
+    }
+    50% {
+      opacity: 0.7;
+    }
+    100% {
+      transform: rotateY(0deg);
+      opacity: 1;
+    }
+  }
+
+  @keyframes flipInReverse {
+    0% {
+      transform: rotateY(180deg);
+      opacity: 0.3;
+    }
+    50% {
+      opacity: 0.7;
+    }
+    100% {
+      transform: rotateY(0deg);
+      opacity: 1;
+    }
+  }
 }

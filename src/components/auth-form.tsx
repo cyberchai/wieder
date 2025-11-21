@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Icons } from "@/components/icons";
 import { Loader2 } from "lucide-react";
 import type { AuthError } from "firebase/auth";
+import { useFlipTransition } from "@/providers/flip-transition-provider";
 // import { signInWithRedirect } from 'firebase/auth';
 
 type AuthFormProps = {
@@ -19,6 +20,7 @@ type AuthFormProps = {
 export function AuthForm({ mode }: AuthFormProps) {
   const router = useRouter();
   const { toast } = useToast();
+  const { triggerFlip } = useFlipTransition();
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
   async function handleGoogleSignIn() {
@@ -26,9 +28,13 @@ export function AuthForm({ mode }: AuthFormProps) {
     const provider = new GoogleAuthProvider();
     try {
       await signInWithPopup(auth, provider);
-      // await signInWithRedirect(auth, new GoogleAuthProvider());
-      router.push("/dashboard");
-      toast({ title: "login successful", description: "welcome!" });
+      // Trigger the flashcard flip animation
+      triggerFlip();
+      // Navigate halfway through the flip animation (when the card is at 90deg, showing the edge)
+      setTimeout(() => {
+        router.push("/dashboard");
+        toast({ title: "login successful", description: "welcome!" });
+      }, 400); // Halfway through the 0.8s flip animation
     } catch (error) {
       const err = error as AuthError;
       toast({
