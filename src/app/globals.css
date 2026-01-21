@@ -150,29 +150,6 @@ svg circle[fill*="url(#a-cl-9)"] {
     --radius: 0.5rem;
     --tab-bar-bg: 0 0% 96%; /* very light gray tab bar background */
   }
-  .fall {
-    --background: 45 100% 95%; /* cream background */
-    --foreground: 25 50% 20%; /* dark brown text */
-    --card: 45 100% 97%; /* lighter cream for cards */
-    --card-foreground: 25 50% 20%; /* dark brown text */
-    --popover: 45 100% 97%; /* lighter cream for popovers */
-    --popover-foreground: 25 50% 20%; /* dark brown text */
-    --primary: 25 70% 45%; /* warm brown primary */
-    --primary-foreground: 45 100% 95%; /* cream text on primary */
-    --secondary: 35 60% 85%; /* light orange secondary */
-    --secondary-foreground: 25 50% 20%; /* dark brown text */
-    --muted: 35 40% 90%; /* very light orange muted */
-    --muted-foreground: 25 30% 40%; /* medium brown muted text */
-    --accent: 30 80% 55%; /* orange accent */
-    --accent-foreground: 45 100% 95%; /* cream text on accent */
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 35 50% 75%; /* medium orange border */
-    --input: 35 40% 92%; /* light orange input */
-    --ring: 30 80% 55%; /* orange ring */
-    --radius: 0.5rem;
-    --tab-bar-bg: 25 60% 40%; /* darker brown tab bar background */
-  }
   
   /* BW theme specific button overrides */
   .bw .bg-primary {
