@@ -18,6 +18,17 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  webpack: (config) => {
+    // Exclude Collaborative Flashcard Dashboard from webpack compilation
+    config.watchOptions = {
+      ...config.watchOptions,
+      ignored: [
+        '**/node_modules/**',
+        '**/Collaborative Flashcard Dashboard/**',
+      ],
+    };
+    return config;
+  },
 };
 
 export default nextConfig;

@@ -43,3 +43,6 @@ next-env.d.ts
 # firebase
 firebase-debug.log
 firestore-debug.log
+
+# Collaborative Flashcard Dashboard (separate project)
+/Collaborative Flashcard Dashboard/

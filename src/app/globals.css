@@ -271,6 +271,32 @@ svg circle[fill*="url(#a-cl-9)"] {
   .bw [role="tab"][aria-selected="true"]:hover {
     background-color: hsl(0 0% 95%) !important; /* slightly off-white on hover */
   }
+  
+  /* BW theme - noise background for cards using pseudo-element overlay */
+  .bw .animated-gradient-border-wrapper > div {
+    position: relative !important;
+  }
+  
+  .bw .animated-gradient-border-wrapper > div::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    background-image: url(/noise.svg) !important;
+    background-repeat: repeat !important;
+    background-size: auto !important;
+    opacity: 0.4 !important;
+    pointer-events: none !important;
+    z-index: 0 !important;
+    border-radius: inherit !important;
+  }
+  
+  .bw .animated-gradient-border-wrapper > div > div[class*="Card"] {
+    position: relative !important;
+    z-index: 1 !important;
+  }
 }
 
 @layer base {

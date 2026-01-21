@@ -7,7 +7,7 @@ import AuroraBackground from "@/components/aurora-background";
 import DashboardParticlesBackground from "@/components/dashboard-particles-background";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { PlusCircle, MoreVertical, Loader2, Trash2, Edit, Share2, Copy, Link as LinkIcon, CopyPlus, Gamepad2, Users, FileText, UserX, Search, BookOpen, Globe, Users2, Tag, Filter, X } from "lucide-react";
+import { PlusCircle, MoreVertical, Loader2, Trash2, Edit, Share2, Copy, Link as LinkIcon, CopyPlus, Users, UserX, Search, BookOpen, Globe, Tag, Filter, X, Target, Sparkles, Flame, Crown, Clock, Lock, Grid3x3, Zap, CloudRain, Sprout, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { FirebaseError } from "firebase/app";
 import {
@@ -40,6 +40,11 @@ import { trackUserEngagement, trackPageView } from "@/lib/analytics";
 import { AdminCacheMonitor } from "@/components/admin-cache-monitor";
 import { SilentCircleHider } from "@/components/silent-element-hider";
 import { AnimatedSetCard } from "@/components/animated-set-card";
+import { StatCard } from "@/components/stat-card";
+import { RecentActivity } from "@/components/recent-activity";
+import { GameModeCard } from "@/components/game-mode-card";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   useUserFlashcardSets,
   usePublicFlashcardSets,
@@ -98,6 +103,66 @@ const DashboardPage = () => {
     const { handleNavigationClick, enableSounds } = useSoundEffects();
     const { settings } = useSettings();
     const [contextMenu, setContextMenu] = useState<{ x: number; y: number; setId: string } | null>(null);
+    const [showActivity, setShowActivity] = useState(true);
+
+    // Mock activity data - can be replaced with real data later
+    const mockActivities = useMemo(() => {
+        if (!user) return [];
+        return [
+            {
+                id: "1",
+                user: { name: user.displayName || user.email?.split('@')[0] || "You", avatar: "" },
+                action: "created a new set",
+                deck: sets[0]?.title || "New Set",
+                timestamp: "just now",
+                type: "social" as const,
+                likes: 0,
+                comments: 0,
+            },
+        ];
+    }, [user, sets]);
+
+    // Calculate stats
+    const totalCards = useMemo(() => {
+        return [...sets, ...sharedSets, ...groupSets].reduce((sum, set) => sum + (Array.isArray(set.cards) ? set.cards.length : 0), 0);
+    }, [sets, sharedSets, groupSets]);
+
+    const totalWieds = useMemo(() => {
+        // Mock wieds calculation - can be replaced with real data
+        return totalCards * 7; // Rough estimate
+    }, [totalCards]);
+
+    // Game modes
+    const gameModes = [
+        {
+            title: "Crossword",
+            description: "Solve crossword puzzles using your flashcard knowledge",
+            icon: Grid3x3,
+            color: "bg-indigo-500",
+            players: "1-2 players",
+        },
+        {
+            title: "Speed",
+            description: "Race against the clock to answer as many cards as possible",
+            icon: Zap,
+            color: "bg-orange-500",
+            players: "1-8 players",
+        },
+        {
+            title: "Raining Words",
+            description: "Catch falling words and match them before they hit the ground",
+            icon: CloudRain,
+            color: "bg-blue-500",
+            players: "1-4 players",
+        },
+        {
+            title: "My Garden",
+            description: "Grow your knowledge garden by correctly answering questions",
+            icon: Sprout,
+            color: "bg-green-500",
+            players: "1 player",
+        },
+    ];
 
     // React Query mutations
     const deleteSetMutation = useDeleteFlashcardSet();
@@ -511,86 +576,136 @@ const DashboardPage = () => {
                   searchInputRef={searchInputRef}
                 />
                 <main className="flex-1 container mx-auto p-4 sm:p-6 lg:p-8 relative z-10">
-                    <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
-                        <div>
-                        {user && (
-                            <>
-                            <h1 className="text-3xl font-bold tracking-tight">
-                                {`${(user.displayName || user.email)?.toLowerCase()}'s big brain operation`}
-                            </h1>
-                            <p className="text-muted-foreground">
-                                <b>{new Date().toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase()}&rsquo;s grind</b>
-                            </p>
-                            </>
-                        )}
-                        </div>
-
-                        <div className="flex gap-2 items-center">
-                            <Button 
-                                variant="outline"
-                                onClick={() => setIsJoinDialogOpen(true)}
-                            >
-                                <LinkIcon className="mr-2 h-4 w-4"/>join set
-                            </Button>
-                            <Button className="hover:shadow-lg hover:scale-105 transition-all duration-200 ease-in-out transform" asChild>
-                                <Link href="/sets/create">
-                                    <PlusCircle className="mr-2 h-4 w-4" />
-                                    new set
-                                </Link>
-                            </Button>
-                        </div>
+                    {/* Welcome Message */}
+                    <div className="mb-8">
+                        {user && (() => {
+                            // Extract first name from displayName or email
+                            const firstName = user.displayName 
+                                ? user.displayName.split(' ')[0] 
+                                : user.email?.split('@')[0] || "there";
+                            return (
+                                <h2 className="text-2xl font-semibold mb-1">
+                                    Hi {firstName}, let&apos;s get stacked
+                                </h2>
+                            );
+                        })()}
                     </div>
 
-                    {/* Search Results Summary */}
-                    {searchQuery && (
-                        <div className="mb-8 p-4 bg-muted/50 rounded-lg border">
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                    <Search className="h-4 w-4 text-muted-foreground" />
-                                    <p className="text-sm text-muted-foreground">
-                                        {`found ${filteredSets.length + filteredSharedSets.length + filteredPublicSets.length} result${
-                                            filteredSets.length + filteredSharedSets.length + filteredPublicSets.length !== 1 ? "s" : ""
-                                        } for "${searchQuery}"`}
-                                    </p>
+                    {/* Stats Section */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <StatCard
+                            title="Cards Studied"
+                            value={totalCards.toLocaleString()}
+                            icon={Target}
+                            trend={{ value: "12% this week", isPositive: true }}
+                            color="bg-blue-500"
+                        />
+                        <StatCard
+                            title="Wieds"
+                            value={totalWieds.toLocaleString()}
+                            icon={Sparkles}
+                            trend={{ value: "+320 today", isPositive: true }}
+                            color="bg-green-500"
+                        />
+                        <StatCard
+                            title="Study Streak"
+                            value="15"
+                            icon={Flame}
+                            trend={{ value: "Best: 23 days", isPositive: true }}
+                            color="bg-orange-500"
+                        />
+                        <StatCard
+                            title="Leaderboard Rank"
+                            value="#12"
+                            icon={Crown}
+                            trend={{ value: "Up 5 spots", isPositive: true }}
+                            color="bg-purple-500"
+                        />
+                    </div>
 
-                                </div>
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="h-6 px-2 text-xs hover:shadow-md hover:scale-105 transition-all duration-200 ease-in-out transform"
-                                    onClick={() => setSearchQuery("")}
-                                >
-                                    clear search
-                                </Button>
-                            </div>
-                        </div>
-                    )}
-                    
-                                         <Tabs value={activeTab} onValueChange={handleTabChange} className="mb-8">
-                         <TabsList className="grid w-full grid-cols-3">
-                             <TabsTrigger value="my-sets" className="flex items-center gap-2">
-                                 <BookOpen className="h-4 w-4" />
-                                 My Sets
-                                 <span className="ml-1 text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-                                     {allMySets.length}
-                                 </span>
-                             </TabsTrigger>
-                             <TabsTrigger value="group-sets" className="flex items-center gap-2">
-                                 <Users className="h-4 w-4" />
-                                 Group Sets
-                                 <span className="ml-1 text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
-                                     {groupSets.length}
-                                 </span>
-                             </TabsTrigger>
-                             <TabsTrigger value="public-sets" className="flex items-center gap-2">
-                                 <Globe className="h-4 w-4" />
-                                 Public Sets
-                                 <span className="ml-1 text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
-                                     {publicSets.length}
-                                 </span>
-                             </TabsTrigger>
-                         </TabsList>
-                            <TabsContent value="my-sets">
+                    {/* Main Content Grid */}
+                    <div className={`grid ${showActivity ? 'grid-cols-1 lg:grid-cols-3' : 'grid-cols-1'} gap-6`}>
+                        {/* Left Section - Decks and Games */}
+                        <div className={showActivity ? "lg:col-span-2" : "col-span-1"}>
+                            <Card className="p-6 mb-6">
+                                <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
+                                    <div className="flex items-center justify-between mb-6">
+                                        <TabsList>
+                                            <TabsTrigger value="my-sets" className="flex items-center gap-2">
+                                                <BookOpen className="h-4 w-4" />
+                                                My Sets
+                                                <span className="ml-1 text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                                                    {allMySets.length}
+                                                </span>
+                                            </TabsTrigger>
+                                            <TabsTrigger value="group-sets" className="flex items-center gap-2">
+                                                <Users className="h-4 w-4" />
+                                                Group Sets
+                                                <span className="ml-1 text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
+                                                    {groupSets.length}
+                                                </span>
+                                            </TabsTrigger>
+                                            <TabsTrigger value="public-sets" className="flex items-center gap-2">
+                                                <Globe className="h-4 w-4" />
+                                                Public Sets
+                                                <span className="ml-1 text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
+                                                    {publicSets.length}
+                                                </span>
+                                            </TabsTrigger>
+                                        </TabsList>
+                                        <div className="flex gap-2">
+                                            <Button 
+                                                variant="outline"
+                                                onClick={() => setIsJoinDialogOpen(true)}
+                                            >
+                                                <LinkIcon className="mr-2 h-4 w-4"/>join set
+                                            </Button>
+                                            <Button className="hover:shadow-lg hover:scale-105 transition-all duration-200 ease-in-out transform" asChild>
+                                                <Link href="/sets/create">
+                                                    <PlusCircle className="mr-2 h-4 w-4" />
+                                                    new set
+                                                </Link>
+                                            </Button>
+                                        </div>
+                                    </div>
+
+                                    {/* Search */}
+                                    <div className="relative mb-6">
+                                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
+                                        <Input
+                                            ref={searchInputRef}
+                                            placeholder="Search decks..."
+                                            className="pl-10"
+                                            value={searchQuery}
+                                            onChange={(e) => setSearchQuery(e.target.value)}
+                                        />
+                                    </div>
+
+                                    {/* Search Results Summary */}
+                                    {searchQuery && (
+                                        <div className="mb-6 p-4 bg-muted/50 rounded-lg border">
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-2">
+                                                    <Search className="h-4 w-4 text-muted-foreground" />
+                                                    <p className="text-sm text-muted-foreground">
+                                                        {`found ${filteredSets.length + filteredSharedSets.length + filteredPublicSets.length} result${
+                                                            filteredSets.length + filteredSharedSets.length + filteredPublicSets.length !== 1 ? "s" : ""
+                                                        } for "${searchQuery}"`}
+                                                    </p>
+                                                </div>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    className="h-6 px-2 text-xs hover:shadow-md hover:scale-105 transition-all duration-200 ease-in-out transform"
+                                                    onClick={() => setSearchQuery("")}
+                                                >
+                                                    clear search
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    )}
+                                    
+                                    <TabsContent value="my-sets">
                              <div className="space-y-8">
                                  {/* Personal Sets Section */}
                                  <div>
@@ -605,139 +720,152 @@ const DashboardPage = () => {
                                              </span>
                                          )}
                                      </h3>
-                                     {filteredSets.length > 0 ? (
-                                         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                                             {filteredSets.map(set => (
-                                                 <Link key={set.id} href={`/sets/${set.id}/study`} className="block">
-                                                     <AnimatedSetCard className="flex flex-col cursor-pointer">
-                                                         <CardHeader>
-                                                             <div className="flex items-start justify-between">
-                                                                 <div className="flex-1">
-                                                                     <CardTitle className="pr-4">{set.title}</CardTitle>
-                                                                     {set.isPublic && (
-                                                                         <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full inline-block mt-1">
-                                                                             public
-                                                                         </span>
-                                                                     )}
-                                                                 </div>
-                                                                 <DropdownMenu>
-                                                                 <DropdownMenuTrigger asChild>
+                                    {filteredSets.length > 0 ? (
+                                        <div className="grid gap-4 md:grid-cols-2">
+                                            {filteredSets.map(set => {
+                                                const cardCount = Array.isArray(set.cards) ? set.cards.length : 0;
+                                                const progress = Math.min(100, Math.max(0, Math.floor((cardCount / Math.max(cardCount, 1)) * 100))); // Mock progress
+                                                const category = Array.isArray(set.tags) && set.tags.length > 0 ? set.tags[0] : "General";
+                                                const lastStudied = set.createdAt ? (() => {
+                                                    const now = new Date();
+                                                    const created = set.createdAt instanceof Date ? set.createdAt : new Date(set.createdAt);
+                                                    const diffHours = Math.floor((now.getTime() - created.getTime()) / (1000 * 60 * 60));
+                                                    if (diffHours < 1) return "just now";
+                                                    if (diffHours < 24) return `${diffHours}h ago`;
+                                                    const diffDays = Math.floor(diffHours / 24);
+                                                    return `${diffDays}d ago`;
+                                                })() : undefined;
+                                                
+                                                return (
+                                                    <Link key={set.id} href={`/sets/${set.id}/study`} className="block">
+                                                        <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer group">
+                                                            <div className="flex justify-between items-start mb-4">
+                                                            <div className="flex-1">
+                                                                <div className="flex items-center gap-2 mb-2">
+                                                                    <h3 className="font-semibold group-hover:text-primary transition-colors">
+                                                                        {set.title}
+                                                                    </h3>
+                                                                    {!set.isPublic && <Lock className="w-4 h-4 text-muted-foreground" />}
+                                                                </div>
+                                                                <p className="text-sm text-muted-foreground mb-3">
+                                                                    {cardCount} {cardCount === 1 ? 'card' : 'cards'}
+                                                                </p>
+                                                                <Badge variant="secondary">{category}</Badge>
+                                                            </div>
+                                                            <DropdownMenu>
+                                                                <DropdownMenuTrigger asChild>
                                                                     <Button
                                                                         variant="ghost"
                                                                         size="icon"
-                                                                        className="h-8 w-8 ..."
+                                                                        className="h-8 w-8"
                                                                         onClick={(e) => {
-                                                                        e.preventDefault();
-                                                                        e.stopPropagation();
+                                                                            e.preventDefault();
+                                                                            e.stopPropagation();
                                                                         }}
                                                                     >
                                                                         <MoreVertical className="h-4 w-4" />
                                                                     </Button>
                                                                 </DropdownMenuTrigger>
+                                                                <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                                                                    <DropdownMenuItem asChild>
+                                                                        <Link href={`/sets/${set.id}/edit`}>
+                                                                            <Edit className="mr-2 h-4 w-4" />
+                                                                            Edit
+                                                                        </Link>
+                                                                    </DropdownMenuItem>
+                                                                    <DropdownMenuItem
+                                                                        onClick={(e) => {
+                                                                            e.preventDefault();
+                                                                            e.stopPropagation();
+                                                                            handleTogglePublic(set);
+                                                                        }}
+                                                                    >
+                                                                        {set.isPublic ? (
+                                                                            <>
+                                                                                <Users className="mr-2 h-4 w-4" />
+                                                                                Make private
+                                                                            </>
+                                                                        ) : (
+                                                                            <>
+                                                                                <Globe className="mr-2 h-4 w-4" />
+                                                                                Make public
+                                                                            </>
+                                                                        )}
+                                                                    </DropdownMenuItem>
+                                                                    <DropdownMenuItem
+                                                                        onClick={(e) => {
+                                                                            e.preventDefault();
+                                                                            e.stopPropagation();
+                                                                            handleShare(set);
+                                                                        }}
+                                                                    >
+                                                                        <Share2 className="mr-2 h-4 w-4" />
+                                                                        Share
+                                                                    </DropdownMenuItem>
+                                                                    <DropdownMenuItem
+                                                                        onClick={(e) => {
+                                                                            e.preventDefault();
+                                                                            e.stopPropagation();
+                                                                            handleCopyId(set.id);
+                                                                        }}
+                                                                    >
+                                                                        <Copy className="mr-2 h-4 w-4" />
+                                                                        Copy set ID
+                                                                    </DropdownMenuItem>
+                                                                    <DropdownMenuItem
+                                                                        onClick={(e) => {
+                                                                            e.preventDefault();
+                                                                            e.stopPropagation();
+                                                                            handleDuplicate(set);
+                                                                        }}
+                                                                    >
+                                                                        <CopyPlus className="mr-2 h-4 w-4" />
+                                                                        Duplicate
+                                                                    </DropdownMenuItem>
+                                                                    <DropdownMenuItem
+                                                                        onClick={(e) => {
+                                                                            e.preventDefault();
+                                                                            e.stopPropagation();
+                                                                            handleDeleteClick(set.id);
+                                                                        }}
+                                                                        className="text-destructive"
+                                                                    >
+                                                                        <Trash2 className="mr-2 h-4 w-4" />
+                                                                        Delete
+                                                                    </DropdownMenuItem>
+                                                                </DropdownMenuContent>
+                                                            </DropdownMenu>
+                                                        </div>
 
-                                                                                                                                        <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
-                                                                        {/* Study & Edit Actions */}
-                                                                        <DropdownMenuItem asChild>
-                                                                            <Link href={`/sets/${set.id}/edit`}>
-                                                                                <Edit className="mr-2 h-4 w-4" />
-                                                                                Edit
-                                                                            </Link>
-                                                                        </DropdownMenuItem>
-                                                                        
-                                                                        {/* Sharing & Visibility */}
-                                                                        <DropdownMenuItem
-                                                                            onClick={(e) => {
-                                                                                e.preventDefault();
-                                                                                e.stopPropagation();
-                                                                                handleTogglePublic(set);
-                                                                            }}
-                                                                        >
-                                                                            {set.isPublic ? (
-                                                                                <>
-                                                                                    <Users className="mr-2 h-4 w-4" />
-                                                                                    Make private
-                                                                                </>
-                                                                            ) : (
-                                                                                <>
-                                                                                    <Globe className="mr-2 h-4 w-4" />
-                                                                                    Make public
-                                                                                </>
-                                                                            )}
-                                                                        </DropdownMenuItem>
-                                                                        
-                                                                        <DropdownMenuItem
-                                                                            onClick={(e) => {
-                                                                                e.preventDefault();
-                                                                                e.stopPropagation();
-                                                                                handleShare(set);
-                                                                            }}
-                                                                        >
-                                                                            <Share2 className="mr-2 h-4 w-4" />
-                                                                            Share
-                                                                        </DropdownMenuItem>
-                                                                        
-                                                                        <DropdownMenuItem
-                                                                            onClick={(e) => {
-                                                                                e.preventDefault();
-                                                                                e.stopPropagation();
-                                                                                handleCopyId(set.id);
-                                                                            }}
-                                                                        >
-                                                                            <Copy className="mr-2 h-4 w-4" />
-                                                                            Copy set ID
-                                                                        </DropdownMenuItem>
-                                                                        
-                                                                        {/* Management Actions */}
-                                                                        <DropdownMenuItem
-                                                                            onClick={(e) => {
-                                                                                e.preventDefault();
-                                                                                e.stopPropagation();
-                                                                                handleDuplicate(set);
-                                                                            }}
-                                                                        >
-                                                                            <CopyPlus className="mr-2 h-4 w-4" />
-                                                                            Duplicate
-                                                                        </DropdownMenuItem>
-                                                                        
-                                                                        <DropdownMenuItem
-                                                                            onClick={(e) => {
-                                                                                e.preventDefault();
-                                                                                e.stopPropagation();
-                                                                                handleDeleteClick(set.id);
-                                                                            }}
-                                                                            className="text-destructive"
-                                                                        >
-                                                                            <Trash2 className="mr-2 h-4 w-4" />
-                                                                            Delete
-                                                                        </DropdownMenuItem>
-                                                                    </DropdownMenuContent>
-                                                                 </DropdownMenu>
-                                                             </div>
-                                                             <CardDescription>{Array.isArray(set.cards) ? set.cards.length : 0} cards</CardDescription>
-                                                             {searchQuery && (
-                                                                 <div className="text-xs text-muted-foreground">
-                                                                     {set.title.toLowerCase().includes(searchQuery.toLowerCase()) ? (
-                                                                         <span>matches title</span>
-                                                                     ) : (
-                                                                         <span>matches {Array.isArray(set.cards) ? set.cards.filter(card => 
-                                                                             card.front.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                                                                             card.back.toLowerCase().includes(searchQuery.toLowerCase())
-                                                                         ).length : 0} cards</span>
-                                                                     )}
-                                                                 </div>
-                                                             )}
-                                                         </CardHeader>
-                                                         <CardContent className="flex-grow"></CardContent>
-                                                         <CardFooter className="flex flex-col gap-2">
-                                                             <Button className="w-full hover:shadow-lg hover:scale-105 transition-all duration-200 ease-in-out transform" onClick={() => router.push(`/sets/${set.id}/study`)}>
-                                                                 <BookOpen className="mr-2 h-4 w-4" />
-                                                                 Study
-                                                             </Button>
-                                                         </CardFooter>
-                                                     </AnimatedSetCard>
-                                                 </Link>
-                                             ))}
-                                         </div>
+                                                        <div className="flex items-center justify-between mt-4 pt-4 border-t">
+                                                            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                                                                <span>{cardCount} cards</span>
+                                                                {lastStudied && (
+                                                                    <div className="flex items-center gap-1">
+                                                                        <Clock className="w-4 h-4" />
+                                                                        <span>{lastStudied}</span>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="mt-4">
+                                                            <div className="flex justify-between text-xs text-muted-foreground mb-1">
+                                                                <span>Progress</span>
+                                                                <span>{progress}%</span>
+                                                            </div>
+                                                            <div className="w-full bg-muted rounded-full h-2">
+                                                                <div
+                                                                    className="bg-primary h-2 rounded-full transition-all"
+                                                                    style={{ width: `${progress}%` }}
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </Card>
+                                                    </Link>
+                                                );
+                                            })}
+                                        </div>
                                      ) : searchQuery ? (
                                          <div className="flex flex-col items-center justify-center text-center p-8 border-2 border-dashed rounded-lg bg-card">
                                              <h4 className="text-lg font-semibold mb-2">no personal sets found</h4>
@@ -760,88 +888,10 @@ const DashboardPage = () => {
                                                  </Link>
                                              </Button>
                                          </div>
-                                     )}
-                                 </div>
-
-                                                                  {/* Shared Sets Section - Commented out for now */}
-                                 {/* <div>
-                                     <h3 className="text-xl font-semibold mb-4 flex items-center justify-between">
-                                         <div className="flex items-center gap-2">
-                                             <Users2 className="h-5 w-5" />
-                                             shared with me
-                                         </div>
-                                         {searchQuery && (
-                                             <span className="text-sm text-muted-foreground">
-                                                 {filteredSharedSets.length} result{filteredSharedSets.length !== 1 ? 's' : ''}
-                                             </span>
-                                         )}
-                                     </h3>
-                                     {loadingShared ? (
-                                         <div className="flex items-center gap-2 text-muted-foreground">
-                                            <Loader2 className="h-5 w-5 animate-spin" />
-                                            <span>loading shared sets...</span>
-                                        </div>
-                                     ) : filteredSharedSets.length > 0 ? (
-                                         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                                            {filteredSharedSets.map(set => (
-                                                <Link key={set.id} href={`/sets/${set.id}/study`} className="block">
-                                                    <AnimatedSetCard className="flex flex-col cursor-pointer">
-                                                        <CardHeader>
-                                                            <div className="flex items-start justify-between">
-                                                                <CardTitle className="pr-4">{set.title}</CardTitle>
-                                                                <DropdownMenu>
-                                                                    <DropdownMenuTrigger asChild>
-                                                                                                                                            <Button variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0 hover:shadow-md hover:scale-110 transition-all duration-200 ease-in-out transform" onClick={(e) => e.preventDefault()}>
-                                                                        <MoreVertical className="h-4 w-4" />
-                                                                    </Button>
-                                                                    </DropdownMenuTrigger>
-                                                                    <DropdownMenuContent align="end">
-                                                                        <DropdownMenuItem onClick={() => handleRemoveSharedSet(set.id)} className="text-destructive">
-                                                                            <UserX className="mr-2 h-4 w-4" />
-                                                                            remove myself from set
-                                                                        </DropdownMenuItem>
-                                                                    </DropdownMenuContent>
-                                                                </DropdownMenu>
-                                                            </div>
-                                                            <CardDescription>{Array.isArray(set.cards) ? set.cards.length : 0} cards</CardDescription>
-                                                            {searchQuery && (
-                                                                <div className="text-xs text-muted-foreground">
-                                                                    {set.title.toLowerCase().includes(searchQuery.toLowerCase()) ? (
-                                                                        <span>matches title</span>
-                                                                    ) : (
-                                                                        <span>matches {Array.isArray(set.cards) ? set.cards.filter(card => 
-                                                                            card.front.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                                                                            card.back.toLowerCase().includes(searchQuery.toLowerCase())
-                                                                        ).length : 0} cards</span>
-                                                                    )}
-                                                                </div>
-                                                            )}
-                                                        </CardHeader>
-                                                        <CardContent className="flex-grow"></CardContent>
-                                                        <CardFooter className="flex flex-col gap-2">
-                                                            <Button className="w-full hover:shadow-lg hover:scale-105 transition-all duration-200 ease-in-out transform" onClick={() => router.push(`/sets/${set.id}/study`)}>
-                                                                <BookOpen className="mr-2 h-4 w-4" />
-                                                                Study
-                                                            </Button>
-                                                        </CardFooter>
-                                                    </AnimatedSetCard>
-                                                </Link>
-                                            ))}
-                                        </div>
-                                    ) : searchQuery ? (
-                                         <div className="flex flex-col items-center justify-center text-center p-8 border-2 border-dashed rounded-lg bg-card">
-                                           <h4 className="text-lg font-semibold mb-2">no shared sets found</h4>
-                                            <p className="text-muted-foreground">try adjusting your search terms.</p>
-                                        </div>
-                                     ) : (
-                                         <div className="flex flex-col items-center justify-center text-center p-8 border-2 border-dashed rounded-lg bg-card">
-                                           <h4 className="text-lg font-semibold mb-2">no shared sets</h4>
-                                            <p className="text-muted-foreground">sets you join using an ID will appear here.</p>
-                                         </div>
-                                     )}
-                                 </div> */}
-                             </div>
-                         </TabsContent>
+                                    )}
+                                </div>
+                            </div>
+                            </TabsContent>
                          
                          <TabsContent value="public-sets">
                              <div className="space-y-6">
@@ -935,53 +985,73 @@ const DashboardPage = () => {
                                          <span>loading public sets...</span>
                                      </div>
                                  ) : filteredPublicSets.length > 0 ? (
-                                     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                                         {filteredPublicSets.map(set => (
-                                             <div key={set.id} className="relative">
-                                                 <Link href={`/sets/${set.id}/study`} className="block">
-                                                     <AnimatedSetCard 
-                                                         className="flex flex-col cursor-pointer"
+                                     <div className="grid gap-4 md:grid-cols-2">
+                                         {filteredPublicSets.map(set => {
+                                             const cardCount = Array.isArray(set.cards) ? set.cards.length : 0;
+                                             const progress = Math.min(100, Math.max(0, Math.floor((cardCount / Math.max(cardCount, 1)) * 100)));
+                                             const category = Array.isArray(set.tags) && set.tags.length > 0 ? set.tags[0] : "General";
+                                             
+                                             return (
+                                                 <Link key={set.id} href={`/sets/${set.id}/study`} className="block">
+                                                     <Card 
+                                                         className="p-6 hover:shadow-lg transition-shadow cursor-pointer group"
                                                          onContextMenu={(e) => handleContextMenu(e, set.id)}
                                                      >
-                                                         <CardHeader>
-                                                             <div className="space-y-2">
-                                                                 <div className="flex items-start justify-between">
-                                                                     <CardTitle className="pr-4">{set.title}</CardTitle>
-                                                                     <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-                                                                         public
-                                                                     </span>
-                                                                 </div>
-                                                                 <div className="flex items-center gap-2">
-                                                                     <span className="text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
-                                                                         by {set.creatorDisplayName || "some user on this app"}
-                                                                     </span>
-                                                                 </div>
+                                                         <div className="flex justify-between items-start mb-4">
+                                                         <div className="flex-1">
+                                                             <div className="flex items-center gap-2 mb-2">
+                                                                 <h3 className="font-semibold group-hover:text-primary transition-colors">
+                                                                     {set.title}
+                                                                 </h3>
+                                                                 <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                                                                     public
+                                                                 </span>
                                                              </div>
-                                                             <CardDescription>{Array.isArray(set.cards) ? set.cards.length : 0} cards</CardDescription>
-                                                             {searchQuery && (
-                                                                 <div className="text-xs text-muted-foreground">
-                                                                     {set.title.toLowerCase().includes(searchQuery.toLowerCase()) ? (
-                                                                         <span>matches title</span>
-                                                                     ) : (
-                                                                         <span>matches {Array.isArray(set.cards) ? set.cards.filter(card => 
-                                                                             card.front.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                                                                             card.back.toLowerCase().includes(searchQuery.toLowerCase())
-                                                                         ).length : 0} cards</span>
-                                                                     )}
-                                                                 </div>
-                                                             )}
-                                                         </CardHeader>
-                                                         <CardContent className="flex-grow"></CardContent>
-                                                         <CardFooter className="flex flex-col gap-2">
-                                                             <Button className="w-full hover:shadow-lg hover:scale-105 transition-all duration-200 ease-in-out transform" onClick={() => router.push(`/sets/${set.id}/study`)}>
-                                                                 <BookOpen className="mr-2 h-4 w-4" />
-                                                                 Study
-                                                             </Button>
-                                                         </CardFooter>
-                                                     </AnimatedSetCard>
+                                                             <p className="text-sm text-muted-foreground mb-3">
+                                                                 {cardCount} {cardCount === 1 ? 'card' : 'cards'}
+                                                             </p>
+                                                             <div className="flex items-center gap-2 mb-2">
+                                                                 <Badge variant="secondary">{category}</Badge>
+                                                                 <span className="text-xs text-muted-foreground">
+                                                                     by {set.creatorDisplayName || "some user on this app"}
+                                                                 </span>
+                                                             </div>
+                                                         </div>
+                                                     </div>
+                                                     <div className="flex items-center justify-between mt-4 pt-4 border-t">
+                                                         <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                                                             <span>{cardCount} cards</span>
+                                                         </div>
+                                                     </div>
+                                                     <div className="mt-4">
+                                                         <div className="flex justify-between text-xs text-muted-foreground mb-1">
+                                                             <span>Progress</span>
+                                                             <span>{progress}%</span>
+                                                         </div>
+                                                         <div className="w-full bg-muted rounded-full h-2">
+                                                             <div
+                                                                 className="bg-primary h-2 rounded-full transition-all"
+                                                                 style={{ width: `${progress}%` }}
+                                                             />
+                                                         </div>
+                                                     </div>
+                                                     <div className="mt-4">
+                                                         <Button 
+                                                             className="w-full"
+                                                             onClick={(e) => {
+                                                                 e.preventDefault();
+                                                                 e.stopPropagation();
+                                                                 router.push(`/sets/${set.id}/study`);
+                                                             }}
+                                                         >
+                                                             <BookOpen className="mr-2 h-4 w-4" />
+                                                             Study
+                                                         </Button>
+                                                     </div>
+                                                 </Card>
                                                  </Link>
-                                             </div>
-                                         ))}
+                                             );
+                                         })}
                                      </div>
                                  ) : searchQuery ? (
                                      <div className="text-center py-12 border-2 border-dashed rounded-lg bg-card">
@@ -1035,79 +1105,103 @@ const DashboardPage = () => {
                                          <span>loading group sets...</span>
                                      </div>
                                  ) : groupSets.length > 0 ? (
-                                     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                                         {groupSets.map(set => (
-                                             <Link key={set.id} href={`/sets/${set.id}/study`} className="block">
-                                                 <AnimatedSetCard className="flex flex-col cursor-pointer">
-                                                     <CardHeader>
-                                                         <div className="flex items-start justify-between">
-                                                             <CardTitle className="pr-4">{set.title}</CardTitle>
-                                                             <DropdownMenu>
-                                                                 <DropdownMenuTrigger asChild>
-                                                                     <Button 
-                                                                         variant="ghost" 
-                                                                         size="icon" 
-                                                                         className="h-8 w-8 flex-shrink-0 hover:shadow-md hover:scale-110 transition-all duration-200 ease-in-out transform" 
-                                                                         onClick={(e) => e.preventDefault()}
-                                                                     >
-                                                                         <MoreVertical className="h-4 w-4" />
-                                                                     </Button>
-                                                                 </DropdownMenuTrigger>
-                                                                 <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
-                                                                     {/* Edit Action */}
-                                                                     <DropdownMenuItem asChild>
-                                                                         <Link href={`/sets/${set.id}/edit`}>
-                                                                             <Edit className="mr-2 h-4 w-4" />
-                                                                             edit set
-                                                                         </Link>
-                                                                     </DropdownMenuItem>
-                                                                     
-                                                                     {/* Copy Set ID */}
-                                                                     <DropdownMenuItem
-                                                                         onClick={(e) => {
-                                                                             e.preventDefault();
-                                                                             e.stopPropagation();
-                                                                             handleCopyId(set.id);
-                                                                         }}
-                                                                     >
-                                                                         <Copy className="mr-2 h-4 w-4" />
-                                                                         copy set ID
-                                                                     </DropdownMenuItem>
-                                                                     
-                                                                     {/* Duplicate Set */}
-                                                                     <DropdownMenuItem
-                                                                         onClick={(e) => {
-                                                                             e.preventDefault();
-                                                                             e.stopPropagation();
-                                                                             handleDuplicate(set);
-                                                                         }}
-                                                                     >
-                                                                         <CopyPlus className="mr-2 h-4 w-4" />
-                                                                         duplicate set
-                                                                     </DropdownMenuItem>
-                                                                     
-                                                                     {/* Remove from Group Sets */}
-                                                                     <DropdownMenuItem 
-                                                                         onClick={(e) => {
-                                                                             e.preventDefault();
-                                                                             e.stopPropagation();
-                                                                             handleRemoveGroupSet(set.id);
-                                                                         }} 
-                                                                         className="text-destructive"
-                                                                     >
-                                                                         <UserX className="mr-2 h-4 w-4" />
-                                                                         remove from group sets
-                                                                     </DropdownMenuItem>
-                                                                 </DropdownMenuContent>
-                                                             </DropdownMenu>
+                                     <div className="grid gap-4 md:grid-cols-2">
+                                         {groupSets.map(set => {
+                                             const cardCount = Array.isArray(set.cards) ? set.cards.length : 0;
+                                             const progress = Math.min(100, Math.max(0, Math.floor((cardCount / Math.max(cardCount, 1)) * 100)));
+                                             const category = Array.isArray(set.tags) && set.tags.length > 0 ? set.tags[0] : "General";
+                                             
+                                             return (
+                                                 <Link key={set.id} href={`/sets/${set.id}/study`} className="block">
+                                                     <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer group">
+                                                         <div className="flex justify-between items-start mb-4">
+                                                         <div className="flex-1">
+                                                             <div className="flex items-center gap-2 mb-2">
+                                                                 <h3 className="font-semibold group-hover:text-primary transition-colors">
+                                                                     {set.title}
+                                                                 </h3>
+                                                             </div>
+                                                             <p className="text-sm text-muted-foreground mb-3">
+                                                                 {cardCount} {cardCount === 1 ? 'card' : 'cards'}
+                                                             </p>
+                                                             <Badge variant="secondary">{category}</Badge>
                                                          </div>
-                                                         <CardDescription>{Array.isArray(set.cards) ? set.cards.length : 0} cards</CardDescription>
-                                                     </CardHeader>
-                                                     <CardContent className="flex-grow"></CardContent>
-                                                     <CardFooter className="flex flex-col gap-2">
+                                                         <DropdownMenu>
+                                                             <DropdownMenuTrigger asChild>
+                                                                 <Button 
+                                                                     variant="ghost" 
+                                                                     size="icon" 
+                                                                     className="h-8 w-8"
+                                                                     onClick={(e) => e.preventDefault()}
+                                                                 >
+                                                                     <MoreVertical className="h-4 w-4" />
+                                                                 </Button>
+                                                             </DropdownMenuTrigger>
+                                                             <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                                                                 <DropdownMenuItem asChild>
+                                                                     <Link href={`/sets/${set.id}/edit`}>
+                                                                         <Edit className="mr-2 h-4 w-4" />
+                                                                         edit set
+                                                                     </Link>
+                                                                 </DropdownMenuItem>
+                                                                 <DropdownMenuItem
+                                                                     onClick={(e) => {
+                                                                         e.preventDefault();
+                                                                         e.stopPropagation();
+                                                                         handleCopyId(set.id);
+                                                                     }}
+                                                                 >
+                                                                     <Copy className="mr-2 h-4 w-4" />
+                                                                     copy set ID
+                                                                 </DropdownMenuItem>
+                                                                 <DropdownMenuItem
+                                                                     onClick={(e) => {
+                                                                         e.preventDefault();
+                                                                         e.stopPropagation();
+                                                                         handleDuplicate(set);
+                                                                     }}
+                                                                 >
+                                                                     <CopyPlus className="mr-2 h-4 w-4" />
+                                                                     duplicate set
+                                                                 </DropdownMenuItem>
+                                                                 <DropdownMenuItem 
+                                                                     onClick={(e) => {
+                                                                         e.preventDefault();
+                                                                         e.stopPropagation();
+                                                                         handleRemoveGroupSet(set.id);
+                                                                     }} 
+                                                                     className="text-destructive"
+                                                                 >
+                                                                     <UserX className="mr-2 h-4 w-4" />
+                                                                     remove from group sets
+                                                                 </DropdownMenuItem>
+                                                             </DropdownMenuContent>
+                                                         </DropdownMenu>
+                                                     </div>
+                                                     <div className="flex items-center justify-between mt-4 pt-4 border-t">
+                                                         <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                                                             <span>{cardCount} cards</span>
+                                                         </div>
+                                                         <div className="flex items-center gap-2">
+                                                             <Users className="w-4 h-4 text-muted-foreground" />
+                                                         </div>
+                                                     </div>
+                                                     <div className="mt-4">
+                                                         <div className="flex justify-between text-xs text-muted-foreground mb-1">
+                                                             <span>Progress</span>
+                                                             <span>{progress}%</span>
+                                                         </div>
+                                                         <div className="w-full bg-muted rounded-full h-2">
+                                                             <div
+                                                                 className="bg-primary h-2 rounded-full transition-all"
+                                                                 style={{ width: `${progress}%` }}
+                                                             />
+                                                         </div>
+                                                     </div>
+                                                     <div className="mt-4 flex gap-2">
                                                          <Button 
                                                              variant="outline" 
-                                                             className="w-full hover:shadow-lg hover:scale-105 transition-all duration-200 ease-in-out transform" 
+                                                             className="flex-1"
                                                              onClick={(e) => {
                                                                  e.preventDefault();
                                                                  e.stopPropagation();
@@ -1117,14 +1211,22 @@ const DashboardPage = () => {
                                                              <Edit className="mr-2 h-4 w-4" />
                                                              Collab
                                                          </Button>
-                                                         <Button className="w-full hover:shadow-lg hover:scale-105 transition-all duration-200 ease-in-out transform" onClick={() => router.push(`/sets/${set.id}/study`)}>
+                                                         <Button 
+                                                             className="flex-1"
+                                                             onClick={(e) => {
+                                                                 e.preventDefault();
+                                                                 e.stopPropagation();
+                                                                 router.push(`/sets/${set.id}/study`);
+                                                             }}
+                                                         >
                                                              <BookOpen className="mr-2 h-4 w-4" />
                                                              Study
                                                          </Button>
-                                                     </CardFooter>
-                                                 </AnimatedSetCard>
-                                             </Link>
-                                         ))}
+                                                     </div>
+                                                 </Card>
+                                                 </Link>
+                                             );
+                                         })}
                                      </div>
                                  ) : (
                                      <div className="text-center py-12 border-2 border-dashed rounded-lg bg-card">
@@ -1144,9 +1246,50 @@ const DashboardPage = () => {
                                  )}
                              </div>
                          </TabsContent>
-                         
+                                </Tabs>
+                            </Card>
 
-                    </Tabs>
+                            {/* Game Modes Section */}
+                            <div>
+                                <div className="flex items-center justify-between mb-6">
+                                    <div>
+                                        <h2 className="text-xl font-semibold">Game Modes</h2>
+                                        <p className="text-sm text-muted-foreground">
+                                            Challenge yourself or play with friends
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {gameModes.map((game) => (
+                                        <GameModeCard key={game.title} {...game} />
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Right Section - Activity Feed */}
+                        {showActivity && (
+                            <div className="lg:col-span-1">
+                                <RecentActivity 
+                                    activities={mockActivities} 
+                                    isVisible={showActivity}
+                                    onToggleVisibility={() => setShowActivity(!showActivity)}
+                                />
+                            </div>
+                        )}
+                        {!showActivity && (
+                            <div className="fixed bottom-8 right-8 z-40">
+                                <Button
+                                    onClick={() => setShowActivity(true)}
+                                    className="gap-2 shadow-lg"
+                                    size="lg"
+                                >
+                                    <Eye className="w-5 h-5" />
+                                    Show Activity
+                                </Button>
+                            </div>
+                        )}
+                    </div>
                 </main>
                 <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 sm:px-6 lg:px-8 border-t mt-auto relative z-10">
                     <div className="container mx-auto flex flex-col gap-2 sm:flex-row items-center justify-between">

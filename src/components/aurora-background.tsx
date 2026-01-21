@@ -10,6 +10,20 @@ interface AuroraBackgroundProps {
 export default function AuroraBackground({ className = "" }: AuroraBackgroundProps) {
   const { theme } = useTheme();
   
+  // Show noise background for bw theme
+  if (theme === 'bw') {
+    return (
+      <div 
+        className={`fixed inset-0 pointer-events-none z-0 ${className}`}
+        style={{
+          backgroundImage: 'url(/noise.svg)',
+          backgroundRepeat: 'repeat',
+          opacity: 0.4,
+        }}
+      />
+    );
+  }
+  
   // Only show aurora for dark theme
   if (theme !== 'dark') {
     return null;
