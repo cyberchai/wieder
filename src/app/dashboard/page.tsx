@@ -59,6 +59,7 @@ import {
   useJoinGroupSet,
   useLeaveGroupSet,
 } from "@/hooks/use-flashcard-queries";
+import { useUserStats, useUserRank, useLeaderboard } from "@/hooks/use-stats-queries";
 
 
 const DashboardPage = () => {
@@ -88,6 +89,20 @@ const DashboardPage = () => {
         data: groupSets = [], 
         isLoading: loadingGroup 
     } = useGroupFlashcardSets();
+    
+    // Stats hooks
+    const { 
+        data: userStats,
+        isLoading: loadingStats
+    } = useUserStats();
+    
+    const {
+        data: userRank
+    } = useUserRank();
+    
+    const {
+        data: leaderboard = []
+    } = useLeaderboard();
     
     // UI state variables
     const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -127,10 +142,11 @@ const DashboardPage = () => {
         return [...sets, ...sharedSets, ...groupSets].reduce((sum, set) => sum + (Array.isArray(set.cards) ? set.cards.length : 0), 0);
     }, [sets, sharedSets, groupSets]);
 
-    const totalWieds = useMemo(() => {
-        // Mock wieds calculation - can be replaced with real data
-        return totalCards * 7; // Rough estimate
-    }, [totalCards]);
+    // Use real stats from Firestore
+    const totalWieds = userStats?.wieds || 0;
+    const cardsStudied = userStats?.cardsStudied || 0;
+    const studyStreak = userStats?.studyStreak ?? 1; // Default to 1, not 0
+    const leaderboardRank = userRank || null;
 
     // Game modes
     const gameModes = [
@@ -595,30 +611,35 @@ const DashboardPage = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                         <StatCard
                             title="Cards Studied"
-                            value={totalCards.toLocaleString()}
+                            value={loadingStats ? "..." : cardsStudied.toLocaleString()}
                             icon={Target}
-                            trend={{ value: "12% this week", isPositive: true }}
+                            trend={{ 
+                                value: totalCards > 0 
+                                    ? `${Math.round((cardsStudied / totalCards) * 100)}% of ${totalCards.toLocaleString()} cards`
+                                    : `${totalCards.toLocaleString()} cards available`,
+                                isPositive: true 
+                            }}
                             color="bg-blue-500"
                         />
                         <StatCard
                             title="Wieds"
-                            value={totalWieds.toLocaleString()}
+                            value={loadingStats ? "..." : totalWieds.toLocaleString()}
                             icon={Sparkles}
-                            trend={{ value: "+320 today", isPositive: true }}
+                            trend={{ value: "1 per card, 100 per game", isPositive: true }}
                             color="bg-green-500"
                         />
                         <StatCard
                             title="Study Streak"
-                            value="15"
+                            value={loadingStats ? "..." : studyStreak.toString()}
                             icon={Flame}
-                            trend={{ value: "Best: 23 days", isPositive: true }}
+                            trend={{ value: studyStreak > 0 ? "Keep it up!" : "Start studying!", isPositive: studyStreak > 0 }}
                             color="bg-orange-500"
                         />
                         <StatCard
                             title="Leaderboard Rank"
-                            value="#12"
+                            value={loadingStats || !leaderboardRank ? "..." : `#${leaderboardRank}`}
                             icon={Crown}
-                            trend={{ value: "Up 5 spots", isPositive: true }}
+                            trend={{ value: leaderboardRank ? `Top ${Math.ceil((leaderboardRank / (leaderboard.length || 1)) * 100)}%` : "No rank yet", isPositive: leaderboardRank ? leaderboardRank <= 20 : false }}
                             color="bg-purple-500"
                         />
                     </div>

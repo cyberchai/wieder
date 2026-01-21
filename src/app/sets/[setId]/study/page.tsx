@@ -14,6 +14,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { ResponsiveText } from '@/components/responsive-text';
 import { useSoundEffects } from '@/hooks/use-sound-effects';
+import { useTrackCardStudied } from '@/hooks/use-stats-queries';
 
 export default function StudyPage() {
   const params = useParams();
@@ -21,6 +22,7 @@ export default function StudyPage() {
   const router = useRouter();
   const { user } = useAuth();
   const { handleHoverStart, handleHoverEnd, handleToggleOn, handleToggleOff, enableSounds } = useSoundEffects();
+  const trackCardStudied = useTrackCardStudied();
 
   const [set, setSet] = useState<FlashcardSet | null>(null);
   const [loading, setLoading] = useState(true);
@@ -33,6 +35,7 @@ export default function StudyPage() {
   const [editingCard, setEditingCard] = useState<number | null>(null);
   const [editTerm, setEditTerm] = useState('');
   const [editDefinition, setEditDefinition] = useState('');
+  const [trackedCards, setTrackedCards] = useState<Set<string>>(new Set());
 
   const shuffleCards = useCallback((cards: CardType[]) => {
     return [...cards].sort(() => Math.random() - 0.5);
@@ -131,9 +134,17 @@ export default function StudyPage() {
     if (currentIndex < shuffledCards.length - 1) {
       setIsTransitioning(true);
       setTimeout(() => {
-        setCurrentIndex(prev => prev + 1);
+        const nextIndex = currentIndex + 1;
+        setCurrentIndex(nextIndex);
         setIsFlipped(false);
         setIsTransitioning(false);
+        
+        // Track card when moving to next (if not already tracked)
+        const nextCard = shuffledCards[nextIndex];
+        if (nextCard && user && !trackedCards.has(nextCard.id)) {
+          setTrackedCards(prev => new Set(prev).add(nextCard.id));
+          trackCardStudied.mutate();
+        }
       }, 150);
     }
   };
@@ -153,6 +164,12 @@ export default function StudyPage() {
   const handleFlip = () => {
     enableSounds(); // Enable sounds on first user interaction
     setIsFlipped(prev => !prev);
+    
+    // Track card when flipped (first time viewing the back)
+    if (!isFlipped && currentCard && user && !trackedCards.has(currentCard.id)) {
+      setTrackedCards(prev => new Set(prev).add(currentCard.id));
+      trackCardStudied.mutate();
+    }
   };
 
   const handleRestart = () => {

@@ -16,6 +16,7 @@ import Confetti from 'react-confetti';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { useSoundEffects } from '@/hooks/use-sound-effects';
+import { useTrackCardStudied } from '@/hooks/use-stats-queries';
 
 export default function PracticePage() {
   const params = useParams();
@@ -24,6 +25,7 @@ export default function PracticePage() {
   const { user } = useAuth();
   const inputRef = useRef<HTMLInputElement>(null);
   const { handleCorrectAnswer, handleToggleOn, handleToggleOff, enableSounds } = useSoundEffects();
+  const trackCardStudied = useTrackCardStudied();
 
   const [set, setSet] = useState<FlashcardSet | null>(null);
   const [loading, setLoading] = useState(true);
@@ -42,6 +44,7 @@ export default function PracticePage() {
   const [attempts, setAttempts] = useState(0);
   const [autoplayTimer, setAutoplayTimer] = useState<NodeJS.Timeout | null>(null);
   const [retryCardIds, setRetryCardIds] = useState<Set<string>>(new Set());
+  const [trackedCards, setTrackedCards] = useState<Set<string>>(new Set());
 
   const shuffleCards = useCallback((cards: CardType[]) => {
     return [...cards].sort(() => Math.random() - 0.5);
@@ -174,6 +177,12 @@ export default function PracticePage() {
     if (userAnswerClean === answerTextClean) {
       setFeedback('correct');
       handleCorrectAnswer(); // Play correct answer sound
+      
+      // Track card when answered correctly (only once per card)
+      if (currentCard && user && !trackedCards.has(currentCard.id)) {
+        setTrackedCards(prev => new Set(prev).add(currentCard.id));
+        trackCardStudied.mutate();
+      }
     } else {
       setFeedback('try-again');
       // Only append the card if it hasn't been added as a retry card yet
@@ -194,6 +203,12 @@ export default function PracticePage() {
       setFeedback('correct');
       setAttempts(0);
       handleCorrectAnswer(); // Play correct answer sound
+      
+      // Track card when answered correctly (only once per card)
+      if (currentCard && user && !trackedCards.has(currentCard.id)) {
+        setTrackedCards(prev => new Set(prev).add(currentCard.id));
+        trackCardStudied.mutate();
+      }
     } else {
       setAttempts(prev => prev + 1);
       // Only append the card if it hasn't been added as a retry card yet
@@ -240,6 +255,7 @@ export default function PracticePage() {
     setSelectedOption(null);
     setAttempts(0);
     setRetryCardIds(new Set());
+    setTrackedCards(new Set());
   }
 
   const handleRestart = () => {

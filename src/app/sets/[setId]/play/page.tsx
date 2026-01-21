@@ -20,6 +20,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import RainDrops from "@/components/rain-drops";
 import { useSoundEffects } from "@/hooks/use-sound-effects";
+import { useTrackGamePlayed } from "@/hooks/use-stats-queries";
 
 interface FallingWord {
   id: string;
@@ -40,6 +41,7 @@ export default function PlayPage() {
   const { width: windowWidth, height: windowHeight } = useWindowSize();
   const isMobile = useIsMobile();
   const { handleCorrectAnswer, handleToggleOn, handleIncorrectAnswer, handleGameEnded, handleHeartLost, enableSounds } = useSoundEffects();
+  const trackGamePlayed = useTrackGamePlayed();
 
   const gameAreaRef = useRef<HTMLDivElement>(null);
   const wordRef = useRef<HTMLDivElement>(null);
@@ -125,6 +127,11 @@ export default function PlayPage() {
       setGameEndReason("success");
       setFallingWord(null);
       handleGameEnded(); // Play game ended sound
+      
+      // Track game completion (100 Wieds)
+      if (user) {
+        trackGamePlayed.mutate();
+      }
       return;
     }
 

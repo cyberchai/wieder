@@ -16,6 +16,7 @@ import { ArrowLeft, RefreshCw, CheckCircle2, XCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import Confetti from 'react-confetti';
+import { useTrackCardStudied } from '@/hooks/use-stats-queries';
 
 type QuestionType = 'multiple-choice' | 'true-false' | 'written';
 
@@ -57,6 +58,7 @@ export default function TestPage() {
     const router = useRouter();
     const { user } = useAuth();
     const { toast } = useToast();
+    const trackCardStudied = useTrackCardStudied();
 
     const [set, setSet] = useState<FlashcardSet | null>(null);
     const [loading, setLoading] = useState(true);
@@ -163,6 +165,8 @@ export default function TestPage() {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         let correctCount = 0;
+        const trackedCardIds = new Set<string>();
+        
         questions.forEach(q => {
             const userAnswer = userAnswers[q.id];
             if (userAnswer === undefined) return;
@@ -176,6 +180,11 @@ export default function TestPage() {
 
             if (isCorrect) {
                 correctCount++;
+                // Track each card that was answered correctly
+                if (q.card && user && !trackedCardIds.has(q.card.id)) {
+                    trackedCardIds.add(q.card.id);
+                    trackCardStudied.mutate();
+                }
             }
         });
         

@@ -1,0 +1,51 @@
+// Allow signed-in users to read all sets, but manage only their own
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    function isOwner(resourceData) {
+      return resourceData.userId == request.auth.uid;
+    }
+
+    match /flashcardSets/{setId} {
+      // Allow read access to all sets for signed-in users
+      allow read: if isSignedIn();
+      
+      // Allow create/update/delete only for sets owned by the user
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      
+      // Updated: Allow anyone to update non-public sets, but only owners can update public sets
+      allow update: if isSignedIn() && (
+        resource.data.isPublic == false || 
+        resource.data.isPublic == null ||
+        !('isPublic' in resource.data) ||
+        isOwner(resource.data)
+      );
+      allow delete: if isSignedIn() && isOwner(resource.data);
+    }
+    
+    match /users/{userId} {
+      // Allow users to read their own profile and other public profiles
+      allow read: if isSignedIn();
+      
+      // Allow users to create/update their own profile
+      allow create, update: if isSignedIn() && request.auth.uid == userId;
+      
+      // No delete allowed for user profiles
+      allow delete: if false;
+    }
+    
+    match /userStats/{userId} {
+      // Allow users to read all stats (needed for leaderboard)
+      allow read: if isSignedIn();
+      
+      // Allow users to create/update only their own stats
+      allow create, update: if isSignedIn() && request.auth.uid == userId;
+      
+      // Prevent deletion of stats to maintain data integrity
+      allow delete: if false;
+    }
+  }
+}
