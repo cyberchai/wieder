@@ -10,8 +10,8 @@ interface AuroraBackgroundProps {
 export default function AuroraBackground({ className = "" }: AuroraBackgroundProps) {
   const { theme } = useTheme();
   
-  // Show noise background for bw theme
-  if (theme === 'bw') {
+  // Show noise background for light theme
+  if (theme === 'light') {
     return (
       <div 
         className={`fixed inset-0 pointer-events-none z-0 ${className}`}

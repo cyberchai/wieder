@@ -127,7 +127,7 @@ svg circle[fill*="url(#a-cl-9)"] {
     --radius: 0.5rem;
     --tab-bar-bg: 224 60% 18%; /* Darker tab bar background for skunks theme */
   }
-  .bw {
+  .light {
     --background: 0 0% 100%; /* white */
     --foreground: 0 0% 0%; /* black */
     --card: 0 0% 100%; /* pure white */
@@ -151,8 +151,8 @@ svg circle[fill*="url(#a-cl-9)"] {
     --tab-bar-bg: 0 0% 96%; /* very light gray tab bar background */
   }
   
-  /* BW theme specific button overrides */
-  .bw .bg-primary {
+  /* Light theme specific button overrides */
+  .light .bg-primary {
     background-color: hsl(0 0% 0%) !important; /* black */
   }
 
@@ -203,81 +203,81 @@ svg circle[fill*="url(#a-cl-9)"] {
     color: hsl(224 60% 22%) !important; /* theme background color for text on hover */
   }
   
-  .bw .bg-accent {
+  .light .bg-accent {
     background-color: hsl(0 0% 0%) !important; /* black */
   }
   
-  .bw .text-primary-foreground {
+  .light .text-primary-foreground {
     color: hsl(0 0% 100%) !important; /* white text */
   }
   
-  .bw .text-accent-foreground {
+  .light .text-accent-foreground {
     color: hsl(0 0% 100%) !important; /* white text */
   }
   
-  .bw .hover\:bg-primary\/90:hover {
+  .light .hover\:bg-primary\/90:hover {
     background-color: hsl(0 0% 20%) !important; /* slightly lighter black on hover */
   }
   
-  .bw .hover\:bg-accent\/90:hover {
+  .light .hover\:bg-accent\/90:hover {
     background-color: hsl(0 0% 20%) !important; /* slightly lighter black on hover */
   }
   
-  /* Force all buttons to be black in BW theme */
-  .bw button {
+  /* Force all buttons to be black in Light theme */
+  .light button {
     background-color: hsl(0 0% 0%) !important;
     color: hsl(0 0% 100%) !important;
   }
   
-  .bw button[class*="bg-"] {
+  .light button[class*="bg-"] {
     background-color: hsl(0 0% 0%) !important;
   }
   
-  .bw button[class*="text-"] {
+  .light button[class*="text-"] {
     color: hsl(0 0% 100%) !important;
   }
   
   /* Tab bar background override */
-  .bw .tab-bar-bg {
+  .light .tab-bar-bg {
     background-color: hsl(0 0% 0%) !important; /* black */
   }
   
   /* Active tab styling - inverted colors */
-  .bw [data-state="active"] {
+  .light [data-state="active"] {
     background-color: hsl(0 0% 100%) !important; /* white background */
     color: hsl(0 0% 0%) !important; /* black text */
   }
   
-  .bw [data-state="active"]:hover {
+  .light [data-state="active"]:hover {
     background-color: hsl(0 0% 95%) !important; /* slightly off-white on hover */
   }
   
   /* Ensure active tab stays white with multiple selectors */
-  .bw .bg-primary {
+  .light .bg-primary {
     background-color: hsl(0 0% 100%) !important; /* white background */
     color: hsl(0 0% 0%) !important; /* black text */
   }
   
-  .bw .bg-primary:hover {
+  .light .bg-primary:hover {
     background-color: hsl(0 0% 95%) !important; /* slightly off-white on hover */
   }
   
   /* Target the TabsTrigger specifically */
-  .bw [role="tab"][aria-selected="true"] {
+  .light [role="tab"][aria-selected="true"] {
     background-color: hsl(0 0% 100%) !important; /* white background */
     color: hsl(0 0% 0%) !important; /* black text */
   }
   
-  .bw [role="tab"][aria-selected="true"]:hover {
+  .light [role="tab"][aria-selected="true"]:hover {
     background-color: hsl(0 0% 95%) !important; /* slightly off-white on hover */
   }
   
-  /* BW theme - noise background for cards using pseudo-element overlay */
-  .bw .animated-gradient-border-wrapper > div {
+  /* Light theme - noise background for cards using pseudo-element overlay */
+  .light .animated-gradient-border-wrapper > div {
     position: relative !important;
   }
   
-  .bw .animated-gradient-border-wrapper > div::before {
+  .light .animated-gradient-border-wrapper > div::before {
     content: '' !important;
     position: absolute !important;
     top: 0 !important;
@@ -293,9 +293,74 @@ svg circle[fill*="url(#a-cl-9)"] {
     border-radius: inherit !important;
   }
   
-  .bw .animated-gradient-border-wrapper > div > div[class*="Card"] {
+  .light .animated-gradient-border-wrapper > div > div[class*="Card"] {
     position: relative !important;
     z-index: 1 !important;
+  }
+  
+  /* Prevent hover color change on space-y-8 divs in light theme */
+  .light .space-y-8:hover {
+    background-color: transparent !important;
+  }
+  
+  .light .space-y-8 > div:hover {
+    background-color: transparent !important;
+  }
+  
+  /* Prevent hover color change on grid containers in light theme */
+  .light .grid:hover {
+    background-color: transparent !important;
+  }
+  
+  .light .grid.gap-4:hover,
+  .light .grid[class*="gap-"]:hover {
+    background-color: transparent !important;
+  }
+  
+  /* Prevent hover on grid items wrapper */
+  .light div[class*="grid"]:hover {
+    background-color: transparent !important;
+  }
+  
+  /* Prevent hover background changes on any divs inside grid in light theme */
+  .light .grid > div:hover {
+    background-color: inherit !important;
+  }
+  
+  /* More specific: prevent hover on grid containers and their direct children */
+  .light .space-y-8 .grid:hover,
+  .light .space-y-8 .grid > *:hover {
+    background-color: transparent !important;
+  }
+  
+  /* Prevent hover effects on tabpanel and its contents in light theme */
+  .light [role="tabpanel"]:hover {
+    background-color: transparent !important;
+  }
+  
+  .light [role="tabpanel"] > *:hover {
+    background-color: transparent !important;
+  }
+  
+  .light [data-state="active"]:hover {
+    background-color: transparent !important;
+  }
+  
+  /* Prevent hover on all divs inside tabpanel */
+  .light [role="tabpanel"] div:hover {
+    background-color: transparent !important;
+  }
+  
+  /* More specific: prevent hover on space-y-8 inside tabpanel */
+  .light [role="tabpanel"] .space-y-8:hover,
+  .light [role="tabpanel"] .space-y-8 > div:hover {
+    background-color: transparent !important;
+  }
+  
+  /* Prevent hover on grid inside tabpanel */
+  .light [role="tabpanel"] .grid:hover,
+  .light [role="tabpanel"] .grid > *:hover {
+    background-color: transparent !important;
   }
 }
 

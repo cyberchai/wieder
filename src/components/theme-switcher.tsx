@@ -2,7 +2,7 @@
 "use client"
 
 import * as React from "react"
-import { Moon, Sun } from "lucide-react"
+import { Moon, Sun, Smile } from "lucide-react"
 import { useTheme, type Theme } from "@/providers/theme-provider" // <-- import Theme type
 import { useSoundEffects } from "@/hooks/use-sound-effects"
 import { trackThemeChange } from "@/lib/analytics"
@@ -15,10 +15,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { NeilsonIcon, ConfeshIcon, SkunksIcon, MatrixIcon } from "./theme-icons"
+import { NeilsonIcon, ConfeshIcon, SkunksIcon } from "./theme-icons"
 
 // Allowed themes in your app (must match what your provider supports)
-const THEMES = ["neilson", "dark", "confesh", "skunks", "bw"] as const satisfies readonly Theme[]
+const THEMES = ["neilson", "dark", "confesh", "skunks", "light"] as const satisfies readonly Theme[]
 
 // Runtime type guard: string -> Theme
 function isThemeName(v: string): v is Theme {
@@ -96,12 +96,12 @@ export function ThemeSwitcher() {
           <span>bears</span> {/* (You had "bears" here — changed to match the value) */}
         </DropdownMenuItem>
         <DropdownMenuItem
-          onClick={() => handleThemeChange("bw")}
+          onClick={() => handleThemeChange("light")}
           onMouseEnter={handleHoverStart}
           onMouseLeave={handleHoverEnd}
         >
-          <MatrixIcon className="mr-2 h-4 w-4" />
-          <span>bw</span>
+          <Smile className="mr-2 h-4 w-4" />
+          <span>light</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
