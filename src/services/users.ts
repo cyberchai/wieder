@@ -16,6 +16,7 @@ import { withPerformanceMonitoring } from "@/lib/performance-monitor";
 export interface UserSettings {
   soundEnabled: boolean;
   showNameOnPublicSets: boolean;
+  fontFamily?: 'poppins' | 'shantell';
 }
 
 export interface UserProfile {

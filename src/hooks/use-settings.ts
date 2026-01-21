@@ -5,11 +5,13 @@ import { getUserProfile, updateUserSettings } from '@/services/users';
 export interface UserSettings {
   soundEnabled: boolean;
   showNameOnPublicSets: boolean;
+  fontFamily?: 'poppins' | 'shantell';
 }
 
 const defaultSettings: UserSettings = {
   soundEnabled: true,
   showNameOnPublicSets: true,
+  fontFamily: 'poppins',
 };
 
 export const useSettings = () => {
@@ -49,7 +51,7 @@ export const useSettings = () => {
     loadSettings();
   }, [user]);
 
-  const updateSetting = useCallback(async (key: keyof UserSettings, value: boolean) => {
+  const updateSetting = useCallback(async (key: keyof UserSettings, value: boolean | 'poppins' | 'shantell') => {
     const previousSettings = settings;
     const newSettings = { ...settings, [key]: value };
     
@@ -80,11 +82,17 @@ export const useSettings = () => {
     updateSetting('showNameOnPublicSets', !settings.showNameOnPublicSets);
   }, [settings.showNameOnPublicSets, updateSetting]);
 
+  const toggleFontFamily = useCallback(() => {
+    const newFont = settings.fontFamily === 'poppins' ? 'shantell' : 'poppins';
+    updateSetting('fontFamily', newFont);
+  }, [settings.fontFamily, updateSetting]);
+
   return {
     settings,
     loading,
     toggleSound,
     toggleShowNameOnPublicSets,
+    toggleFontFamily,
     updateSetting,
   };
 };

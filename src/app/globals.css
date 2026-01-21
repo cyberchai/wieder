@@ -375,6 +375,20 @@ svg circle[fill*="url(#a-cl-9)"] {
   .font-arial {
     font-family: Arial, sans-serif;
   }
+  .shantell-sans {
+    font-family: "Shantell Sans", cursive !important;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
+    font-variation-settings:
+      "BNCE" 0,
+      "INFM" 0,
+      "SPAC" 0;
+  }
+  
+  body.shantell-sans {
+    font-family: "Shantell Sans", cursive !important;
+  }
 }
 
 @layer components {
