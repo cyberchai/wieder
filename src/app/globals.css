@@ -486,6 +486,10 @@ svg circle[fill*="url(#a-cl-9)"] {
     transform: rotateY(180deg);
   }
   
+  .rotate-x-180 {
+    transform: rotateX(180deg);
+  }
+  
   .flip-transition {
     transition: transform 0.3s ease-in-out;
   }

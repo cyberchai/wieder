@@ -40,11 +40,10 @@ import { trackUserEngagement, trackPageView } from "@/lib/analytics";
 import { SilentCircleHider } from "@/components/silent-element-hider";
 import { AnimatedSetCard } from "@/components/animated-set-card";
 import { StatCard } from "@/components/stat-card";
-import { RecentActivity } from "@/components/recent-activity";
-import { GameModeCard } from "@/components/game-mode-card";
-import { Leaderboard } from "@/components/leaderboard";
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { GameModeCard } from "@/components/game-mode-card";
+import { Trophy, Medal } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import {
   useUserFlashcardSets,
   usePublicFlashcardSets,
@@ -60,6 +59,8 @@ import {
   useLeaveGroupSet,
 } from "@/hooks/use-flashcard-queries";
 import { useUserStats, useUserRank, useLeaderboard } from "@/hooks/use-stats-queries";
+import { useQuery } from "@tanstack/react-query";
+import { getUserProfilesBatch } from "@/services/users";
 
 
 const DashboardPage = () => {
@@ -104,6 +105,15 @@ const DashboardPage = () => {
         data: leaderboard = []
     } = useLeaderboard();
     
+    // Fetch user profiles for top 3 leaderboard display
+    const top3Uids = useMemo(() => leaderboard.slice(0, 3).map(stat => stat.uid), [leaderboard]);
+    const { data: leaderboardProfiles = new Map() } = useQuery({
+        queryKey: ['leaderboard-profiles-top3', top3Uids],
+        queryFn: () => getUserProfilesBatch(top3Uids),
+        enabled: top3Uids.length > 0,
+        staleTime: 5 * 60 * 1000,
+    });
+    
     // UI state variables
     const [deletingId, setDeletingId] = useState<string | null>(null);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -118,7 +128,6 @@ const DashboardPage = () => {
     const { handleNavigationClick, enableSounds } = useSoundEffects();
     const { settings } = useSettings();
     const [contextMenu, setContextMenu] = useState<{ x: number; y: number; setId: string } | null>(null);
-    const [showActivity, setShowActivity] = useState(true);
     const [viewMode, setViewMode] = useState<'cards' | 'list'>(() => {
         // Initialize from localStorage if available
         if (typeof window !== 'undefined') {
@@ -134,23 +143,6 @@ const DashboardPage = () => {
     useEffect(() => {
         localStorage.setItem('dashboard-view-mode', viewMode);
     }, [viewMode]);
-
-    // Mock activity data - can be replaced with real data later
-    const mockActivities = useMemo(() => {
-        if (!user) return [];
-        return [
-            {
-                id: "1",
-                user: { name: user.displayName || user.email?.split('@')[0] || "You", avatar: "" },
-                action: "created a new set",
-                deck: sets[0]?.title || "New Set",
-                timestamp: "just now",
-                type: "social" as const,
-                likes: 0,
-                comments: 0,
-            },
-        ];
-    }, [user, sets]);
 
     // Calculate stats
     const totalCards = useMemo(() => {
@@ -635,6 +627,32 @@ const DashboardPage = () => {
                                 isPositive: true 
                             }}
                             color="bg-blue-500"
+                            backTitle="Suggested Set"
+                            backContent={
+                                (() => {
+                                    const allSets = [...sets, ...sharedSets, ...groupSets];
+                                    const funReasons = [
+                                        "it's been lonely lately",
+                                        "your brain will thank you",
+                                        "knowledge is power",
+                                        "you're on a roll today",
+                                        "it misses you"
+                                    ];
+                                    if (allSets.length === 0) {
+                                        return <p className="text-xs text-muted-foreground">Create a set to get started!</p>;
+                                    }
+                                    const randomSet = allSets[Math.floor(Math.random() * allSets.length)];
+                                    const randomReason = funReasons[Math.floor(Math.random() * funReasons.length)];
+                                    return (
+                                        <div className="space-y-2">
+                                            <Link href={`/sets/${randomSet.id}/study`} className="block">
+                                                <p className="text-sm font-medium text-primary hover:underline truncate">{randomSet.title}</p>
+                                            </Link>
+                                            <p className="text-xs text-muted-foreground italic">because {randomReason}</p>
+                                        </div>
+                                    );
+                                })()
+                            }
                         />
                         <StatCard
                             title="Wieds"
@@ -642,6 +660,39 @@ const DashboardPage = () => {
                             icon={Coins}
                             trend={{ value: "1 per card, 100 per game", isPositive: true }}
                             color="bg-green-500"
+                            backContent={
+                                <div className="relative h-full w-full overflow-hidden rounded-md">
+                                    {/* Mini Garden Scene */}
+                                    <div className="absolute inset-0 bg-gradient-to-b from-sky-400 to-sky-300">
+                                        {/* Sun */}
+                                        <div className="absolute top-1 right-2 w-6 h-6 bg-yellow-400 rounded-full shadow-lg" />
+                                        {/* Cloud */}
+                                        <div className="absolute top-2 left-2 flex">
+                                            <div className="w-4 h-4 bg-white rounded-full" />
+                                            <div className="w-5 h-5 bg-white rounded-full -ml-2 -mt-1" />
+                                            <div className="w-3 h-3 bg-white rounded-full -ml-1" />
+                                        </div>
+                                        {/* Grass/Ground */}
+                                        <div className="absolute bottom-0 left-0 right-0 h-8 bg-green-500 rounded-t-full" />
+                                        <div className="absolute bottom-1 left-2 w-6 h-6 bg-green-600 rounded-full" />
+                                        <div className="absolute bottom-0 right-3 w-5 h-5 bg-green-600 rounded-full" />
+                                        {/* Trees */}
+                                        <div className="absolute bottom-6 left-4 w-4 h-4 bg-green-700 rounded-full" />
+                                        <div className="absolute bottom-5 left-5 w-0.5 h-3 bg-amber-700" />
+                                        <div className="absolute bottom-6 right-6 w-5 h-5 bg-green-700 rounded-full" />
+                                        <div className="absolute bottom-5 right-7 w-0.5 h-3 bg-amber-700" />
+                                        {/* Flower */}
+                                        <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
+                                            <div className="w-2 h-2 bg-pink-400 rounded-full" />
+                                            <div className="w-0.5 h-2 bg-green-600 mx-auto" />
+                                        </div>
+                                    </div>
+                                    {/* Text overlay */}
+                                    <div className="absolute bottom-0 left-0 right-0 bg-black/40 px-1 py-0.5">
+                                        <p className="text-[9px] text-white text-center font-medium">Spend Wieds growing your garden</p>
+                                    </div>
+                                </div>
+                            }
                         />
                         <StatCard
                             title="Study Streak"
@@ -649,6 +700,20 @@ const DashboardPage = () => {
                             icon={Flame}
                             trend={{ value: studyStreak > 0 ? "Keep it up!" : "Start studying!", isPositive: studyStreak > 0 }}
                             color="bg-orange-500"
+                            backTitle="Recent Activity"
+                            backContent={
+                                <div className="space-y-2 text-xs">
+                                    {sets.slice(0, 3).map((set, i) => (
+                                        <div key={set.id} className="flex items-center gap-2">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-orange-500" />
+                                            <span className="truncate">Studied {set.title}</span>
+                                        </div>
+                                    ))}
+                                    {sets.length === 0 && (
+                                        <p className="text-muted-foreground">No recent activity yet</p>
+                                    )}
+                                </div>
+                            }
                         />
                         <StatCard
                             title="Leaderboard Rank"
@@ -656,13 +721,39 @@ const DashboardPage = () => {
                             icon={Crown}
                             trend={{ value: leaderboardRank ? `Top ${Math.ceil((leaderboardRank / (leaderboard.length || 1)) * 100)}%` : "No rank yet", isPositive: leaderboardRank ? leaderboardRank <= 20 : false }}
                             color="bg-purple-500"
+                            backTitle="Top 3"
+                            backContent={
+                                <div className="space-y-2">
+                                    {leaderboard.slice(0, 3).map((stat, index) => {
+                                        const profile = leaderboardProfiles.get(stat.uid);
+                                        const displayName = profile?.displayName || "Anonymous";
+                                        const rankIcon = index === 0 ? <Crown className="h-3 w-3 text-yellow-500" /> : 
+                                                        index === 1 ? <Trophy className="h-3 w-3 text-gray-400" /> : 
+                                                        <Medal className="h-3 w-3 text-amber-600" />;
+                                        return (
+                                            <div key={stat.uid} className="flex items-center gap-2">
+                                                {rankIcon}
+                                                <Avatar className="h-5 w-5">
+                                                    <AvatarImage src={profile?.photoURL} />
+                                                    <AvatarFallback className="text-[8px]">{displayName.charAt(0)}</AvatarFallback>
+                                                </Avatar>
+                                                <span className="text-xs truncate flex-1">{stat.uid === user?.uid ? "You" : displayName}</span>
+                                                <span className="text-[10px] text-muted-foreground">{stat.wieds}</span>
+                                            </div>
+                                        );
+                                    })}
+                                    {leaderboard.length === 0 && (
+                                        <p className="text-xs text-muted-foreground">No rankings yet</p>
+                                    )}
+                                </div>
+                            }
                         />
                     </div>
 
                     {/* Main Content Grid */}
-                    <div className={`grid ${showActivity ? 'grid-cols-1 lg:grid-cols-3' : 'grid-cols-1'} gap-6`}>
-                        {/* Left Section - Decks and Games */}
-                        <div className={showActivity ? "lg:col-span-2" : "col-span-1"}>
+                    <div className="grid grid-cols-1 gap-6">
+                        {/* Decks and Games Section */}
+                        <div>
                             <Card className="p-6 mb-6">
                                 <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
                                     <div className="flex items-center justify-between mb-6">
@@ -1443,29 +1534,6 @@ const DashboardPage = () => {
                             </div>
                         </div>
 
-                        {/* Right Section - Leaderboard and Activity Feed */}
-                        {showActivity && (
-                            <div className="lg:col-span-1 space-y-6">
-                                <Leaderboard />
-                                <RecentActivity 
-                                    activities={mockActivities} 
-                                    isVisible={showActivity}
-                                    onToggleVisibility={() => setShowActivity(!showActivity)}
-                                />
-                            </div>
-                        )}
-                        {!showActivity && (
-                            <div className="fixed bottom-8 right-8 z-40">
-                                <Button
-                                    onClick={() => setShowActivity(true)}
-                                    className="gap-2 shadow-lg"
-                                    size="lg"
-                                >
-                                    <Eye className="w-5 h-5" />
-                                    Show Activity
-                                </Button>
-                            </div>
-                        )}
                     </div>
                 </main>
                 <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 sm:px-6 lg:px-8 border-t mt-auto relative z-10">
