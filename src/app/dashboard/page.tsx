@@ -1517,16 +1517,14 @@ const DashboardPage = () => {
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     {gameModes.map((game) => {
-                                        // For Raining Words, we need a setId - use the first available set
-                                        const firstSetId = sets.length > 0 ? sets[0].id : 
-                                                          sharedSets.length > 0 ? sharedSets[0].id :
-                                                          groupSets.length > 0 ? groupSets[0].id : undefined;
+                                        // Combine all available sets for selection
+                                        const allAvailableSets = [...sets, ...sharedSets, ...groupSets];
                                         
                                         return (
                                             <GameModeCard 
                                                 key={game.title} 
                                                 {...game}
-                                                setId={game.title === "Raining Words" ? firstSetId : undefined}
+                                                sets={allAvailableSets}
                                             />
                                         );
                                     })}

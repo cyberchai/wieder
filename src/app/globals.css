@@ -340,18 +340,18 @@ svg circle[fill*="url(#a-cl-9)"] {
     background-color: transparent !important;
   }
   
-  /* Prevent hover color change on grid containers in light theme */
-  .light .grid:hover {
+  /* Prevent hover color change on grid containers in light theme (exclude dialogs) */
+  .light .grid:not([role="dialog"]):hover {
     background-color: transparent !important;
   }
   
-  .light .grid.gap-4:hover,
-  .light .grid[class*="gap-"]:hover {
+  .light .grid.gap-4:not([role="dialog"]):hover,
+  .light .grid[class*="gap-"]:not([role="dialog"]):hover {
     background-color: transparent !important;
   }
   
-  /* Prevent hover on grid items wrapper */
-  .light div[class*="grid"]:hover {
+  /* Prevent hover on grid items wrapper (exclude dialogs) */
+  .light div[class*="grid"]:not([role="dialog"]):hover {
     background-color: transparent !important;
   }
   
@@ -379,8 +379,8 @@ svg circle[fill*="url(#a-cl-9)"] {
     background-color: transparent !important;
   }
   
-  /* Prevent hover on all divs inside tabpanel */
-  .light [role="tabpanel"] div:hover {
+  /* Prevent hover on all divs inside tabpanel (but not inside dialogs) */
+  .light [role="tabpanel"] div:not([role="dialog"] *):hover {
     background-color: transparent !important;
   }
   
@@ -394,6 +394,33 @@ svg circle[fill*="url(#a-cl-9)"] {
   .light [role="tabpanel"] .grid:hover,
   .light [role="tabpanel"] .grid > *:hover {
     background-color: transparent !important;
+  }
+  
+  /* Preserve dialog background on hover - use high specificity to override other rules */
+  .light [role="dialog"],
+  .light [role="dialog"]:hover,
+  .light [data-radix-dialog-content],
+  .light [data-radix-dialog-content]:hover {
+    background-color: hsl(var(--background)) !important;
+  }
+  
+  /* Ensure scroll area content inside dialog maintains background */
+  .light [role="dialog"] [data-radix-scroll-area-viewport],
+  .light [role="dialog"] [data-radix-scroll-area-viewport]:hover,
+  .light [role="dialog"] [data-radix-scroll-area-viewport] > div,
+  .light [role="dialog"] [data-radix-scroll-area-viewport] > div:hover {
+    background-color: hsl(var(--background)) !important;
+  }
+  
+  /* Button styling inside dialogs */
+  .light [role="dialog"] button {
+    background-color: hsl(var(--background)) !important;
+    color: hsl(var(--foreground)) !important;
+  }
+  
+  .light [role="dialog"] button:hover {
+    background-color: hsl(var(--accent)) !important;
+    color: hsl(var(--accent-foreground)) !important;
   }
 }
 
