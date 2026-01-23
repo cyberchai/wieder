@@ -7,7 +7,7 @@ import AuroraBackground from "@/components/aurora-background";
 import DashboardParticlesBackground from "@/components/dashboard-particles-background";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { PlusCircle, MoreVertical, Loader2, Trash2, Edit, Share2, Copy, Link as LinkIcon, CopyPlus, Users, UserX, Search, BookOpen, Globe, Tag, Filter, X, Target, Coins, Flame, Crown, Clock, Lock, Grid3x3, Zap, CloudRain, Sprout, Eye, EyeOff } from "lucide-react";
+import { PlusCircle, MoreVertical, Loader2, Trash2, Edit, Share2, Copy, Link as LinkIcon, CopyPlus, Users, UserX, Search, BookOpen, Globe, Tag, Filter, X, Target, Coins, Flame, Crown, Clock, Lock, Grid3x3, Zap, CloudRain, Sprout, Eye, EyeOff, LayoutGrid, List } from "lucide-react";
 import Link from "next/link";
 import { FirebaseError } from "firebase/app";
 import {
@@ -119,6 +119,21 @@ const DashboardPage = () => {
     const { settings } = useSettings();
     const [contextMenu, setContextMenu] = useState<{ x: number; y: number; setId: string } | null>(null);
     const [showActivity, setShowActivity] = useState(true);
+    const [viewMode, setViewMode] = useState<'cards' | 'list'>(() => {
+        // Initialize from localStorage if available
+        if (typeof window !== 'undefined') {
+            const saved = localStorage.getItem('dashboard-view-mode');
+            if (saved === 'list' || saved === 'cards') {
+                return saved;
+            }
+        }
+        return 'cards';
+    });
+
+    // Persist view mode to localStorage
+    useEffect(() => {
+        localStorage.setItem('dashboard-view-mode', viewMode);
+    }, [viewMode]);
 
     // Mock activity data - can be replaced with real data later
     const mockActivities = useMemo(() => {
@@ -674,7 +689,28 @@ const DashboardPage = () => {
                                                 </span>
                                             </TabsTrigger>
                                         </TabsList>
-                                        <div className="flex gap-2">
+                                        <div className="flex gap-2 items-center">
+                                            {/* View Mode Toggle */}
+                                            <div className="flex border rounded-md">
+                                                <Button
+                                                    variant={viewMode === 'cards' ? 'default' : 'ghost'}
+                                                    size="icon"
+                                                    className="h-9 w-9 rounded-r-none"
+                                                    onClick={() => setViewMode('cards')}
+                                                    title="Card view"
+                                                >
+                                                    <LayoutGrid className="h-4 w-4" />
+                                                </Button>
+                                                <Button
+                                                    variant={viewMode === 'list' ? 'default' : 'ghost'}
+                                                    size="icon"
+                                                    className="h-9 w-9 rounded-l-none"
+                                                    onClick={() => setViewMode('list')}
+                                                    title="List view"
+                                                >
+                                                    <List className="h-4 w-4" />
+                                                </Button>
+                                            </div>
                                             <Button 
                                                 variant="outline"
                                                 onClick={() => setIsJoinDialogOpen(true)}
@@ -730,21 +766,74 @@ const DashboardPage = () => {
                                          )}
                                      </h3>
                                     {filteredSets.length > 0 ? (
-                                        <div className="grid gap-4 md:grid-cols-2">
+                                        <div className={viewMode === 'cards' ? "grid gap-4 md:grid-cols-2" : "flex flex-col gap-2"}>
                                             {filteredSets.map(set => {
                                                 const cardCount = Array.isArray(set.cards) ? set.cards.length : 0;
                                                 const progress = Math.min(100, Math.max(0, Math.floor((cardCount / Math.max(cardCount, 1)) * 100))); // Mock progress
                                                 const category = Array.isArray(set.tags) && set.tags.length > 0 ? set.tags[0] : "General";
-                                                const lastStudied = set.createdAt ? (() => {
-                                                    const now = new Date();
-                                                    const created = set.createdAt instanceof Date ? set.createdAt : new Date(set.createdAt);
-                                                    const diffHours = Math.floor((now.getTime() - created.getTime()) / (1000 * 60 * 60));
-                                                    if (diffHours < 1) return "just now";
-                                                    if (diffHours < 24) return `${diffHours}h ago`;
-                                                    const diffDays = Math.floor(diffHours / 24);
-                                                    return `${diffDays}d ago`;
-                                                })() : undefined;
                                                 
+                                                // List view
+                                                if (viewMode === 'list') {
+                                                    return (
+                                                        <Link key={set.id} href={`/sets/${set.id}/study`} className="block">
+                                                            <Card className="p-3 hover:shadow-md transition-shadow cursor-pointer group">
+                                                                <div className="flex items-center justify-between gap-4">
+                                                                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                                                                        <BookOpen className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                                                                        <span className="font-medium truncate group-hover:text-primary transition-colors">
+                                                                            {set.title}
+                                                                        </span>
+                                                                        {!set.isPublic && <Lock className="w-3 h-3 text-muted-foreground flex-shrink-0" />}
+                                                                    </div>
+                                                                    <div className="flex items-center gap-4 text-sm text-muted-foreground flex-shrink-0">
+                                                                        <Badge variant="secondary" className="text-xs">{category}</Badge>
+                                                                        <span className="hidden sm:inline">{cardCount} cards</span>
+                                                                        <DropdownMenu>
+                                                                            <DropdownMenuTrigger asChild>
+                                                                                <Button
+                                                                                    variant="ghost"
+                                                                                    size="icon"
+                                                                                    className="h-7 w-7"
+                                                                                    onClick={(e) => {
+                                                                                        e.preventDefault();
+                                                                                        e.stopPropagation();
+                                                                                    }}
+                                                                                >
+                                                                                    <MoreVertical className="h-4 w-4" />
+                                                                                </Button>
+                                                                            </DropdownMenuTrigger>
+                                                                            <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                                                                                <DropdownMenuItem asChild>
+                                                                                    <Link href={`/sets/${set.id}/edit`}>
+                                                                                        <Edit className="mr-2 h-4 w-4" />
+                                                                                        Edit
+                                                                                    </Link>
+                                                                                </DropdownMenuItem>
+                                                                                <DropdownMenuItem onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleTogglePublic(set); }}>
+                                                                                    {set.isPublic ? <><Users className="mr-2 h-4 w-4" />Make private</> : <><Globe className="mr-2 h-4 w-4" />Make public</>}
+                                                                                </DropdownMenuItem>
+                                                                                <DropdownMenuItem onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleShare(set); }}>
+                                                                                    <Share2 className="mr-2 h-4 w-4" />Share
+                                                                                </DropdownMenuItem>
+                                                                                <DropdownMenuItem onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleCopyId(set.id); }}>
+                                                                                    <Copy className="mr-2 h-4 w-4" />Copy set ID
+                                                                                </DropdownMenuItem>
+                                                                                <DropdownMenuItem onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleDuplicate(set); }}>
+                                                                                    <CopyPlus className="mr-2 h-4 w-4" />Duplicate
+                                                                                </DropdownMenuItem>
+                                                                                <DropdownMenuItem onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleDeleteClick(set.id); }} className="text-destructive">
+                                                                                    <Trash2 className="mr-2 h-4 w-4" />Delete
+                                                                                </DropdownMenuItem>
+                                                                            </DropdownMenuContent>
+                                                                        </DropdownMenu>
+                                                                    </div>
+                                                                </div>
+                                                            </Card>
+                                                        </Link>
+                                                    );
+                                                }
+                                                
+                                                // Card view (default)
                                                 return (
                                                     <Link key={set.id} href={`/sets/${set.id}/study`} className="block">
                                                         <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer group">
@@ -849,12 +938,6 @@ const DashboardPage = () => {
                                                         <div className="flex items-center justify-between mt-4 pt-4 border-t">
                                                             <div className="flex items-center gap-4 text-sm text-muted-foreground">
                                                                 <span>{cardCount} cards</span>
-                                                                {lastStudied && (
-                                                                    <div className="flex items-center gap-1">
-                                                                        <Clock className="w-4 h-4" />
-                                                                        <span>{lastStudied}</span>
-                                                                    </div>
-                                                                )}
                                                             </div>
                                                         </div>
 
@@ -993,75 +1076,104 @@ const DashboardPage = () => {
                                          <Loader2 className="h-5 w-5 animate-spin" />
                                          <span>loading public sets...</span>
                                      </div>
-                                 ) : filteredPublicSets.length > 0 ? (
-                                     <div className="grid gap-4 md:grid-cols-2">
-                                         {filteredPublicSets.map(set => {
-                                             const cardCount = Array.isArray(set.cards) ? set.cards.length : 0;
-                                             const progress = Math.min(100, Math.max(0, Math.floor((cardCount / Math.max(cardCount, 1)) * 100)));
-                                             const category = Array.isArray(set.tags) && set.tags.length > 0 ? set.tags[0] : "General";
-                                             
-                                             return (
-                                                 <Link key={set.id} href={`/sets/${set.id}/study`} className="block">
-                                                     <Card 
-                                                         className="p-6 hover:shadow-lg transition-shadow cursor-pointer group"
-                                                         onContextMenu={(e) => handleContextMenu(e, set.id)}
-                                                     >
-                                                         <div className="flex justify-between items-start mb-4">
-                                                         <div className="flex-1">
-                                                             <div className="flex items-center gap-2 mb-2">
-                                                                 <h3 className="font-semibold group-hover:text-primary transition-colors">
-                                                                     {set.title}
-                                                                 </h3>
-                                                                 <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-                                                                     public
-                                                                 </span>
-                                                             </div>
-                                                             <p className="text-sm text-muted-foreground mb-3">
-                                                                 {cardCount} {cardCount === 1 ? 'card' : 'cards'}
-                                                             </p>
-                                                             <div className="flex items-center gap-2 mb-2">
-                                                                 <Badge variant="secondary">{category}</Badge>
-                                                                 <span className="text-xs text-muted-foreground">
-                                                                     by {set.creatorDisplayName || "some user on this app"}
-                                                                 </span>
-                                                             </div>
-                                                         </div>
-                                                     </div>
-                                                     <div className="flex items-center justify-between mt-4 pt-4 border-t">
-                                                         <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                                                             <span>{cardCount} cards</span>
-                                                         </div>
-                                                     </div>
-                                                     <div className="mt-4">
-                                                         <div className="flex justify-between text-xs text-muted-foreground mb-1">
-                                                             <span>Progress</span>
-                                                             <span>{progress}%</span>
-                                                         </div>
-                                                         <div className="w-full bg-muted rounded-full h-2">
-                                                             <div
-                                                                 className="bg-primary h-2 rounded-full transition-all"
-                                                                 style={{ width: `${progress}%` }}
-                                                             />
-                                                         </div>
-                                                     </div>
-                                                     <div className="mt-4">
-                                                         <Button 
-                                                             className="w-full"
-                                                             onClick={(e) => {
-                                                                 e.preventDefault();
-                                                                 e.stopPropagation();
-                                                                 router.push(`/sets/${set.id}/study`);
-                                                             }}
-                                                         >
-                                                             <BookOpen className="mr-2 h-4 w-4" />
-                                                             Study
-                                                         </Button>
-                                                     </div>
-                                                 </Card>
-                                                 </Link>
-                                             );
-                                         })}
-                                     </div>
+                                ) : filteredPublicSets.length > 0 ? (
+                                    <div className={viewMode === 'cards' ? "grid gap-4 md:grid-cols-2" : "flex flex-col gap-2"}>
+                                        {filteredPublicSets.map(set => {
+                                            const cardCount = Array.isArray(set.cards) ? set.cards.length : 0;
+                                            const progress = Math.min(100, Math.max(0, Math.floor((cardCount / Math.max(cardCount, 1)) * 100)));
+                                            const category = Array.isArray(set.tags) && set.tags.length > 0 ? set.tags[0] : "General";
+                                            
+                                            // List view
+                                            if (viewMode === 'list') {
+                                                return (
+                                                    <Link key={set.id} href={`/sets/${set.id}/study`} className="block">
+                                                        <Card className="p-3 hover:shadow-md transition-shadow cursor-pointer group">
+                                                            <div className="flex items-center justify-between gap-4">
+                                                                <div className="flex items-center gap-3 flex-1 min-w-0">
+                                                                    <Globe className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                                                                    <span className="font-medium truncate group-hover:text-primary transition-colors">
+                                                                        {set.title}
+                                                                    </span>
+                                                                    <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full flex-shrink-0">
+                                                                        public
+                                                                    </span>
+                                                                </div>
+                                                                <div className="flex items-center gap-4 text-sm text-muted-foreground flex-shrink-0">
+                                                                    <Badge variant="secondary" className="text-xs">{category}</Badge>
+                                                                    <span className="hidden sm:inline">{cardCount} cards</span>
+                                                                    <span className="hidden md:inline text-xs truncate max-w-[100px]">
+                                                                        by {set.creatorDisplayName || "someone"}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </Card>
+                                                    </Link>
+                                                );
+                                            }
+                                            
+                                            // Card view (default)
+                                            return (
+                                                <Link key={set.id} href={`/sets/${set.id}/study`} className="block">
+                                                    <Card 
+                                                        className="p-6 hover:shadow-lg transition-shadow cursor-pointer group"
+                                                        onContextMenu={(e) => handleContextMenu(e, set.id)}
+                                                    >
+                                                        <div className="flex justify-between items-start mb-4">
+                                                        <div className="flex-1">
+                                                            <div className="flex items-center gap-2 mb-2">
+                                                                <h3 className="font-semibold group-hover:text-primary transition-colors">
+                                                                    {set.title}
+                                                                </h3>
+                                                                <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                                                                    public
+                                                                </span>
+                                                            </div>
+                                                            <p className="text-sm text-muted-foreground mb-3">
+                                                                {cardCount} {cardCount === 1 ? 'card' : 'cards'}
+                                                            </p>
+                                                            <div className="flex items-center gap-2 mb-2">
+                                                                <Badge variant="secondary">{category}</Badge>
+                                                                <span className="text-xs text-muted-foreground">
+                                                                    by {set.creatorDisplayName || "some user on this app"}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex items-center justify-between mt-4 pt-4 border-t">
+                                                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                                                            <span>{cardCount} cards</span>
+                                                        </div>
+                                                    </div>
+                                                    <div className="mt-4">
+                                                        <div className="flex justify-between text-xs text-muted-foreground mb-1">
+                                                            <span>Progress</span>
+                                                            <span>{progress}%</span>
+                                                        </div>
+                                                        <div className="w-full bg-muted rounded-full h-2">
+                                                            <div
+                                                                className="bg-primary h-2 rounded-full transition-all"
+                                                                style={{ width: `${progress}%` }}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    <div className="mt-4">
+                                                        <Button 
+                                                            className="w-full"
+                                                            onClick={(e) => {
+                                                                e.preventDefault();
+                                                                e.stopPropagation();
+                                                                router.push(`/sets/${set.id}/study`);
+                                                            }}
+                                                        >
+                                                            <BookOpen className="mr-2 h-4 w-4" />
+                                                            Study
+                                                        </Button>
+                                                    </div>
+                                                </Card>
+                                                </Link>
+                                            );
+                                        })}
+                                    </div>
                                  ) : searchQuery ? (
                                      <div className="text-center py-12 border-2 border-dashed rounded-lg bg-card">
                                          <Globe className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
@@ -1113,130 +1225,174 @@ const DashboardPage = () => {
                                          <Loader2 className="h-5 w-5 animate-spin" />
                                          <span>loading group sets...</span>
                                      </div>
-                                 ) : groupSets.length > 0 ? (
-                                     <div className="grid gap-4 md:grid-cols-2">
-                                         {groupSets.map(set => {
-                                             const cardCount = Array.isArray(set.cards) ? set.cards.length : 0;
-                                             const progress = Math.min(100, Math.max(0, Math.floor((cardCount / Math.max(cardCount, 1)) * 100)));
-                                             const category = Array.isArray(set.tags) && set.tags.length > 0 ? set.tags[0] : "General";
-                                             
-                                             return (
-                                                 <Link key={set.id} href={`/sets/${set.id}/study`} className="block">
-                                                     <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer group">
-                                                         <div className="flex justify-between items-start mb-4">
-                                                         <div className="flex-1">
-                                                             <div className="flex items-center gap-2 mb-2">
-                                                                 <h3 className="font-semibold group-hover:text-primary transition-colors">
-                                                                     {set.title}
-                                                                 </h3>
-                                                             </div>
-                                                             <p className="text-sm text-muted-foreground mb-3">
-                                                                 {cardCount} {cardCount === 1 ? 'card' : 'cards'}
-                                                             </p>
-                                                             <Badge variant="secondary">{category}</Badge>
-                                                         </div>
-                                                         <DropdownMenu>
-                                                             <DropdownMenuTrigger asChild>
-                                                                 <Button 
-                                                                     variant="ghost" 
-                                                                     size="icon" 
-                                                                     className="h-8 w-8"
-                                                                     onClick={(e) => e.preventDefault()}
-                                                                 >
-                                                                     <MoreVertical className="h-4 w-4" />
-                                                                 </Button>
-                                                             </DropdownMenuTrigger>
-                                                             <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
-                                                                 <DropdownMenuItem asChild>
-                                                                     <Link href={`/sets/${set.id}/edit`}>
-                                                                         <Edit className="mr-2 h-4 w-4" />
-                                                                         edit set
-                                                                     </Link>
-                                                                 </DropdownMenuItem>
-                                                                 <DropdownMenuItem
-                                                                     onClick={(e) => {
-                                                                         e.preventDefault();
-                                                                         e.stopPropagation();
-                                                                         handleCopyId(set.id);
-                                                                     }}
-                                                                 >
-                                                                     <Copy className="mr-2 h-4 w-4" />
-                                                                     copy set ID
-                                                                 </DropdownMenuItem>
-                                                                 <DropdownMenuItem
-                                                                     onClick={(e) => {
-                                                                         e.preventDefault();
-                                                                         e.stopPropagation();
-                                                                         handleDuplicate(set);
-                                                                     }}
-                                                                 >
-                                                                     <CopyPlus className="mr-2 h-4 w-4" />
-                                                                     duplicate set
-                                                                 </DropdownMenuItem>
-                                                                 <DropdownMenuItem 
-                                                                     onClick={(e) => {
-                                                                         e.preventDefault();
-                                                                         e.stopPropagation();
-                                                                         handleRemoveGroupSet(set.id);
-                                                                     }} 
-                                                                     className="text-destructive"
-                                                                 >
-                                                                     <UserX className="mr-2 h-4 w-4" />
-                                                                     remove from group sets
-                                                                 </DropdownMenuItem>
-                                                             </DropdownMenuContent>
-                                                         </DropdownMenu>
-                                                     </div>
-                                                     <div className="flex items-center justify-between mt-4 pt-4 border-t">
-                                                         <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                                                             <span>{cardCount} cards</span>
-                                                         </div>
-                                                         <div className="flex items-center gap-2">
-                                                             <Users className="w-4 h-4 text-muted-foreground" />
-                                                         </div>
-                                                     </div>
-                                                     <div className="mt-4">
-                                                         <div className="flex justify-between text-xs text-muted-foreground mb-1">
-                                                             <span>Progress</span>
-                                                             <span>{progress}%</span>
-                                                         </div>
-                                                         <div className="w-full bg-muted rounded-full h-2">
-                                                             <div
-                                                                 className="bg-primary h-2 rounded-full transition-all"
-                                                                 style={{ width: `${progress}%` }}
-                                                             />
-                                                         </div>
-                                                     </div>
-                                                     <div className="mt-4 flex gap-2">
-                                                         <Button 
-                                                             variant="outline" 
-                                                             className="flex-1"
-                                                             onClick={(e) => {
-                                                                 e.preventDefault();
-                                                                 e.stopPropagation();
-                                                                 router.push(`/sets/${set.id}/edit`);
-                                                             }}
-                                                         >
-                                                             <Edit className="mr-2 h-4 w-4" />
-                                                             Collab
-                                                         </Button>
-                                                         <Button 
-                                                             className="flex-1"
-                                                             onClick={(e) => {
-                                                                 e.preventDefault();
-                                                                 e.stopPropagation();
-                                                                 router.push(`/sets/${set.id}/study`);
-                                                             }}
-                                                         >
-                                                             <BookOpen className="mr-2 h-4 w-4" />
-                                                             Study
-                                                         </Button>
-                                                     </div>
-                                                 </Card>
-                                                 </Link>
-                                             );
-                                         })}
-                                     </div>
+                                ) : groupSets.length > 0 ? (
+                                    <div className={viewMode === 'cards' ? "grid gap-4 md:grid-cols-2" : "flex flex-col gap-2"}>
+                                        {groupSets.map(set => {
+                                            const cardCount = Array.isArray(set.cards) ? set.cards.length : 0;
+                                            const progress = Math.min(100, Math.max(0, Math.floor((cardCount / Math.max(cardCount, 1)) * 100)));
+                                            const category = Array.isArray(set.tags) && set.tags.length > 0 ? set.tags[0] : "General";
+                                            
+                                            // List view
+                                            if (viewMode === 'list') {
+                                                return (
+                                                    <Link key={set.id} href={`/sets/${set.id}/study`} className="block">
+                                                        <Card className="p-3 hover:shadow-md transition-shadow cursor-pointer group">
+                                                            <div className="flex items-center justify-between gap-4">
+                                                                <div className="flex items-center gap-3 flex-1 min-w-0">
+                                                                    <Users className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                                                                    <span className="font-medium truncate group-hover:text-primary transition-colors">
+                                                                        {set.title}
+                                                                    </span>
+                                                                </div>
+                                                                <div className="flex items-center gap-4 text-sm text-muted-foreground flex-shrink-0">
+                                                                    <Badge variant="secondary" className="text-xs">{category}</Badge>
+                                                                    <span className="hidden sm:inline">{cardCount} cards</span>
+                                                                    <DropdownMenu>
+                                                                        <DropdownMenuTrigger asChild>
+                                                                            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={(e) => e.preventDefault()}>
+                                                                                <MoreVertical className="h-4 w-4" />
+                                                                            </Button>
+                                                                        </DropdownMenuTrigger>
+                                                                        <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                                                                            <DropdownMenuItem asChild>
+                                                                                <Link href={`/sets/${set.id}/edit`}><Edit className="mr-2 h-4 w-4" />edit set</Link>
+                                                                            </DropdownMenuItem>
+                                                                            <DropdownMenuItem onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleCopyId(set.id); }}>
+                                                                                <Copy className="mr-2 h-4 w-4" />copy set ID
+                                                                            </DropdownMenuItem>
+                                                                            <DropdownMenuItem onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleDuplicate(set); }}>
+                                                                                <CopyPlus className="mr-2 h-4 w-4" />duplicate set
+                                                                            </DropdownMenuItem>
+                                                                            <DropdownMenuItem onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleRemoveGroupSet(set.id); }} className="text-destructive">
+                                                                                <UserX className="mr-2 h-4 w-4" />remove from group sets
+                                                                            </DropdownMenuItem>
+                                                                        </DropdownMenuContent>
+                                                                    </DropdownMenu>
+                                                                </div>
+                                                            </div>
+                                                        </Card>
+                                                    </Link>
+                                                );
+                                            }
+                                            
+                                            // Card view (default)
+                                            return (
+                                                <Link key={set.id} href={`/sets/${set.id}/study`} className="block">
+                                                    <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer group">
+                                                        <div className="flex justify-between items-start mb-4">
+                                                        <div className="flex-1">
+                                                            <div className="flex items-center gap-2 mb-2">
+                                                                <h3 className="font-semibold group-hover:text-primary transition-colors">
+                                                                    {set.title}
+                                                                </h3>
+                                                            </div>
+                                                            <p className="text-sm text-muted-foreground mb-3">
+                                                                {cardCount} {cardCount === 1 ? 'card' : 'cards'}
+                                                            </p>
+                                                            <Badge variant="secondary">{category}</Badge>
+                                                        </div>
+                                                        <DropdownMenu>
+                                                            <DropdownMenuTrigger asChild>
+                                                                <Button 
+                                                                    variant="ghost" 
+                                                                    size="icon" 
+                                                                    className="h-8 w-8"
+                                                                    onClick={(e) => e.preventDefault()}
+                                                                >
+                                                                    <MoreVertical className="h-4 w-4" />
+                                                                </Button>
+                                                            </DropdownMenuTrigger>
+                                                            <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                                                                <DropdownMenuItem asChild>
+                                                                    <Link href={`/sets/${set.id}/edit`}>
+                                                                        <Edit className="mr-2 h-4 w-4" />
+                                                                        edit set
+                                                                    </Link>
+                                                                </DropdownMenuItem>
+                                                                <DropdownMenuItem
+                                                                    onClick={(e) => {
+                                                                        e.preventDefault();
+                                                                        e.stopPropagation();
+                                                                        handleCopyId(set.id);
+                                                                    }}
+                                                                >
+                                                                    <Copy className="mr-2 h-4 w-4" />
+                                                                    copy set ID
+                                                                </DropdownMenuItem>
+                                                                <DropdownMenuItem
+                                                                    onClick={(e) => {
+                                                                        e.preventDefault();
+                                                                        e.stopPropagation();
+                                                                        handleDuplicate(set);
+                                                                    }}
+                                                                >
+                                                                    <CopyPlus className="mr-2 h-4 w-4" />
+                                                                    duplicate set
+                                                                </DropdownMenuItem>
+                                                                <DropdownMenuItem 
+                                                                    onClick={(e) => {
+                                                                        e.preventDefault();
+                                                                        e.stopPropagation();
+                                                                        handleRemoveGroupSet(set.id);
+                                                                    }} 
+                                                                    className="text-destructive"
+                                                                >
+                                                                    <UserX className="mr-2 h-4 w-4" />
+                                                                    remove from group sets
+                                                                </DropdownMenuItem>
+                                                            </DropdownMenuContent>
+                                                        </DropdownMenu>
+                                                    </div>
+                                                    <div className="flex items-center justify-between mt-4 pt-4 border-t">
+                                                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                                                            <span>{cardCount} cards</span>
+                                                        </div>
+                                                        <div className="flex items-center gap-2">
+                                                            <Users className="w-4 h-4 text-muted-foreground" />
+                                                        </div>
+                                                    </div>
+                                                    <div className="mt-4">
+                                                        <div className="flex justify-between text-xs text-muted-foreground mb-1">
+                                                            <span>Progress</span>
+                                                            <span>{progress}%</span>
+                                                        </div>
+                                                        <div className="w-full bg-muted rounded-full h-2">
+                                                            <div
+                                                                className="bg-primary h-2 rounded-full transition-all"
+                                                                style={{ width: `${progress}%` }}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    <div className="mt-4 flex gap-2">
+                                                        <Button 
+                                                            variant="outline" 
+                                                            className="flex-1"
+                                                            onClick={(e) => {
+                                                                e.preventDefault();
+                                                                e.stopPropagation();
+                                                                router.push(`/sets/${set.id}/edit`);
+                                                            }}
+                                                        >
+                                                            <Edit className="mr-2 h-4 w-4" />
+                                                            Collab
+                                                        </Button>
+                                                        <Button 
+                                                            className="flex-1"
+                                                            onClick={(e) => {
+                                                                e.preventDefault();
+                                                                e.stopPropagation();
+                                                                router.push(`/sets/${set.id}/study`);
+                                                            }}
+                                                        >
+                                                            <BookOpen className="mr-2 h-4 w-4" />
+                                                            Study
+                                                        </Button>
+                                                    </div>
+                                                </Card>
+                                                </Link>
+                                            );
+                                        })}
+                                    </div>
                                  ) : (
                                      <div className="text-center py-12 border-2 border-dashed rounded-lg bg-card">
                                          <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
