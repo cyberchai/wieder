@@ -433,9 +433,10 @@ export default function StudyPage() {
                     }}
                     onMouseLeave={handleHoverEnd}
                     className="flex items-center gap-2"
+                    title="Raining Words - Catch falling words and match them before they hit the ground"
                   >
                     <Gamepad2 className="h-4 w-4" />
-                    Game
+                    Raining Words
                   </Button>
                   
                   <Button 

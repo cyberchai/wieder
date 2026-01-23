@@ -7,7 +7,6 @@ import { FlipTransitionProvider } from '@/providers/flip-transition-provider';
 import { FlashcardFlipTransition } from '@/components/flashcard-flip-transition';
 import { Toaster } from "@/components/ui/toaster";
 import { ThemedBody } from '@/components/themed-body';
-import { PerformanceDashboard } from '@/components/performance-dashboard';
 
 export const metadata: Metadata = {
   title: 'wieder - learning with flashcards',
@@ -72,7 +71,6 @@ export default function RootLayout({
                   <ThemedBody>
                     {children}
                     <Toaster />
-                    <PerformanceDashboard />
                   </ThemedBody>
                 </FlashcardFlipTransition>
               </FlipTransitionProvider>

@@ -237,9 +237,9 @@ export function CountdownTimer() {
       )}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" className="gap-2">
-            <Timer className="h-4 w-4" />
-            <span className="hidden sm:inline">Timer</span>
+          <Button variant="ghost" size="icon">
+            <Timer className="h-[1.2rem] w-[1.2rem]" />
+            <span className="sr-only">Timer</span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">

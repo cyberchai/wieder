@@ -113,152 +113,16 @@ export const AdminCacheMonitor = () => {
     0
   );
 
-  // Only show if admin mode is enabled AND visible
-  if (!adminMode || !isVisible) {
-    return null;
-  }
+  // Only log to console, no UI
+  useEffect(() => {
+    if (autoRefresh) {
+      const interval = setInterval(() => {
+        reportMetrics(); // This already logs to console
+      }, 5000);
+      return () => clearInterval(interval);
+    }
+  }, [autoRefresh, reportMetrics]);
 
-  return (
-    <div className="fixed bottom-4 right-4 z-50">
-      <Card className={`w-80 transition-all duration-300 ${isExpanded ? 'h-96' : 'h-auto'}`}>
-        <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Activity className="h-4 w-4" />
-              <CardTitle className="text-sm">Admin Cache Monitor</CardTitle>
-              <Badge variant="outline" className="text-xs">ADMIN</Badge>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsVisible(!isVisible)}
-                className="h-6 w-6 p-0"
-              >
-                {isVisible ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setAutoRefresh(!autoRefresh)}
-                className="h-6 w-6 p-0"
-              >
-                <RefreshCw className={`h-3 w-3 ${autoRefresh ? 'animate-spin' : ''}`} />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsExpanded(!isExpanded)}
-                className="h-6 w-6 p-0"
-              >
-                {isExpanded ? '−' : '+'}
-              </Button>
-            </div>
-          </div>
-          <CardDescription className="text-xs">
-            Overall hit rate: <span className={getHitRateColor(overallHitRate)}>
-              {(overallHitRate * 100).toFixed(1)}%
-            </span>
-            <br />
-            <span className="text-muted-foreground">
-              Press Ctrl+Shift+A to toggle admin mode
-            </span>
-          </CardDescription>
-        </CardHeader>
-
-        {isVisible && (
-          <CardContent className="pt-0">
-            <div className="space-y-3">
-              {/* Admin Controls */}
-              <div className="flex items-center justify-between p-2 bg-muted rounded">
-                <div className="flex items-center gap-2">
-                  <Settings className="h-3 w-3" />
-                  <span className="text-xs font-medium">Admin Controls</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs">Auto Refresh</span>
-                  <Switch
-                    checked={autoRefresh}
-                    onCheckedChange={setAutoRefresh}
-                    className="scale-75"
-                  />
-                </div>
-              </div>
-
-              {/* Summary Stats */}
-              <div className="grid grid-cols-3 gap-2 text-xs">
-                <div className="text-center">
-                  <div className="font-semibold text-green-600">{totalHits}</div>
-                  <div className="text-muted-foreground">Hits</div>
-                </div>
-                <div className="text-center">
-                  <div className="font-semibold text-red-600">{totalMisses}</div>
-                  <div className="text-muted-foreground">Misses</div>
-                </div>
-                <div className="text-center">
-                  <div className="font-semibold">{totalRequests}</div>
-                  <div className="text-muted-foreground">Total</div>
-                </div>
-              </div>
-
-              {/* Overall Hit Rate Progress */}
-              <div className="space-y-1">
-                <div className="flex justify-between text-xs">
-                  <span>Hit Rate</span>
-                  <span className={getHitRateColor(overallHitRate)}>
-                    {(overallHitRate * 100).toFixed(1)}%
-                  </span>
-                </div>
-                <Progress 
-                  value={overallHitRate * 100} 
-                  className="h-2"
-                />
-              </div>
-
-              {isExpanded && (
-                <div className="space-y-2">
-                  <div className="max-h-32 overflow-y-auto space-y-2">
-                    {Array.from(metrics.entries()).map(([queryKey, metric]) => {
-                      const hitRate = metric.totalRequests > 0 ? metric.hits / metric.totalRequests : 0;
-                      return (
-                        <div key={queryKey} className="p-2 border rounded text-xs">
-                          <div className="flex justify-between items-start mb-1">
-                            <div className="font-mono text-xs truncate flex-1 mr-2">
-                              {formatQueryKey(queryKey)}
-                            </div>
-                            <Badge 
-                              variant={getHitRateBadgeVariant(hitRate)}
-                              className="text-xs"
-                            >
-                              {(hitRate * 100).toFixed(0)}%
-                            </Badge>
-                          </div>
-                          <div className="flex justify-between text-muted-foreground">
-                            <span>{metric.hits}H/{metric.misses}M</span>
-                            <span>{metric.totalRequests} total</span>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                  
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={reportMetrics}
-                      className="flex-1 text-xs"
-                    >
-                      <BarChart3 className="h-3 w-3 mr-1" />
-                      Report
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        )}
-      </Card>
-    </div>
-  );
+  // No visible UI
+  return null;
 };

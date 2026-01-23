@@ -200,7 +200,7 @@ export const getLeaderboard = async (limitCount: number = 20): Promise<UserStats
             uid: docSnap.id,
             cardsStudied: data.cardsStudied || 0,
             wieds: data.wieds || 0,
-            studyStreak: data.studyStreak || 0,
+            studyStreak: data.studyStreak ?? 1, // Default to 1, not 0
             lastStudyDate: data.lastStudyDate?.toDate() || null,
             createdAt: data.createdAt?.toDate() || new Date(),
             updatedAt: data.updatedAt?.toDate() || new Date(),

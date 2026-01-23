@@ -2,10 +2,12 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/providers/auth-provider';
 import { getUserProfile, updateUserSettings } from '@/services/users';
 
+export type FontFamily = 'poppins' | 'shantell' | 'dyslexia';
+
 export interface UserSettings {
   soundEnabled: boolean;
   showNameOnPublicSets: boolean;
-  fontFamily?: 'poppins' | 'shantell';
+  fontFamily?: FontFamily;
 }
 
 const defaultSettings: UserSettings = {
@@ -51,7 +53,7 @@ export const useSettings = () => {
     loadSettings();
   }, [user]);
 
-  const updateSetting = useCallback(async (key: keyof UserSettings, value: boolean | 'poppins' | 'shantell') => {
+  const updateSetting = useCallback(async (key: keyof UserSettings, value: boolean | FontFamily) => {
     const previousSettings = settings;
     const newSettings = { ...settings, [key]: value };
     
@@ -83,9 +85,16 @@ export const useSettings = () => {
   }, [settings.showNameOnPublicSets, updateSetting]);
 
   const toggleFontFamily = useCallback(() => {
-    const newFont = settings.fontFamily === 'poppins' ? 'shantell' : 'poppins';
-    updateSetting('fontFamily', newFont);
+    // Cycle through fonts: poppins -> shantell -> dyslexia -> poppins
+    const fontCycle: FontFamily[] = ['poppins', 'shantell', 'dyslexia'];
+    const currentIndex = fontCycle.indexOf(settings.fontFamily || 'poppins');
+    const nextIndex = (currentIndex + 1) % fontCycle.length;
+    updateSetting('fontFamily', fontCycle[nextIndex]);
   }, [settings.fontFamily, updateSetting]);
+
+  const setFontFamily = useCallback((font: FontFamily) => {
+    updateSetting('fontFamily', font);
+  }, [updateSetting]);
 
   return {
     settings,
@@ -93,6 +102,7 @@ export const useSettings = () => {
     toggleSound,
     toggleShowNameOnPublicSets,
     toggleFontFamily,
+    setFontFamily,
     updateSetting,
   };
 };

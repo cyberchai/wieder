@@ -17,7 +17,9 @@ export function ThemedBody({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!hasMounted) return;
-    const fontClass = settings.fontFamily === 'shantell' ? 'shantell-sans' : '';
+    const fontClass = 
+      settings.fontFamily === 'shantell' ? 'shantell-sans' : 
+      settings.fontFamily === 'dyslexia' ? 'dyslexia-font' : '';
     const bodyClass = cn(
       'antialiased',
       inter.variable,

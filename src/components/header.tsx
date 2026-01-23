@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { ThemeSwitcher } from './theme-switcher';
+import { FontSwitcher } from './font-switcher';
 import { UserNav } from './user-nav';
 import { CountdownTimer } from './countdown-timer';
 import { IterationCcw, Search } from 'lucide-react';
@@ -68,9 +69,10 @@ export default function Header({ searchQuery = "", onSearchChange, searchInputRe
             </div>
           </div>
 
-          {/* Theme & Profile Section */}
+          {/* Theme, Font & Profile Section */}
           <div className="flex items-center space-x-2">
              <CountdownTimer />
+             <FontSwitcher />
              <ThemeSwitcher />
              <UserNav />
           </div>

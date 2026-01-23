@@ -7,7 +7,7 @@ import AuroraBackground from "@/components/aurora-background";
 import DashboardParticlesBackground from "@/components/dashboard-particles-background";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { PlusCircle, MoreVertical, Loader2, Trash2, Edit, Share2, Copy, Link as LinkIcon, CopyPlus, Users, UserX, Search, BookOpen, Globe, Tag, Filter, X, Target, Sparkles, Flame, Crown, Clock, Lock, Grid3x3, Zap, CloudRain, Sprout, Eye, EyeOff } from "lucide-react";
+import { PlusCircle, MoreVertical, Loader2, Trash2, Edit, Share2, Copy, Link as LinkIcon, CopyPlus, Users, UserX, Search, BookOpen, Globe, Tag, Filter, X, Target, Coins, Flame, Crown, Clock, Lock, Grid3x3, Zap, CloudRain, Sprout, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { FirebaseError } from "firebase/app";
 import {
@@ -37,12 +37,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useSoundEffects } from "@/hooks/use-sound-effects";
 import { useSettings } from "@/hooks/use-settings";
 import { trackUserEngagement, trackPageView } from "@/lib/analytics";
-import { AdminCacheMonitor } from "@/components/admin-cache-monitor";
 import { SilentCircleHider } from "@/components/silent-element-hider";
 import { AnimatedSetCard } from "@/components/animated-set-card";
 import { StatCard } from "@/components/stat-card";
 import { RecentActivity } from "@/components/recent-activity";
 import { GameModeCard } from "@/components/game-mode-card";
+import { Leaderboard } from "@/components/leaderboard";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -624,7 +624,7 @@ const DashboardPage = () => {
                         <StatCard
                             title="Wieds"
                             value={loadingStats ? "..." : totalWieds.toLocaleString()}
-                            icon={Sparkles}
+                            icon={Coins}
                             trend={{ value: "1 per card, 100 per game", isPositive: true }}
                             color="bg-green-500"
                         />
@@ -688,18 +688,6 @@ const DashboardPage = () => {
                                                 </Link>
                                             </Button>
                                         </div>
-                                    </div>
-
-                                    {/* Search */}
-                                    <div className="relative mb-6">
-                                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
-                                        <Input
-                                            ref={searchInputRef}
-                                            placeholder="Search decks..."
-                                            className="pl-10"
-                                            value={searchQuery}
-                                            onChange={(e) => setSearchQuery(e.target.value)}
-                                        />
                                     </div>
 
                                     {/* Search Results Summary */}
@@ -1281,16 +1269,28 @@ const DashboardPage = () => {
                                     </div>
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    {gameModes.map((game) => (
-                                        <GameModeCard key={game.title} {...game} />
-                                    ))}
+                                    {gameModes.map((game) => {
+                                        // For Raining Words, we need a setId - use the first available set
+                                        const firstSetId = sets.length > 0 ? sets[0].id : 
+                                                          sharedSets.length > 0 ? sharedSets[0].id :
+                                                          groupSets.length > 0 ? groupSets[0].id : undefined;
+                                        
+                                        return (
+                                            <GameModeCard 
+                                                key={game.title} 
+                                                {...game}
+                                                setId={game.title === "Raining Words" ? firstSetId : undefined}
+                                            />
+                                        );
+                                    })}
                                 </div>
                             </div>
                         </div>
 
-                        {/* Right Section - Activity Feed */}
+                        {/* Right Section - Leaderboard and Activity Feed */}
                         {showActivity && (
-                            <div className="lg:col-span-1">
+                            <div className="lg:col-span-1 space-y-6">
+                                <Leaderboard />
                                 <RecentActivity 
                                     activities={mockActivities} 
                                     isVisible={showActivity}
@@ -1389,9 +1389,6 @@ const DashboardPage = () => {
                 </div>
             )}
 
-            {/* Admin Cache Monitor - only visible to admins */}
-            <AdminCacheMonitor />
-            
             {/* Hide unwanted circle elements */}
             <SilentCircleHider />
         </ProtectedRoute>

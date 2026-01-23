@@ -2,6 +2,39 @@
 @tailwind components;
 @tailwind utilities;
 
+/* OpenDyslexic Font */
+@font-face {
+  font-family: 'OpenDyslexic';
+  src: url('/opendyslexic-0.92/OpenDyslexic-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'OpenDyslexic';
+  src: url('/opendyslexic-0.92/OpenDyslexic-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'OpenDyslexic';
+  src: url('/opendyslexic-0.92/OpenDyslexic-Italic.otf') format('opentype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'OpenDyslexic';
+  src: url('/opendyslexic-0.92/OpenDyslexic-BoldItalic.otf') format('opentype');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
 /* Hide unwanted circle elements */
 circle[cx="316.5"][cy="316.5"][r="316.5"] {
   display: none !important;
@@ -388,6 +421,14 @@ svg circle[fill*="url(#a-cl-9)"] {
   
   body.shantell-sans {
     font-family: "Shantell Sans", cursive !important;
+  }
+  
+  .dyslexia-font {
+    font-family: 'OpenDyslexic', sans-serif !important;
+  }
+  
+  body.dyslexia-font {
+    font-family: 'OpenDyslexic', sans-serif !important;
   }
 }
 

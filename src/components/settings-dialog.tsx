@@ -13,11 +13,11 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Settings, Volume2, VolumeX, Eye, EyeOff, Type } from "lucide-react";
+import { Settings, Volume2, VolumeX, Eye, EyeOff } from "lucide-react";
 import { useSettings } from "@/hooks/use-settings";
 
 export function SettingsDialog() {
-  const { settings, loading, toggleSound, toggleShowNameOnPublicSets, toggleFontFamily } = useSettings();
+  const { settings, loading, toggleSound, toggleShowNameOnPublicSets } = useSettings();
   const [open, setOpen] = useState(false);
 
   if (loading) {
@@ -103,30 +103,6 @@ export function SettingsDialog() {
             </CardContent>
           </Card>
 
-          {/* Font Settings */}
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base flex items-center">
-                <Type className="h-4 w-4 mr-2" />
-                Font Family
-              </CardTitle>
-              <CardDescription>
-                Choose between Poppins (sans-serif) or Shantell Sans (handwriting) font.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="font-toggle" className="text-sm font-medium">
-                  {settings.fontFamily === 'poppins' ? "Poppins" : "Shantell Sans"}
-                </Label>
-                <Switch
-                  id="font-toggle"
-                  checked={settings.fontFamily === 'shantell'}
-                  onCheckedChange={toggleFontFamily}
-                />
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </DialogContent>
     </Dialog>
