@@ -271,6 +271,11 @@ export default function StudyPage() {
                           shuffle
                         </Button>
                         
+                        <Button variant="outline" size="sm" onClick={handleRestart} className="w-full justify-start">
+                          <RotateCcw className="mr-2 h-4 w-4" />
+                          restart
+                        </Button>
+                        
                         <div className="flex items-center justify-between">
                           <Label htmlFor="reverse-mode" className="flex items-center gap-2 cursor-pointer text-sm">
                             <Repeat className="h-4 w-4"/>
@@ -398,7 +403,7 @@ export default function StudyPage() {
                 </div>
 
                 {/* Navigation Buttons - Separate from card */}
-                <div className="flex items-center justify-between w-full gap-4 mb-6">
+                <div className="flex items-center justify-center w-full gap-4 mb-6">
                   <Button 
                     variant="outline" 
                     onClick={handlePrevious}
@@ -407,15 +412,6 @@ export default function StudyPage() {
                   >
                     <ArrowLeft className="h-4 w-4" />
                     previous
-                  </Button>
-                  
-                  <Button 
-                    variant="outline" 
-                    onClick={handleRestart}
-                    className="flex items-center gap-2"
-                  >
-                    <RotateCcw className="h-4 w-4" />
-                    restart
                   </Button>
                   
                   <Button 

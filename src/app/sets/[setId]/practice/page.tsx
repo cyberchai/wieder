@@ -8,7 +8,7 @@ import Header from '@/components/header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, CheckCircle2, XCircle, RefreshCw, Shuffle, Repeat, Play, Pause } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, XCircle, RefreshCw, Shuffle, Repeat, Play, Pause, ChevronDown, Settings2 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
@@ -352,39 +352,63 @@ export default function PracticePage() {
                         back to study
                     </Link>
                 </Button>
-                <div className="flex items-center gap-4 flex-wrap justify-center">
-                  <Button variant="outline" size="sm" onClick={handleShuffle}>
-                    <Shuffle className="mr-2 h-4 w-4" />
-                    shuffle
-                  </Button>
-                  <div className="flex items-center space-x-2">
-                    <Switch id="reverse-mode" checked={isReversed} onCheckedChange={handleReverseToggle} />
-                    <Label htmlFor="reverse-mode" className="flex items-center gap-2 cursor-pointer">
-                      <Repeat className="h-4 w-4"/>
-                      swap
-                    </Label>
+                
+                {/* Options Menu - Hover to reveal */}
+                <div className="relative group">
+                  <button className="flex items-center gap-2 px-5 py-1 rounded-full text-xs text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-border/50 hover:border-border transition-all duration-200">
+                    <Settings2 className="h-3.5 w-3.5" />
+                    <span className="font-medium">options</span>
+                    <ChevronDown className="h-3 w-3 transition-transform duration-200 group-hover:rotate-180" />
+                  </button>
+                  
+                  {/* Dropdown panel */}
+                  <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                    <div className="bg-background/95 backdrop-blur-sm border rounded-lg shadow-lg p-4 min-w-[280px]">
+                      {/* Controls */}
+                      <div className="space-y-3">
+                        <Button variant="outline" size="sm" onClick={handleShuffle} className="w-full justify-start">
+                          <Shuffle className="mr-2 h-4 w-4" />
+                          shuffle
+                        </Button>
+                        
+                        <div className="flex items-center justify-between">
+                          <Label htmlFor="reverse-mode" className="flex items-center gap-2 cursor-pointer text-sm">
+                            <Repeat className="h-4 w-4"/>
+                            swap term/definition
+                          </Label>
+                          <Switch id="reverse-mode" checked={isReversed} onCheckedChange={handleReverseToggle} />
+                        </div>
+                        
+                        <div className="flex items-center justify-between">
+                          <Label htmlFor="lenient-mode" className="cursor-pointer text-sm">
+                            lenient mode
+                          </Label>
+                          <Switch id="lenient-mode" checked={lenientMode} onCheckedChange={handleLenientModeToggle} />
+                        </div>
+                        
+                        <div className="flex items-center justify-between">
+                          <Label htmlFor="autoplay-mode" className="flex items-center gap-2 cursor-pointer text-sm">
+                            {autoplay ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                            autoplay
+                          </Label>
+                          <Switch id="autoplay-mode" checked={autoplay} onCheckedChange={handleAutoplayToggle} />
+                        </div>
+                        
+                        <div className="pt-2 border-t">
+                          <Button 
+                            variant={multipleChoiceMode ? "default" : "outline"} 
+                            size="sm" 
+                            onClick={handleModeToggle}
+                            className="w-full"
+                          >
+                            {multipleChoiceMode ? 'type answer' : 'multiple choice'}
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <Switch id="lenient-mode" checked={lenientMode} onCheckedChange={handleLenientModeToggle} />
-                    <Label htmlFor="lenient-mode" className="cursor-pointer">
-                      lenient mode
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Switch id="autoplay-mode" checked={autoplay} onCheckedChange={handleAutoplayToggle} />
-                    <Label htmlFor="autoplay-mode" className="flex items-center gap-2 cursor-pointer">
-                      {autoplay ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-                      autoplay
-                    </Label>
-                  </div>
-                  <Button 
-                    variant={multipleChoiceMode ? "default" : "outline"} 
-                    size="sm" 
-                    onClick={handleModeToggle}
-                  >
-                    {multipleChoiceMode ? 'type answer' : 'multiple choice'}
-                  </Button>
                 </div>
+                
                  <div className="text-sm text-muted-foreground">
                     card {currentIndex + 1} of {shuffledCards.length}
                     {shuffledCards.length > (set?.cards.length || 0) && (
