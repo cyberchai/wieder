@@ -13,6 +13,16 @@ declare global {
 
 // Theme color mappings for the 3D scene
 const themeColors = {
+  wiederland: {
+    fog: 0x0a1a27,
+    bgMountains: 0x5d2042,
+    terrain: [0x879759, 0x648459, 0x7d8f57, 0x748857],
+    water: [0x142c4c, 0x132a49, 0x1a3a65, 0x112541],
+    trees: [0x6a7749, 0x48604a, 0x3a5449, 0x344847],
+    clouds: 0xd5d6e2,
+    mountainColors: [0xceced8, 0xaeacb9, 0xffffed],
+    sky: { r: 0.04, g: 0.1, b: 0.15 },
+  },
   neilson: {
     fog: 0x4a4035,
     bgMountains: 0x443053,

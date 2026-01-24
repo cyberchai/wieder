@@ -2,7 +2,7 @@
 "use client"
 
 import * as React from "react"
-import { Moon, Sun, Smile } from "lucide-react"
+import { Moon, Sun, Smile, TreePine } from "lucide-react"
 import { useTheme, type Theme } from "@/providers/theme-provider" // <-- import Theme type
 import { useSoundEffects } from "@/hooks/use-sound-effects"
 import { trackThemeChange } from "@/lib/analytics"
@@ -18,7 +18,7 @@ import {
 import { NeilsonIcon, ConfeshIcon, SkunksIcon } from "./theme-icons"
 
 // Allowed themes in your app (must match what your provider supports)
-const THEMES = ["neilson", "dark", "confesh", "skunks", "light"] as const satisfies readonly Theme[]
+const THEMES = ["wiederland", "neilson", "dark", "confesh", "skunks", "light"] as const satisfies readonly Theme[]
 
 // Runtime type guard: string -> Theme
 function isThemeName(v: string): v is Theme {
@@ -63,6 +63,14 @@ export function ThemeSwitcher() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
+        <DropdownMenuItem
+          onClick={() => handleThemeChange("wiederland")}
+          onMouseEnter={handleHoverStart}
+          onMouseLeave={handleHoverEnd}
+        >
+          <TreePine className="mr-2 h-4 w-4" />
+          <span>wiederland</span>
+        </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => handleThemeChange("neilson")}
           onMouseEnter={handleHoverStart}

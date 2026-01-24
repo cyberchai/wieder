@@ -1,0 +1,100 @@
+$darkblue: #0a1a27;
+$lightblue: #4e83b7;
+$greenprimary: #879759;
+$greenshadow: #648459;
+
+* { margin: 0; padding: 0; }
+
+@media (max-width: 960px) {
+  body { zoom: 0.7; }
+}
+
+html, body { height: 100%; }
+
+@keyframes bounce {
+  from {
+    transform: translateY(0px);
+  } to {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes sway-small {
+  from {
+    transform: translateX(0px);
+  } to {
+    transform: translateX(-24px);
+  }
+}
+
+@keyframes sway-big {
+  from {
+    transform: translateX(0px);
+  } to {
+    transform: translateX(-48px);
+  }
+}
+
+body {
+    min-height: 100%;
+    background: linear-gradient(40deg, #0a1a27, #4e83b7);
+    position: relative;
+
+    #mountains {
+        z-index: 2;
+        position: absolute;
+        bottom: 20%;
+        margin-bottom: -16px;
+        left: 100px;
+    }
+  
+    #hills {
+        // background: rgba(255,0,0,0.3);
+        position: absolute;
+        left: 100px;
+        margin-left: -120px;
+        margin-bottom: -86px;
+        bottom: 20%;
+        z-index: 3;
+    }
+
+    #cloud1 {
+        z-index: 2;
+        position: absolute;
+        top: 20%;
+        right: 4%;
+        animation: sway-big 10s ease-in-out 0s infinite alternate;
+    }
+
+    #cloud2 {
+        z-index: 1;
+        position: absolute;
+        top: 22%;
+        right: 16%;
+        animation: sway-small 10s ease-in-out 0s infinite alternate;
+    }
+
+    .trees {
+        width: 100%;
+        height: 130px;
+        z-index: 4;
+        position: absolute;
+        bottom: 20%;
+        margin-bottom: -100px;
+    }
+
+    #ground {
+        z-index: 1;
+        width: 100%;
+        height: 20%;
+        position: absolute;
+        bottom: 0;
+        background: $greenprimary;
+        background: linear-gradient(210deg, $greenprimary, $greenshadow);
+    }
+
+    #stars {
+        width: 100%;
+        height: 100%;
+    }
+}

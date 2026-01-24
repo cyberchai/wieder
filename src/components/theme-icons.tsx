@@ -1,6 +1,24 @@
 import { cn } from "@/lib/utils";
 import React from "react";
 
+export const WiederlandIcon = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg id='Wiederland_Icon_24' width='24' height='24' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' xmlnsXlink='http://www.w3.org/1999/xlink' {...props}>
+        <rect width='24' height='24' stroke='none' fill='#000000' opacity='0'/>
+        <g transform="matrix(0.85 0 0 0.85 12 12)">
+            {/* Mountain */}
+            <polygon points="-8,8 0,-6 8,8" fill="currentColor" opacity="0.6"/>
+            <polygon points="-4,8 0,-2 4,8" fill="currentColor" opacity="0.8"/>
+            {/* Snow cap */}
+            <polygon points="-1,-3 0,-6 1,-3 0,-2" fill="currentColor" opacity="1"/>
+            {/* Ground */}
+            <rect x="-10" y="6" width="20" height="4" fill="currentColor" opacity="0.4"/>
+            {/* Tree silhouette */}
+            <polygon points="-7,6 -6,2 -5,6" fill="currentColor" opacity="0.7"/>
+            <polygon points="5,6 6,1 7,6" fill="currentColor" opacity="0.7"/>
+        </g>
+    </svg>
+)
+
 export const NeilsonIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg id='Content_Book_2_24' width='24' height='24' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' xmlnsXlink='http://www.w3.org/1999/xlink' {...props}>
         <rect width='24' height='24' stroke='none' fill='#000000' opacity='0'/>

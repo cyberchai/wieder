@@ -58,6 +58,29 @@ svg circle[fill*="url(#a-cl-9)"] {
 }
 
 @layer base {
+  .wiederland {
+    --background: 200 50% 10%; /* #0a1a27 dark blue sky */
+    --foreground: 0 0% 100%; /* white */
+    --card: 200 50% 14%; /* Slightly lighter than background */
+    --card-foreground: 0 0% 100%; /* white */
+    --popover: 0 0% 100%; /* white */
+    --popover-foreground: 0 0% 0%; /* black */
+    --primary: 74 30% 47%; /* #879759 green from ground */
+    --primary-foreground: 0 0% 100%; /* white */
+    --secondary: 200 50% 18%; /* Lighter blue for secondary */
+    --secondary-foreground: 0 0% 100%; /* white */
+    --muted: 200 50% 20%; /* Lighter blue for muted */
+    --muted-foreground: 0 0% 80%; /* Lighter grey for muted foreground */
+    --accent: 320 50% 25%; /* #5d2042 purple mountain */
+    --accent-foreground: 0 0% 100%; /* white */
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 200 50% 30%;
+    --input: 200 50% 18%; /* Lighter blue */
+    --ring: 74 30% 47%; /* green */
+    --radius: 0.5rem;
+    --tab-bar-bg: 200 50% 8%; /* Darker tab bar background for wiederland theme */
+  }
   .neilson {
     --background: 210 20% 98%; /* approx #f2f2f2 */
     --foreground: 0 0% 17.5%; /* #2d2d2d */

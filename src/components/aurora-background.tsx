@@ -2,6 +2,7 @@
 
 import { useTheme } from '@/providers/theme-provider';
 import Aurora from './aurora';
+import LowPolyLandscapeBackground from './low-poly-landscape-background';
 
 interface AuroraBackgroundProps {
   className?: string;
@@ -9,6 +10,11 @@ interface AuroraBackgroundProps {
 
 export default function AuroraBackground({ className = "" }: AuroraBackgroundProps) {
   const { theme } = useTheme();
+  
+  // Show low-poly landscape background for wiederland theme
+  if (theme === 'wiederland') {
+    return <LowPolyLandscapeBackground className={className} />;
+  }
   
   // Show noise background for light theme
   if (theme === 'light') {

@@ -1,0 +1,120 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+@media (max-width: 960px) {
+  body {
+    zoom: 0.7;
+  }
+}
+html, body {
+  height: 100%;
+}
+
+@-webkit-keyframes bounce {
+  from {
+    transform: translateY(0px);
+  }
+  to {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes bounce {
+  from {
+    transform: translateY(0px);
+  }
+  to {
+    transform: translateY(-4px);
+  }
+}
+@-webkit-keyframes sway-small {
+  from {
+    transform: translateX(0px);
+  }
+  to {
+    transform: translateX(-24px);
+  }
+}
+@keyframes sway-small {
+  from {
+    transform: translateX(0px);
+  }
+  to {
+    transform: translateX(-24px);
+  }
+}
+@-webkit-keyframes sway-big {
+  from {
+    transform: translateX(0px);
+  }
+  to {
+    transform: translateX(-48px);
+  }
+}
+@keyframes sway-big {
+  from {
+    transform: translateX(0px);
+  }
+  to {
+    transform: translateX(-48px);
+  }
+}
+body {
+  min-height: 100%;
+  background: linear-gradient(40deg, #0a1a27, #4e83b7);
+  position: relative;
+}
+body #mountains {
+  z-index: 2;
+  position: absolute;
+  bottom: 20%;
+  margin-bottom: -16px;
+  left: 100px;
+}
+body #hills {
+  position: absolute;
+  left: 100px;
+  margin-left: -120px;
+  margin-bottom: -86px;
+  bottom: 20%;
+  z-index: 3;
+}
+body #cloud1 {
+  z-index: 2;
+  position: absolute;
+  top: 20%;
+  right: 4%;
+  -webkit-animation: sway-big 10s ease-in-out 0s infinite alternate;
+          animation: sway-big 10s ease-in-out 0s infinite alternate;
+}
+body #cloud2 {
+  z-index: 1;
+  position: absolute;
+  top: 22%;
+  right: 16%;
+  -webkit-animation: sway-small 10s ease-in-out 0s infinite alternate;
+          animation: sway-small 10s ease-in-out 0s infinite alternate;
+}
+body .trees {
+  width: 100%;
+  height: 130px;
+  z-index: 4;
+  position: absolute;
+  bottom: 20%;
+  margin-bottom: -100px;
+}
+body #ground {
+  z-index: 1;
+  width: 100%;
+  height: 20%;
+  position: absolute;
+  bottom: 0;
+  background: #879759;
+  background: linear-gradient(210deg, #879759, #648459);
+}
+body #stars {
+  width: 100%;
+  height: 100%;
+}
