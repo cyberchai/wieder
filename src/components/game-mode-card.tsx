@@ -56,6 +56,8 @@ export function GameModeCard({
       router.push(`/sets/${setId}/play`);
     } else if (title === "Speed") {
       router.push(`/sets/${setId}/speed`);
+    } else if (title === "Crossword") {
+      router.push(`/sets/${setId}/crossword`);
     } else {
       // Default to study page for other game modes
       router.push(`/sets/${setId}/study`);
