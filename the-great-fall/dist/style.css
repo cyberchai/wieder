@@ -1,0 +1,172 @@
+/* custom styles */
+body {
+  font-family: open-sans, sans-serif;
+  overflow-x: hidden;
+  color: white;
+  background: black;
+}
+
+h2, h3 {
+  position: relative;
+  text-transform: uppercase;
+  font-family: open-sans-condensed, sans-serif;
+  font-size: 3rem;
+  font-weight: 100;
+  letter-spacing: .1em;
+  margin: 0 0 .5rem 0;
+  text-shadow: 0px 5px 10px rgba(0, 0, 0, 0.5);
+}
+
+h3 {
+  font-size: 1.5rem;
+}
+
+a {
+  text-decoration: none;
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+a:hover {
+  color: white;
+}
+
+ol {
+  font-size: 3rem;
+  text-transform: uppercase;
+  list-style-type: decimal;
+}
+
+li {
+  line-height: 1.5;
+}
+
+.slide {
+  position: relative;
+  display: flex;
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+  -webkit-align-items: center;
+  -webkit-justify-content: center;
+  -moz-flex-direction: column;
+  -moz-align-items: center;
+  -moz-justify-content: center;
+  width: 100vw;
+  height: 100vh;
+}
+
+figure {
+  position: relative;
+  padding: 50px 80px;
+  width: 400px;
+  opacity: 0;
+  -moz-transition: -webkit-clip-path 1s, opacity 0.2s;
+  -o-transition: -webkit-clip-path 1s, opacity 0.2s;
+  -webkit-transition: -webkit-clip-path 1s, opacity 0.2s;
+  transition: -webkit-clip-path 1s, opacity 0.2s;
+}
+figure canvas {
+  position: absolute;
+  top: 0;
+  -moz-transform: scale(0);
+  -ms-transform: scale(0);
+  -webkit-transform: scale(0);
+  transform: scale(0);
+  -moz-transition: -webkit-transform 0.5s;
+  -o-transition: -webkit-transform 0.5s;
+  -webkit-transition: -webkit-transform 0.5s;
+  transition: -webkit-transform 0.5s;
+}
+figure.in {
+  opacity: 1;
+}
+figure.in canvas {
+  -moz-transform: scale(1);
+  -ms-transform: scale(1);
+  -webkit-transform: scale(1);
+  transform: scale(1);
+}
+figure.in figcaption {
+  opacity: 1;
+}
+figure.right {
+  float: right;
+}
+figure.right canvas {
+  left: 0;
+}
+figure.right figcaption {
+  border-left: 2px solid white;
+  text-align: left;
+}
+figure.left {
+  float: left;
+}
+figure.left canvas {
+  right: 0;
+}
+figure.left figcaption {
+  border-right: 2px solid white;
+  text-align: right;
+}
+
+figcaption {
+  position: relative;
+  padding: 0 10px;
+  z-index: 1;
+  text-transform: uppercase;
+  font-family: open-sans-condensed, sans-serif;
+  font-size: 1.3rem;
+  opacity: 0;
+  -moz-transition: -webkit-clip-path 1s, opacity 1s;
+  -o-transition: -webkit-clip-path 1s, opacity 1s;
+  -webkit-transition: -webkit-clip-path 1s, opacity 1s;
+  transition: -webkit-clip-path 1s, opacity 1s;
+}
+figcaption p {
+  line-height: 1.5;
+}
+
+.section {
+  width: 100vw;
+  height: 100vh;
+}
+
+.slide {
+  -webkit-box-sizing: border-box;
+  padding: 1rem;
+}
+
+#title {
+  margin: auto;
+}
+
+#scroll-btn {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  margin-left: -54px;
+  opacity: 1;
+  -moz-transition: opacity 0.2s;
+  -o-transition: opacity 0.2s;
+  -webkit-transition: opacity 0.2s;
+  transition: opacity 0.2s;
+  -moz-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+#scroll-btn.out {
+  opacity: 0;
+}
+
+#ground {
+  top: 0;
+  left: 0;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+}
+
+#deck {
+  z-index: 2;
+}
