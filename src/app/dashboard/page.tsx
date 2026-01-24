@@ -7,7 +7,7 @@ import AuroraBackground from "@/components/aurora-background";
 import DashboardParticlesBackground from "@/components/dashboard-particles-background";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { PlusCircle, MoreVertical, Loader2, Trash2, Edit, Share2, Copy, Link as LinkIcon, CopyPlus, Users, UserX, Search, BookOpen, Globe, Tag, Filter, X, Target, Coins, Flame, Crown, Clock, Lock, Grid3x3, Zap, CloudRain, Sprout, Eye, EyeOff, LayoutGrid, List } from "lucide-react";
+import { PlusCircle, MoreVertical, Loader2, Trash2, Edit, Share2, Copy, Link as LinkIcon, CopyPlus, Users, UserX, Search, BookOpen, Globe, Tag, Filter, X, Target, Coins, Flame, Crown, Clock, Lock, Grid3x3, Zap, CloudRain, Grid2x2, Eye, EyeOff, LayoutGrid, List } from "lucide-react";
 import Link from "next/link";
 import { FirebaseError } from "firebase/app";
 import {
@@ -179,10 +179,10 @@ const DashboardPage = () => {
             players: "1-4 players",
         },
         {
-            title: "My Garden",
-            description: "Grow your knowledge garden by correctly answering questions",
-            icon: Sprout,
-            color: "bg-green-500",
+            title: "Match Pairs",
+            description: "Match terms with their definitions in this memory challenge",
+            icon: Grid2x2,
+            color: "bg-emerald-500",
             players: "1 player",
         },
     ];
