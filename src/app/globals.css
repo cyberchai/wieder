@@ -640,4 +640,24 @@ svg circle[fill*="url(#a-cl-9)"] {
       opacity: 1;
     }
   }
+
+  /* Speed Game Feedback Animation */
+  .animate-ping-once {
+    animation: pingOnce 0.6s cubic-bezier(0, 0, 0.2, 1) forwards;
+  }
+
+  @keyframes pingOnce {
+    0% {
+      transform: scale(0.8);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.2);
+      opacity: 0.8;
+    }
+    100% {
+      transform: scale(1.5);
+      opacity: 0;
+    }
+  }
 }

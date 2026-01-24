@@ -54,6 +54,8 @@ export function GameModeCard({
     setIsSelectDialogOpen(false);
     if (title === "Raining Words") {
       router.push(`/sets/${setId}/play`);
+    } else if (title === "Speed") {
+      router.push(`/sets/${setId}/speed`);
     } else {
       // Default to study page for other game modes
       router.push(`/sets/${setId}/study`);

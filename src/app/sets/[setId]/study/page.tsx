@@ -7,7 +7,7 @@ import { getFlashcardSet, type FlashcardSet, type Card as CardType, updateFlashc
 import Header from '@/components/header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowLeft, ArrowRight, RotateCcw, Shuffle, Repeat, BookOpen, Gamepad2, FileText } from 'lucide-react';
+import { ArrowLeft, ArrowRight, RotateCcw, Shuffle, Repeat, BookOpen, Gamepad2, FileText, Zap } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 import { Switch } from '@/components/ui/switch';
@@ -437,6 +437,21 @@ export default function StudyPage() {
                   >
                     <Gamepad2 className="h-4 w-4" />
                     Raining Words
+                  </Button>
+
+                  <Button 
+                    variant="outline" 
+                    onClick={() => router.push(`/sets/${setId}/speed`)}
+                    onMouseEnter={() => {
+                      enableSounds();
+                      handleHoverStart();
+                    }}
+                    onMouseLeave={handleHoverEnd}
+                    className="flex items-center gap-2"
+                    title="Speed Mode - Type the term before time runs out"
+                  >
+                    <Zap className="h-4 w-4" />
+                    Speed
                   </Button>
                   
                   <Button 
