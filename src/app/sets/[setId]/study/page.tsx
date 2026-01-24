@@ -7,7 +7,7 @@ import { getFlashcardSet, type FlashcardSet, type Card as CardType, updateFlashc
 import Header from '@/components/header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowLeft, ArrowRight, RotateCcw, Shuffle, Repeat, BookOpen, Gamepad2, FileText, Zap } from 'lucide-react';
+import { ArrowLeft, ArrowRight, RotateCcw, Shuffle, Repeat, BookOpen, Gamepad2, FileText, Zap, ChevronDown, Settings2 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 import { Switch } from '@/components/ui/switch';
@@ -252,51 +252,71 @@ export default function StudyPage() {
                         back to dashboard
                     </Link>
                 </Button>
-                <div className="flex items-center gap-4 flex-wrap justify-center">
-                  <Button variant="outline" size="sm" onClick={handleShuffle}>
-                    <Shuffle className="mr-2 h-4 w-4" />
-                    shuffle
-                  </Button>
-                  <div className="flex items-center space-x-2">
-                    <Switch id="reverse-mode" checked={isReversed} onCheckedChange={handleReverseToggle} />
-                    <Label htmlFor="reverse-mode" className="flex items-center gap-2 cursor-pointer">
-                      <Repeat className="h-4 w-4"/>
-                      swap
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Switch id="progress-toggle" checked={showProgress} onCheckedChange={handleProgressToggle} />
-                    <Label htmlFor="progress-toggle" className="flex items-center gap-2 cursor-pointer">
-                      <div className="w-4 h-1 bg-current rounded-full"/>
-                      progress
-                    </Label>
+                
+                {/* Options Menu - Hover to reveal */}
+                <div className="relative group">
+                  <button className="flex items-center gap-2 px-5 py-1 rounded-full text-xs text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-border/50 hover:border-border transition-all duration-200">
+                    <Settings2 className="h-3.5 w-3.5" />
+                    <span className="font-medium">options</span>
+                    <ChevronDown className="h-3 w-3 transition-transform duration-200 group-hover:rotate-180" />
+                  </button>
+                  
+                  {/* Dropdown panel */}
+                  <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                    <div className="bg-background/95 backdrop-blur-sm border rounded-lg shadow-lg p-4 min-w-[280px]">
+                      {/* Controls */}
+                      <div className="space-y-3">
+                        <Button variant="outline" size="sm" onClick={handleShuffle} className="w-full justify-start">
+                          <Shuffle className="mr-2 h-4 w-4" />
+                          shuffle
+                        </Button>
+                        
+                        <div className="flex items-center justify-between">
+                          <Label htmlFor="reverse-mode" className="flex items-center gap-2 cursor-pointer text-sm">
+                            <Repeat className="h-4 w-4"/>
+                            swap term/definition
+                          </Label>
+                          <Switch id="reverse-mode" checked={isReversed} onCheckedChange={handleReverseToggle} />
+                        </div>
+                        
+                        <div className="flex items-center justify-between">
+                          <Label htmlFor="progress-toggle" className="flex items-center gap-2 cursor-pointer text-sm">
+                            <div className="w-4 h-1 bg-current rounded-full"/>
+                            show progress
+                          </Label>
+                          <Switch id="progress-toggle" checked={showProgress} onCheckedChange={handleProgressToggle} />
+                        </div>
+                      </div>
+                      
+                      {/* Keyboard Shortcuts */}
+                      <div className="mt-4 pt-3 border-t">
+                        <div className="text-xs font-medium text-muted-foreground mb-2">Keyboard Shortcuts</div>
+                        <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
+                          <div className="flex items-center gap-2">
+                            <kbd className="px-1.5 py-0.5 bg-muted border rounded text-[10px]">Space</kbd>
+                            <span>flip</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <kbd className="px-1.5 py-0.5 bg-muted border rounded text-[10px]">←</kbd>
+                            <span>previous</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <kbd className="px-1.5 py-0.5 bg-muted border rounded text-[10px]">→</kbd>
+                            <span>next</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <kbd className="px-1.5 py-0.5 bg-muted border rounded text-[10px]">Enter</kbd>
+                            <span>next</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
+                
                  <div className="text-sm text-muted-foreground">
                     card {currentIndex + 1} of {shuffledCards.length}
                 </div>
-            </div>
-
-            {/* Keyboard Shortcuts Info */}
-            <div className="mb-6 p-4 bg-muted/50 rounded-lg border text-center">
-              <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground flex-wrap">
-                <div className="flex items-center gap-2">
-                  <kbd className="px-2 py-1 bg-background border rounded text-xs">Space</kbd>
-                  <span>flip card</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <kbd className="px-2 py-1 bg-background border rounded text-xs">←</kbd>
-                  <span>previous</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <kbd className="px-2 py-1 bg-background border rounded text-xs">→</kbd>
-                  <span>next</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <kbd className="px-2 py-1 bg-background border rounded text-xs">Enter</kbd>
-                  <span>next</span>
-                </div>
-              </div>
             </div>
 
             {/* Progress Bar */}
