@@ -689,7 +689,7 @@ const DashboardPage = () => {
                                     </div>
                                     {/* Text overlay */}
                                     <div className="absolute bottom-0 left-0 right-0 bg-black/40 px-1 py-0.5">
-                                        <p className="text-[9px] text-white text-center font-medium">Spend Wieds growing your garden</p>
+                                        <p className="text-[9px] text-white text-center font-medium">Spend Wieds unlocking new themes</p>
                                     </div>
                                 </div>
                             }
