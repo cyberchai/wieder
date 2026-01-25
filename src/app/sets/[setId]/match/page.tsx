@@ -446,7 +446,7 @@ export default function MatchPairsPage() {
                 variant="outline"
                 size="lg"
                 asChild
-                className="text-lg px-6 py-5 bg-white/50 hover:bg-white shadow-lg"
+                className="text-lg px-6 py-5 bg-white/50 hover:bg-white shadow-lg text-black"
               >
                 <Link href="/dashboard">
                   <Home className="mr-2 h-5 w-5" />
