@@ -12,15 +12,17 @@ import { Label } from "@/components/ui/label";
 import { Icons } from "@/components/icons";
 import { GoogleAuthProvider, signInWithPopup, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink } from "firebase/auth";
 import { auth } from "@/lib/firebase";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { useFlipTransition } from "@/providers/flip-transition-provider";
 import type { AuthError } from "firebase/auth";
+import { Suspense } from "react";
 
 const EMAIL_FOR_SIGN_IN_KEY = "emailForSignIn";
 
-export default function LoginPage() {
+function LoginContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
   const { triggerFlip } = useFlipTransition();
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
@@ -38,11 +40,15 @@ export default function LoginPage() {
       if (isSignInWithEmailLink(auth, window.location.href)) {
         setIsCompletingSignIn(true);
         
-        // Get the email from localStorage
-        let emailForSignIn = window.localStorage.getItem(EMAIL_FOR_SIGN_IN_KEY);
+        // Try to get email from: 1) URL params, 2) localStorage, 3) prompt user
+        let emailForSignIn = searchParams.get("email");
         
         if (!emailForSignIn) {
-          // User opened the link on a different device
+          emailForSignIn = window.localStorage.getItem(EMAIL_FOR_SIGN_IN_KEY);
+        }
+        
+        if (!emailForSignIn) {
+          // Last resort: prompt user (e.g., opened on different device without URL param)
           emailForSignIn = window.prompt("please enter your email to confirm sign-in");
         }
         
@@ -85,7 +91,7 @@ export default function LoginPage() {
     };
     
     completeEmailLinkSignIn();
-  }, [router, toast, triggerFlip]);
+  }, [router, searchParams, toast, triggerFlip]);
 
   async function handleGoogleSignIn() {
     setIsGoogleLoading(true);
@@ -113,15 +119,19 @@ export default function LoginPage() {
     e.preventDefault();
     setIsEmailLoading(true);
     
+    // Include email in the URL so user doesn't have to type it again
+    const continueUrl = new URL("/login", window.location.origin);
+    continueUrl.searchParams.set("email", email);
+    
     const actionCodeSettings = {
-      // URL to redirect back to - must be in Firebase authorized domains
-      url: `${window.location.origin}/login`,
+      // URL to redirect back to - includes email param for seamless sign-in
+      url: continueUrl.toString(),
       handleCodeInApp: true,
     };
     
     try {
       await sendSignInLinkToEmail(auth, email, actionCodeSettings);
-      // Save the email locally for when the user clicks the link
+      // Also save to localStorage as backup (same device scenario)
       window.localStorage.setItem(EMAIL_FOR_SIGN_IN_KEY, email);
       setEmailSent(true);
       toast({ 
@@ -282,5 +292,17 @@ export default function LoginPage() {
         </p>
       </div>
     </PublicRoute>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-[#59332e]" />
+      </div>
+    }>
+      <LoginContent />
+    </Suspense>
   );
 }
