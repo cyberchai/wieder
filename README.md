@@ -35,7 +35,7 @@ wieder (German for "again") is a flashcard learning platform that makes studying
 
 | Layer | Tech |
 |-------|------|
-| Framework | Next.js 14 (App Router) |
+| Framework | Next.js 15 (App Router) |
 | Styling | Tailwind CSS + shadcn/ui |
 | Database | Firebase Firestore |
 | Auth | Firebase Authentication (Email + Google) |
@@ -43,13 +43,15 @@ wieder (German for "again") is a flashcard learning platform that makes studying
 | Hosting | Firebase App Hosting |
 | Analytics | Google Analytics |
 
+> **Note on Firestore Rules:** The `firestore.rules` file in this repo is for reference only. **Production rules are managed directly in the Firebase Console.** Always check the console for the most up-to-date security rules before making changes.
+
 ---
 
 ## Getting Started
 
 ```bash
 # Clone the repo
-git clone https://github.com/your-username/wieder.git
+git clone https://github.com/cyberchai/wieder.git
 cd wieder
 
 # Install dependencies
@@ -151,7 +153,7 @@ src/
 
 - [ ] **Multiplayer Speed Mode** — Real-time competitive studying
 
-- [ ] **AI-Generated Flashcards** — Generate cards from uploaded PDFs/notes
+- [ ] **Smart-suggest Flashcards** — Generate cards from uploaded PDFs/notes
 
 - [ ] **Spaced Repetition Algorithm** — Implement SM-2 or similar for optimal review scheduling
 
@@ -160,6 +162,8 @@ src/
 ## Contributing
 
 We'd love help! Here's how to get involved:
+
+> **A note on our mission:** A big part of this project is getting the **Smith College community** more involved in tech and app development — building tools that benefit Smithies and the broader education space. We'd especially love contributions from **Smith students, alums, and developers**. If that's you, please reach out!
 
 1. **Pick an issue** — Check the roadmap above or open issues
 2. **Fork & branch** — Create a feature branch from `main`

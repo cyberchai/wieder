@@ -1566,6 +1566,9 @@ const DashboardPage = () => {
                         <Link href="/privacy" className="text-xs hover:underline underline-offset-4" prefetch={false}>
                             privacy
                         </Link>
+                        <Link href="/contribute" className="text-xs hover:underline underline-offset-4" prefetch={false}>
+                            contribute
+                        </Link>
                         </nav>
                     </div>
                 </footer>
