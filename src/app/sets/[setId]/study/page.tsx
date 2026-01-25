@@ -451,17 +451,55 @@ export default function StudyPage() {
                   </div>
                 </div>
                 
-                 <div className="text-sm text-muted-foreground flex items-center gap-2">
-                    <span>card {currentIndex + 1} of {shuffledCards.length}</span>
-                    {cardFilter !== 'all' && (
-                      <span className={`text-xs px-2 py-0.5 rounded-full ${
-                        cardFilter === 'weak' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' : 
-                        'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
-                      }`}>
-                        {cardFilter} only
-                      </span>
-                    )}
+                 <div className="text-sm text-muted-foreground">
+                    card {currentIndex + 1} of {shuffledCards.length}
                 </div>
+            </div>
+            
+            {/* Filter Toggle Bar */}
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <span className="text-xs text-muted-foreground mr-1">
+                <Filter className="h-3 w-3 inline mr-1" />
+                Show:
+              </span>
+              <div className="flex gap-1 bg-muted/50 p-1 rounded-lg">
+                <button
+                  onClick={() => handleFilterChange('all')}
+                  className={`px-3 py-1 text-xs rounded-md transition-all ${
+                    cardFilter === 'all' 
+                      ? 'bg-background shadow-sm font-medium' 
+                      : 'hover:bg-background/50 text-muted-foreground'
+                  }`}
+                >
+                  All ({filterCounts.all})
+                </button>
+                <button
+                  onClick={() => handleFilterChange('weak')}
+                  disabled={filterCounts.weak === 0}
+                  className={`px-3 py-1 text-xs rounded-md transition-all ${
+                    cardFilter === 'weak' 
+                      ? 'bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300 shadow-sm font-medium' 
+                      : filterCounts.weak === 0 
+                        ? 'text-muted-foreground/50 cursor-not-allowed'
+                        : 'hover:bg-red-50 dark:hover:bg-red-900/20 text-muted-foreground'
+                  }`}
+                >
+                  Weak ({filterCounts.weak})
+                </button>
+                <button
+                  onClick={() => handleFilterChange('strong')}
+                  disabled={filterCounts.strong === 0}
+                  className={`px-3 py-1 text-xs rounded-md transition-all ${
+                    cardFilter === 'strong' 
+                      ? 'bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300 shadow-sm font-medium' 
+                      : filterCounts.strong === 0 
+                        ? 'text-muted-foreground/50 cursor-not-allowed'
+                        : 'hover:bg-green-50 dark:hover:bg-green-900/20 text-muted-foreground'
+                  }`}
+                >
+                  Strong ({filterCounts.strong})
+                </button>
+              </div>
             </div>
 
             {/* Progress Bar */}
