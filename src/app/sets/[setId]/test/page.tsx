@@ -16,7 +16,7 @@ import { ArrowLeft, RefreshCw, CheckCircle2, XCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import Confetti from 'react-confetti';
-import { useTrackCardStudied } from '@/hooks/use-stats-queries';
+import { useTrackCardStudied, useTrackSetCardStudied, useSetCardPerformance } from '@/hooks/use-stats-queries';
 
 type QuestionType = 'multiple-choice' | 'true-false' | 'written';
 
@@ -59,6 +59,8 @@ export default function TestPage() {
     const { user } = useAuth();
     const { toast } = useToast();
     const trackCardStudied = useTrackCardStudied();
+    const trackSetCardStudied = useTrackSetCardStudied();
+    const setCardPerformance = useSetCardPerformance();
 
     const [set, setSet] = useState<FlashcardSet | null>(null);
     const [loading, setLoading] = useState(true);
@@ -178,12 +180,19 @@ export default function TestPage() {
                 isCorrect = userAnswer === q.answer;
             }
 
-            if (isCorrect) {
-                correctCount++;
-                // Track each card that was answered correctly
-                if (q.card && user && !trackedCardIds.has(q.card.id)) {
-                    trackedCardIds.add(q.card.id);
+            // Track performance for each card
+            if (q.card && user && !trackedCardIds.has(q.card.id)) {
+                trackedCardIds.add(q.card.id);
+                
+                if (isCorrect) {
+                    correctCount++;
+                    // Track card studied and set performance to strong
                     trackCardStudied.mutate();
+                    trackSetCardStudied.mutate({ setId, cardId: q.card.id });
+                    setCardPerformance.mutate({ setId, cardId: q.card.id, performance: 'strong' });
+                } else {
+                    // Set performance to weak for incorrect answers
+                    setCardPerformance.mutate({ setId, cardId: q.card.id, performance: 'weak' });
                 }
             }
         });

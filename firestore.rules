@@ -35,6 +35,11 @@ service cloud.firestore {
       
       // No delete allowed for user profiles
       allow delete: if false;
+      
+      // Set progress subcollection - users can only access their own progress
+      match /setProgress/{setId} {
+        allow read, write: if isSignedIn() && request.auth.uid == userId;
+      }
     }
     
     match /userStats/{userId} {

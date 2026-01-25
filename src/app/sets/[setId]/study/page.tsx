@@ -14,7 +14,11 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { ResponsiveText } from '@/components/responsive-text';
 import { useSoundEffects } from '@/hooks/use-sound-effects';
-import { useTrackCardStudied } from '@/hooks/use-stats-queries';
+import { useTrackCardStudied, useTrackSetCardStudied, useSetProgress } from '@/hooks/use-stats-queries';
+import { getCardPerformance } from '@/services/set-progress';
+import { Filter } from 'lucide-react';
+
+type CardFilter = 'all' | 'weak' | 'strong';
 
 export default function StudyPage() {
   const params = useParams();
@@ -23,6 +27,8 @@ export default function StudyPage() {
   const { user } = useAuth();
   const { handleHoverStart, handleHoverEnd, handleToggleOn, handleToggleOff, enableSounds } = useSoundEffects();
   const trackCardStudied = useTrackCardStudied();
+  const trackSetCardStudied = useTrackSetCardStudied();
+  const { data: setProgress } = useSetProgress(setId);
 
   const [set, setSet] = useState<FlashcardSet | null>(null);
   const [loading, setLoading] = useState(true);
@@ -36,10 +42,39 @@ export default function StudyPage() {
   const [editTerm, setEditTerm] = useState('');
   const [editDefinition, setEditDefinition] = useState('');
   const [trackedCards, setTrackedCards] = useState<Set<string>>(new Set());
+  const [cardFilter, setCardFilter] = useState<CardFilter>('all');
 
   const shuffleCards = useCallback((cards: CardType[]) => {
     return [...cards].sort(() => Math.random() - 0.5);
   }, []);
+
+  // Filter cards based on performance
+  const filterCardsByPerformance = useCallback((cards: CardType[], filter: CardFilter) => {
+    if (filter === 'all' || !setProgress) return cards;
+    
+    return cards.filter(card => {
+      const performance = getCardPerformance(setProgress, card.id);
+      return performance === filter;
+    });
+  }, [setProgress]);
+
+  // Get counts for filter badges
+  const getFilterCounts = useCallback(() => {
+    if (!set || !setProgress) return { all: set?.cards.length || 0, weak: 0, strong: 0 };
+    
+    let weak = 0;
+    let strong = 0;
+    
+    set.cards.forEach(card => {
+      const performance = getCardPerformance(setProgress, card.id);
+      if (performance === 'weak') weak++;
+      else if (performance === 'strong') strong++;
+    });
+    
+    return { all: set.cards.length, weak, strong };
+  }, [set, setProgress]);
+
+  const filterCounts = getFilterCounts();
 
   const handleSaveCard = async (cardIndex: number) => {
     if (!set) return;
@@ -80,6 +115,7 @@ export default function StudyPage() {
             router.push('/dashboard');
         }
         setSet(fetchedSet);
+        // Initial load always shows all cards (filter will be applied via handleFilterChange)
         setShuffledCards(shuffleCards(fetchedSet.cards));
       } else {
         router.push('/dashboard');
@@ -90,7 +126,19 @@ export default function StudyPage() {
     if (setId && user) {
       fetchSet();
     }
-  }, [setId, router, shuffleCards, user]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [setId, user]);
+
+  // Re-filter when filter changes (user interaction)
+  const handleFilterChange = useCallback((filter: CardFilter) => {
+    if (set) {
+      const filtered = filterCardsByPerformance(set.cards, filter);
+      setShuffledCards(shuffleCards(filtered));
+      setCurrentIndex(0);
+      setIsFlipped(false);
+    }
+    setCardFilter(filter);
+  }, [set, filterCardsByPerformance, shuffleCards]);
 
   const currentCard = shuffledCards[currentIndex];
 
@@ -110,8 +158,17 @@ export default function StudyPage() {
       case 'ArrowRight':
         e.preventDefault();
         if (currentIndex < shuffledCards.length - 1) {
-          setCurrentIndex(prev => prev + 1);
+          const nextIndex = currentIndex + 1;
+          setCurrentIndex(nextIndex);
           setIsFlipped(false);
+          
+          // Track card when moving to next via keyboard (if not already tracked)
+          const nextCard = shuffledCards[nextIndex];
+          if (nextCard && user && !trackedCards.has(nextCard.id)) {
+            setTrackedCards(prev => new Set(prev).add(nextCard.id));
+            trackCardStudied.mutate();
+            trackSetCardStudied.mutate({ setId, cardId: nextCard.id });
+          }
         }
         break;
       case 'ArrowLeft':
@@ -122,7 +179,7 @@ export default function StudyPage() {
         }
         break;
     }
-  }, [currentIndex, shuffledCards.length]);
+  }, [currentIndex, shuffledCards, user, trackedCards, setId, trackCardStudied, trackSetCardStudied]);
 
   useEffect(() => {
     document.addEventListener('keydown', handleKeyDown);
@@ -144,6 +201,7 @@ export default function StudyPage() {
         if (nextCard && user && !trackedCards.has(nextCard.id)) {
           setTrackedCards(prev => new Set(prev).add(nextCard.id));
           trackCardStudied.mutate();
+          trackSetCardStudied.mutate({ setId, cardId: nextCard.id });
         }
       }, 150);
     }
@@ -169,6 +227,7 @@ export default function StudyPage() {
     if (!isFlipped && currentCard && user && !trackedCards.has(currentCard.id)) {
       setTrackedCards(prev => new Set(prev).add(currentCard.id));
       trackCardStudied.mutate();
+      trackSetCardStudied.mutate({ setId, cardId: currentCard.id });
     }
   };
 
@@ -220,13 +279,13 @@ export default function StudyPage() {
     );
   }
   
-  if (!set || !currentCard) {
+  if (!set) {
      return (
         <ProtectedRoute>
             <div className="flex flex-col min-h-screen bg-secondary/50">
                 <Header />
                 <main className="flex-1 container mx-auto py-8 px-4 sm:px-6 lg:px-8 text-center">
-                    <p>set not found or has no cards.</p>
+                    <p>set not found.</p>
                      <Button variant="link" asChild>
                         <Link href="/dashboard">go back to dashboard</Link>
                     </Button>
@@ -234,6 +293,43 @@ export default function StudyPage() {
             </div>
         </ProtectedRoute>
      )
+  }
+  
+  // Handle empty filtered cards
+  if (shuffledCards.length === 0) {
+    return (
+      <ProtectedRoute>
+        <div className="flex flex-col min-h-screen bg-secondary/50">
+          <Header />
+          <main className="flex-1 container mx-auto py-8 px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center">
+            <Card className="max-w-md p-8 text-center">
+              <h2 className="text-xl font-semibold mb-2">
+                {cardFilter === 'all' ? 'No cards in this set' : `No ${cardFilter} cards`}
+              </h2>
+              <p className="text-muted-foreground mb-4">
+                {cardFilter !== 'all' 
+                  ? `You don't have any cards marked as "${cardFilter}" yet. Practice more to categorize your cards!`
+                  : 'This set has no cards to study.'}
+              </p>
+              {cardFilter !== 'all' && (
+                <Button onClick={() => handleFilterChange('all')}>
+                  Show all cards
+                </Button>
+              )}
+              {cardFilter === 'all' && (
+                <Button variant="link" asChild>
+                  <Link href="/dashboard">go back to dashboard</Link>
+                </Button>
+              )}
+            </Card>
+          </main>
+        </div>
+      </ProtectedRoute>
+    );
+  }
+  
+  if (!currentCard) {
+    return null; // This shouldn't happen but just in case
   }
 
   const frontText = isReversed ? currentCard.back : currentCard.front;
@@ -293,6 +389,42 @@ export default function StudyPage() {
                         </div>
                       </div>
                       
+                      {/* Card Filter */}
+                      <div className="mt-4 pt-3 border-t">
+                        <div className="text-xs font-medium text-muted-foreground mb-2 flex items-center gap-1">
+                          <Filter className="h-3 w-3" />
+                          Filter Cards
+                        </div>
+                        <div className="flex gap-1">
+                          <Button
+                            variant={cardFilter === 'all' ? 'default' : 'outline'}
+                            size="sm"
+                            onClick={() => handleFilterChange('all')}
+                            className="flex-1 text-xs"
+                          >
+                            All ({filterCounts.all})
+                          </Button>
+                          <Button
+                            variant={cardFilter === 'weak' ? 'default' : 'outline'}
+                            size="sm"
+                            onClick={() => handleFilterChange('weak')}
+                            className="flex-1 text-xs"
+                            disabled={filterCounts.weak === 0}
+                          >
+                            Weak ({filterCounts.weak})
+                          </Button>
+                          <Button
+                            variant={cardFilter === 'strong' ? 'default' : 'outline'}
+                            size="sm"
+                            onClick={() => handleFilterChange('strong')}
+                            className="flex-1 text-xs"
+                            disabled={filterCounts.strong === 0}
+                          >
+                            Strong ({filterCounts.strong})
+                          </Button>
+                        </div>
+                      </div>
+                      
                       {/* Keyboard Shortcuts */}
                       <div className="mt-4 pt-3 border-t">
                         <div className="text-xs font-medium text-muted-foreground mb-2">Keyboard Shortcuts</div>
@@ -319,8 +451,16 @@ export default function StudyPage() {
                   </div>
                 </div>
                 
-                 <div className="text-sm text-muted-foreground">
-                    card {currentIndex + 1} of {shuffledCards.length}
+                 <div className="text-sm text-muted-foreground flex items-center gap-2">
+                    <span>card {currentIndex + 1} of {shuffledCards.length}</span>
+                    {cardFilter !== 'all' && (
+                      <span className={`text-xs px-2 py-0.5 rounded-full ${
+                        cardFilter === 'weak' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' : 
+                        'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
+                      }`}>
+                        {cardFilter} only
+                      </span>
+                    )}
                 </div>
             </div>
 

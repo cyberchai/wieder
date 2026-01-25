@@ -8,6 +8,15 @@ import {
   trackGamePlayed,
   type UserStats,
 } from "@/services/stats";
+import {
+  getSetProgress,
+  getUserSetsProgress,
+  trackSetCardStudied,
+  resetSetProgress,
+  setCardPerformance,
+  type SetProgress,
+  type CardPerformance,
+} from "@/services/set-progress";
 
 // Query key factory
 export const statsKeys = {
@@ -15,6 +24,13 @@ export const statsKeys = {
   user: (uid: string) => [...statsKeys.all, "user", uid] as const,
   leaderboard: () => [...statsKeys.all, "leaderboard"] as const,
   rank: (uid: string) => [...statsKeys.all, "rank", uid] as const,
+};
+
+// Query key factory for set progress
+export const progressKeys = {
+  all: ["setProgress"] as const,
+  set: (uid: string, setId: string) => [...progressKeys.all, uid, setId] as const,
+  userSets: (uid: string) => [...progressKeys.all, uid, "all"] as const,
 };
 
 // Get current user's stats
@@ -81,6 +97,102 @@ export const useTrackGamePlayed = () => {
         queryClient.invalidateQueries({ queryKey: statsKeys.user(user.uid) });
         queryClient.invalidateQueries({ queryKey: statsKeys.rank(user.uid) });
         queryClient.invalidateQueries({ queryKey: statsKeys.leaderboard() });
+      }
+    },
+  });
+};
+
+// ============================================
+// Set Progress Hooks
+// ============================================
+
+// Get progress for a single set
+export const useSetProgress = (setId: string) => {
+  const { user } = useAuth();
+  
+  return useQuery({
+    queryKey: progressKeys.set(user?.uid || "", setId),
+    queryFn: () => getSetProgress(user!.uid, setId),
+    enabled: !!user && !!setId,
+    staleTime: 30000, // 30 seconds
+  });
+};
+
+// Get progress for multiple sets (for dashboard)
+export const useUserSetsProgress = (setIds: string[]) => {
+  const { user } = useAuth();
+  
+  return useQuery({
+    queryKey: progressKeys.userSets(user?.uid || ""),
+    queryFn: () => getUserSetsProgress(user!.uid, setIds),
+    enabled: !!user && setIds.length > 0,
+    staleTime: 30000, // 30 seconds
+  });
+};
+
+// Track a card studied for a specific set
+export const useTrackSetCardStudied = () => {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: ({ setId, cardId }: { setId: string; cardId: string }) => 
+      trackSetCardStudied(user!.uid, setId, cardId),
+    onSuccess: (_, variables) => {
+      // Invalidate set progress queries
+      if (user) {
+        queryClient.invalidateQueries({ 
+          queryKey: progressKeys.set(user.uid, variables.setId) 
+        });
+        queryClient.invalidateQueries({ 
+          queryKey: progressKeys.userSets(user.uid) 
+        });
+      }
+    },
+  });
+};
+
+// Reset progress for a set
+export const useResetSetProgress = () => {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: (setId: string) => resetSetProgress(user!.uid, setId),
+    onSuccess: (_, setId) => {
+      // Invalidate set progress queries
+      if (user) {
+        queryClient.invalidateQueries({ 
+          queryKey: progressKeys.set(user.uid, setId) 
+        });
+        queryClient.invalidateQueries({ 
+          queryKey: progressKeys.userSets(user.uid) 
+        });
+      }
+    },
+  });
+};
+
+// Set card performance (weak/strong/neutral)
+export const useSetCardPerformance = () => {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: ({ setId, cardId, performance }: { 
+      setId: string; 
+      cardId: string; 
+      performance: CardPerformance 
+    }) => setCardPerformance(user!.uid, setId, cardId, performance),
+    onSuccess: (_, variables) => {
+      // Invalidate set progress queries
+      if (user) {
+        queryClient.invalidateQueries({ 
+          queryKey: progressKeys.set(user.uid, variables.setId) 
+        });
+        queryClient.invalidateQueries({ 
+          queryKey: progressKeys.userSets(user.uid) 
+        });
       }
     },
   });

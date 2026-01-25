@@ -16,7 +16,11 @@ import Confetti from 'react-confetti';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { useSoundEffects } from '@/hooks/use-sound-effects';
-import { useTrackCardStudied } from '@/hooks/use-stats-queries';
+import { useTrackCardStudied, useTrackSetCardStudied, useSetCardPerformance, useSetProgress } from '@/hooks/use-stats-queries';
+import { ThumbsUp, ThumbsDown, Filter } from 'lucide-react';
+import { getCardPerformance } from '@/services/set-progress';
+
+type CardFilter = 'all' | 'weak' | 'strong';
 
 export default function PracticePage() {
   const params = useParams();
@@ -26,8 +30,12 @@ export default function PracticePage() {
   const inputRef = useRef<HTMLInputElement>(null);
   const { handleCorrectAnswer, handleToggleOn, handleToggleOff, enableSounds } = useSoundEffects();
   const trackCardStudied = useTrackCardStudied();
+  const trackSetCardStudied = useTrackSetCardStudied();
+  const setCardPerformanceMutation = useSetCardPerformance();
+  const { data: setProgress } = useSetProgress(setId);
 
   const [set, setSet] = useState<FlashcardSet | null>(null);
+  const [cardFilter, setCardFilter] = useState<CardFilter>('all');
   const [loading, setLoading] = useState(true);
   const [shuffledCards, setShuffledCards] = useState<CardType[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -45,10 +53,39 @@ export default function PracticePage() {
   const [autoplayTimer, setAutoplayTimer] = useState<NodeJS.Timeout | null>(null);
   const [retryCardIds, setRetryCardIds] = useState<Set<string>>(new Set());
   const [trackedCards, setTrackedCards] = useState<Set<string>>(new Set());
+  const [currentCardPerformance, setCurrentCardPerformance] = useState<'weak' | 'strong' | null>(null);
 
   const shuffleCards = useCallback((cards: CardType[]) => {
     return [...cards].sort(() => Math.random() - 0.5);
   }, []);
+
+  // Filter cards based on performance
+  const filterCardsByPerformance = useCallback((cards: CardType[], filter: CardFilter) => {
+    if (filter === 'all' || !setProgress) return cards;
+    
+    return cards.filter(card => {
+      const performance = getCardPerformance(setProgress, card.id);
+      return performance === filter;
+    });
+  }, [setProgress]);
+
+  // Get counts for filter badges
+  const getFilterCounts = useCallback(() => {
+    if (!set || !setProgress) return { all: set?.cards.length || 0, weak: 0, strong: 0 };
+    
+    let weak = 0;
+    let strong = 0;
+    
+    set.cards.forEach(card => {
+      const performance = getCardPerformance(setProgress, card.id);
+      if (performance === 'weak') weak++;
+      else if (performance === 'strong') strong++;
+    });
+    
+    return { all: set.cards.length, weak, strong };
+  }, [set, setProgress]);
+
+  const filterCounts = getFilterCounts();
 
   const generateMultipleChoiceOptions = useCallback((correctAnswer: string, allCards: CardType[], isReversed: boolean) => {
     const correctText = isReversed ? correctAnswer : correctAnswer;
@@ -74,6 +111,7 @@ export default function PracticePage() {
             router.push('/dashboard');
         }
         setSet(fetchedSet);
+        // Initial load always shows all cards (filter will be applied via handleFilterChange)
         setShuffledCards(shuffleCards(fetchedSet.cards));
         setRetryCardIds(new Set());
       } else {
@@ -85,7 +123,25 @@ export default function PracticePage() {
     if (setId && user) {
       fetchSet();
     }
-  }, [setId, router, shuffleCards, user]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [setId, user]);
+
+  // Re-filter when filter changes (user interaction)
+  const handleFilterChange = useCallback((filter: CardFilter) => {
+    if (set) {
+      const filtered = filterCardsByPerformance(set.cards, filter);
+      setShuffledCards(shuffleCards(filtered));
+      setCurrentIndex(0);
+      setUserAnswer('');
+      setFeedback(null);
+      setSelectedOption(null);
+      setAttempts(0);
+      setRetryCardIds(new Set());
+      setIsFinished(false);
+      setCurrentCardPerformance(null);
+    }
+    setCardFilter(filter);
+  }, [set, filterCardsByPerformance, shuffleCards]);
 
   const currentCard = useMemo(() => shuffledCards[currentIndex], [shuffledCards, currentIndex]);
 
@@ -176,15 +232,29 @@ export default function PracticePage() {
 
     if (userAnswerClean === answerTextClean) {
       setFeedback('correct');
+      setCurrentCardPerformance('strong');
       handleCorrectAnswer(); // Play correct answer sound
       
       // Track card when answered correctly (only once per card)
       if (currentCard && user && !trackedCards.has(currentCard.id)) {
         setTrackedCards(prev => new Set(prev).add(currentCard.id));
         trackCardStudied.mutate();
+        trackSetCardStudied.mutate({ setId, cardId: currentCard.id });
+      }
+      
+      // Auto-set performance to strong
+      if (currentCard && user) {
+        setCardPerformanceMutation.mutate({ setId, cardId: currentCard.id, performance: 'strong' });
       }
     } else {
       setFeedback('try-again');
+      setCurrentCardPerformance('weak');
+      
+      // Auto-set performance to weak
+      if (currentCard && user) {
+        setCardPerformanceMutation.mutate({ setId, cardId: currentCard.id, performance: 'weak' });
+      }
+      
       // Only append the card if it hasn't been added as a retry card yet
       if (!retryCardIds.has(currentCard.id)) {
         setRetryCardIds(prev => new Set(prev).add(currentCard.id));
@@ -201,6 +271,7 @@ export default function PracticePage() {
     
     if (selectedAnswer === answerText) {
       setFeedback('correct');
+      setCurrentCardPerformance('strong');
       setAttempts(0);
       handleCorrectAnswer(); // Play correct answer sound
       
@@ -208,9 +279,22 @@ export default function PracticePage() {
       if (currentCard && user && !trackedCards.has(currentCard.id)) {
         setTrackedCards(prev => new Set(prev).add(currentCard.id));
         trackCardStudied.mutate();
+        trackSetCardStudied.mutate({ setId, cardId: currentCard.id });
+      }
+      
+      // Auto-set performance to strong
+      if (currentCard && user) {
+        setCardPerformanceMutation.mutate({ setId, cardId: currentCard.id, performance: 'strong' });
       }
     } else {
       setAttempts(prev => prev + 1);
+      setCurrentCardPerformance('weak');
+      
+      // Auto-set performance to weak
+      if (currentCard && user) {
+        setCardPerformanceMutation.mutate({ setId, cardId: currentCard.id, performance: 'weak' });
+      }
+      
       // Only append the card if it hasn't been added as a retry card yet
       if (!retryCardIds.has(currentCard.id)) {
         setRetryCardIds(prev => new Set(prev).add(currentCard.id));
@@ -227,6 +311,7 @@ export default function PracticePage() {
       setFeedback(null);
       setSelectedOption(null);
       setAttempts(0);
+      setCurrentCardPerformance(null);
     } else {
       // We've reached the last card, finish the session
       setIsFinished(true);
@@ -244,6 +329,13 @@ export default function PracticePage() {
         handleNextCard();
       }
     }
+  };
+  
+  // Override card performance (user manually marks as strong/weak)
+  const handleOverridePerformance = (performance: 'weak' | 'strong') => {
+    if (!currentCard || !user) return;
+    setCurrentCardPerformance(performance);
+    setCardPerformanceMutation.mutate({ setId, cardId: currentCard.id, performance });
   };
   
   const resetQuizState = () => {
@@ -322,13 +414,13 @@ export default function PracticePage() {
     );
   }
   
-  if (!set || !currentCard) {
+  if (!set) {
      return (
         <ProtectedRoute>
             <div className="flex flex-col min-h-screen bg-secondary/50">
                 <Header />
                 <main className="flex-1 container mx-auto py-8 px-4 sm:px-6 lg:px-8 text-center">
-                    <p>set not found or has no cards.</p>
+                    <p>set not found.</p>
                      <Button variant="link" asChild>
                         <Link href="/dashboard">go back to dashboard</Link>
                     </Button>
@@ -336,6 +428,39 @@ export default function PracticePage() {
             </div>
         </ProtectedRoute>
      )
+  }
+  
+  // Handle empty filtered cards (but not when finished)
+  if (shuffledCards.length === 0 && !isFinished) {
+    return (
+      <ProtectedRoute>
+        <div className="flex flex-col min-h-screen bg-secondary/50">
+          <Header />
+          <main className="flex-1 container mx-auto py-8 px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center">
+            <Card className="max-w-md p-8 text-center">
+              <h2 className="text-xl font-semibold mb-2">
+                {cardFilter === 'all' ? 'No cards in this set' : `No ${cardFilter} cards`}
+              </h2>
+              <p className="text-muted-foreground mb-4">
+                {cardFilter !== 'all' 
+                  ? `You don't have any cards marked as "${cardFilter}" yet. Practice more to categorize your cards!`
+                  : 'This set has no cards to practice.'}
+              </p>
+              {cardFilter !== 'all' && (
+                <Button onClick={() => handleFilterChange('all')}>
+                  Show all cards
+                </Button>
+              )}
+              {cardFilter === 'all' && (
+                <Button variant="link" asChild>
+                  <Link href="/dashboard">go back to dashboard</Link>
+                </Button>
+              )}
+            </Card>
+          </main>
+        </div>
+      </ProtectedRoute>
+    );
   }
 
   return (
@@ -404,13 +529,57 @@ export default function PracticePage() {
                             {multipleChoiceMode ? 'type answer' : 'multiple choice'}
                           </Button>
                         </div>
+                        
+                        {/* Card Filter */}
+                        <div className="mt-3 pt-3 border-t">
+                          <div className="text-xs font-medium text-muted-foreground mb-2 flex items-center gap-1">
+                            <Filter className="h-3 w-3" />
+                            Filter Cards
+                          </div>
+                          <div className="flex gap-1">
+                            <Button
+                              variant={cardFilter === 'all' ? 'default' : 'outline'}
+                              size="sm"
+                              onClick={() => handleFilterChange('all')}
+                              className="flex-1 text-xs"
+                            >
+                              All ({filterCounts.all})
+                            </Button>
+                            <Button
+                              variant={cardFilter === 'weak' ? 'default' : 'outline'}
+                              size="sm"
+                              onClick={() => handleFilterChange('weak')}
+                              className="flex-1 text-xs"
+                              disabled={filterCounts.weak === 0}
+                            >
+                              Weak ({filterCounts.weak})
+                            </Button>
+                            <Button
+                              variant={cardFilter === 'strong' ? 'default' : 'outline'}
+                              size="sm"
+                              onClick={() => handleFilterChange('strong')}
+                              className="flex-1 text-xs"
+                              disabled={filterCounts.strong === 0}
+                            >
+                              Strong ({filterCounts.strong})
+                            </Button>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
                 
-                 <div className="text-sm text-muted-foreground">
-                    card {currentIndex + 1} of {shuffledCards.length}
+                 <div className="text-sm text-muted-foreground flex items-center gap-2">
+                    <span>card {currentIndex + 1} of {shuffledCards.length}</span>
+                    {cardFilter !== 'all' && (
+                      <span className={`text-xs px-2 py-0.5 rounded-full ${
+                        cardFilter === 'weak' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' : 
+                        'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
+                      }`}>
+                        {cardFilter} only
+                      </span>
+                    )}
                     {shuffledCards.length > (set?.cards.length || 0) && (
                       <span className="ml-2 text-xs text-orange-600 dark:text-orange-400">
                         ({set?.cards.length} original + {shuffledCards.length - (set?.cards.length || 0)} retry)
@@ -479,16 +648,40 @@ export default function PracticePage() {
                                                     </div>
                                                 </div>
                                             )}
+                                            
+                                            {/* Override buttons */}
+                                            <div className="flex gap-2 mt-3 animate-in fade-in duration-300 delay-300">
+                                                <span className="text-xs text-muted-foreground self-center mr-1">
+                                                    marked as {currentCardPerformance === 'strong' ? 'strong' : 'weak'}
+                                                </span>
+                                                {currentCardPerformance === 'weak' ? (
+                                                    <Button 
+                                                        variant="outline" 
+                                                        size="sm"
+                                                        onClick={() => handleOverridePerformance('strong')}
+                                                        className="text-xs"
+                                                    >
+                                                        <ThumbsUp className="h-3 w-3 mr-1" />
+                                                        I know this
+                                                    </Button>
+                                                ) : (
+                                                    <Button 
+                                                        variant="outline" 
+                                                        size="sm"
+                                                        onClick={() => handleOverridePerformance('weak')}
+                                                        className="text-xs"
+                                                    >
+                                                        <ThumbsDown className="h-3 w-3 mr-1" />
+                                                        still learning
+                                                    </Button>
+                                                )}
+                                            </div>
+                                            
                                             {!autoplay && (
                                                 <Button onClick={handleNextCard} className="mt-4 w-1/2 animate-in slide-in-from-bottom-2 duration-500 delay-400">
                                                     next
                                                 </Button>
                                             )}
-                                            {/* {autoplay && (
-                                                <p className="mt-4 text-sm text-muted-foreground animate-in slide-in-from-bottom-2 duration-500 delay-400">
-                                                    advancing automatically...
-                                                </p>
-                                            )} */}
                                         </div>
                                     )}
                                 </div>
@@ -573,16 +766,40 @@ export default function PracticePage() {
                                             <p className="mt-2">the correct answer is: <strong className="font-bold">{answerText}</strong></p>
                                         </div>
                                     )}
+                                    
+                                    {/* Override buttons */}
+                                    <div className="flex gap-2 mt-3 animate-in fade-in duration-300 delay-300">
+                                        <span className="text-xs text-muted-foreground self-center mr-1">
+                                            marked as {currentCardPerformance === 'strong' ? 'strong' : 'weak'}
+                                        </span>
+                                        {currentCardPerformance === 'weak' ? (
+                                            <Button 
+                                                variant="outline" 
+                                                size="sm"
+                                                onClick={() => handleOverridePerformance('strong')}
+                                                className="text-xs"
+                                            >
+                                                <ThumbsUp className="h-3 w-3 mr-1" />
+                                                I know this
+                                            </Button>
+                                        ) : (
+                                            <Button 
+                                                variant="outline" 
+                                                size="sm"
+                                                onClick={() => handleOverridePerformance('weak')}
+                                                className="text-xs"
+                                            >
+                                                <ThumbsDown className="h-3 w-3 mr-1" />
+                                                still learning
+                                            </Button>
+                                        )}
+                                    </div>
+                                    
                                     {!autoplay && (
                                         <Button onClick={handleNextCard} className="mt-4 w-1/2 animate-in slide-in-from-bottom-2 duration-500 delay-400">
                                             next
                                         </Button>
                                     )}
-                                    {/* {autoplay && (
-                                        <p className="mt-4 text-sm text-muted-foreground animate-in slide-in-from-bottom-2 duration-500 delay-400">
-                                            advancing automatically...
-                                        </p>
-                                    )} */}
                                 </div>
                             )}
                         </CardContent>

@@ -58,7 +58,8 @@ import {
   useJoinGroupSet,
   useLeaveGroupSet,
 } from "@/hooks/use-flashcard-queries";
-import { useUserStats, useUserRank, useLeaderboard } from "@/hooks/use-stats-queries";
+import { useUserStats, useUserRank, useLeaderboard, useUserSetsProgress } from "@/hooks/use-stats-queries";
+import { calculateProgressPercentage } from "@/services/set-progress";
 import { useQuery } from "@tanstack/react-query";
 import { getUserProfilesBatch } from "@/services/users";
 
@@ -113,6 +114,26 @@ const DashboardPage = () => {
         enabled: top3Uids.length > 0,
         staleTime: 5 * 60 * 1000,
     });
+    
+    // Collect all set IDs for progress tracking
+    const allSetIds = useMemo(() => {
+        const ids = new Set<string>();
+        sets.forEach(set => ids.add(set.id));
+        publicSets.forEach(set => ids.add(set.id));
+        groupSets.forEach(set => ids.add(set.id));
+        return Array.from(ids);
+    }, [sets, publicSets, groupSets]);
+    
+    // Fetch progress for all sets
+    const { data: setsProgress = new Map() } = useUserSetsProgress(allSetIds);
+    
+    // Helper function to get progress percentage for a set
+    const getSetProgress = (set: FlashcardSet): number => {
+        const progress = setsProgress.get(set.id);
+        const cardCount = Array.isArray(set.cards) ? set.cards.length : 0;
+        if (!progress || cardCount === 0) return 0;
+        return calculateProgressPercentage(progress.studiedCardIds, cardCount);
+    };
     
     // UI state variables
     const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -860,7 +881,7 @@ const DashboardPage = () => {
                                         <div className={viewMode === 'cards' ? "grid gap-4 md:grid-cols-2" : "flex flex-col gap-2"}>
                                             {filteredSets.map(set => {
                                                 const cardCount = Array.isArray(set.cards) ? set.cards.length : 0;
-                                                const progress = Math.min(100, Math.max(0, Math.floor((cardCount / Math.max(cardCount, 1)) * 100))); // Mock progress
+                                                const progress = getSetProgress(set);
                                                 const category = Array.isArray(set.tags) && set.tags.length > 0 ? set.tags[0] : "General";
                                                 
                                                 // List view
@@ -1171,7 +1192,7 @@ const DashboardPage = () => {
                                     <div className={viewMode === 'cards' ? "grid gap-4 md:grid-cols-2" : "flex flex-col gap-2"}>
                                         {filteredPublicSets.map(set => {
                                             const cardCount = Array.isArray(set.cards) ? set.cards.length : 0;
-                                            const progress = Math.min(100, Math.max(0, Math.floor((cardCount / Math.max(cardCount, 1)) * 100)));
+                                            const progress = getSetProgress(set);
                                             const category = Array.isArray(set.tags) && set.tags.length > 0 ? set.tags[0] : "General";
                                             
                                             // List view
@@ -1320,7 +1341,7 @@ const DashboardPage = () => {
                                     <div className={viewMode === 'cards' ? "grid gap-4 md:grid-cols-2" : "flex flex-col gap-2"}>
                                         {groupSets.map(set => {
                                             const cardCount = Array.isArray(set.cards) ? set.cards.length : 0;
-                                            const progress = Math.min(100, Math.max(0, Math.floor((cardCount / Math.max(cardCount, 1)) * 100)));
+                                            const progress = getSetProgress(set);
                                             const category = Array.isArray(set.tags) && set.tags.length > 0 ? set.tags[0] : "General";
                                             
                                             // List view
