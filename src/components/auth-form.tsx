@@ -1,40 +1,38 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth } from "@/lib/firebase";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Icons } from "@/components/icons";
 import { Loader2 } from "lucide-react";
 import type { AuthError } from "firebase/auth";
-import { useFlipTransition } from "@/providers/flip-transition-provider";
-// import { signInWithRedirect } from 'firebase/auth';
+import { useRippleTransition } from "@/providers/ripple-transition-provider";
 
 type AuthFormProps = {
   mode: "login" | "signup";
 };
 
 export function AuthForm({ mode }: AuthFormProps) {
-  const router = useRouter();
   const { toast } = useToast();
-  const { triggerFlip } = useFlipTransition();
+  const { triggerRipple } = useRippleTransition();
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const hasSignedInRef = useRef(false);
 
   async function handleGoogleSignIn() {
+    if (hasSignedInRef.current) return; // Prevent duplicate attempts
+    
     setIsGoogleLoading(true);
     const provider = new GoogleAuthProvider();
     try {
       await signInWithPopup(auth, provider);
-      // Trigger the flashcard flip animation
-      triggerFlip();
-      // Navigate halfway through the flip animation (when the card is at 90deg, showing the edge)
-      setTimeout(() => {
-        router.push("/dashboard");
-        toast({ title: "login successful", description: "welcome!" });
-      }, 400); // Halfway through the 0.8s flip animation
+      hasSignedInRef.current = true;
+      
+      // Trigger ripple animation - PublicRoute will handle navigation
+      triggerRipple();
+      toast({ title: "login successful", description: "welcome!" });
     } catch (error) {
       const err = error as AuthError;
       toast({
@@ -42,9 +40,9 @@ export function AuthForm({ mode }: AuthFormProps) {
         description: err.message,
         variant: "destructive",
       });
-    } finally {
       setIsGoogleLoading(false);
     }
+    // Don't reset loading state on success - let PublicRoute redirect
   }
 
   return (

@@ -3,8 +3,8 @@ import './globals.css';
 import { ThemeProvider } from '@/providers/theme-provider';
 import { AuthProvider } from '@/providers/auth-provider';
 import { QueryProvider } from '@/providers/simple-query-provider';
-import { FlipTransitionProvider } from '@/providers/flip-transition-provider';
-import { FlashcardFlipTransition } from '@/components/flashcard-flip-transition';
+import { RippleTransitionProvider } from '@/providers/ripple-transition-provider';
+import { RippleTransition } from '@/components/ripple-transition';
 import { Toaster } from "@/components/ui/toaster";
 import { ThemedBody } from '@/components/themed-body';
 
@@ -66,14 +66,14 @@ export default function RootLayout({
         <QueryProvider>
           <ThemeProvider>
             <AuthProvider>
-              <FlipTransitionProvider>
-                <FlashcardFlipTransition>
+              <RippleTransitionProvider>
+                <RippleTransition>
                   <ThemedBody>
                     {children}
                     <Toaster />
                   </ThemedBody>
-                </FlashcardFlipTransition>
-              </FlipTransitionProvider>
+                </RippleTransition>
+              </RippleTransitionProvider>
             </AuthProvider>
           </ThemeProvider>
         </QueryProvider>

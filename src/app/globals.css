@@ -599,7 +599,56 @@ svg circle[fill*="url(#a-cl-9)"] {
     }
   }
 
-  /* Flashcard Flip Animation */
+  /* Ripple Page Transition Animation */
+  .ripple-transition-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 9999;
+    overflow: hidden;
+  }
+
+  .ripple-transition-circle {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(89, 51, 46, 0.85);
+    transform: translate(-50%, -50%) scale(0);
+    animation: ripple-expand var(--ripple-duration-expand, 800ms) ease-out forwards;
+  }
+
+  .ripple-transition-circle::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: inherit;
+    animation: ripple-fade var(--ripple-duration-fade, 400ms) ease-in-out forwards;
+    animation-delay: calc(var(--ripple-duration-expand, 800ms) - var(--ripple-duration-fade, 400ms));
+  }
+
+  @keyframes ripple-expand {
+    0% {
+      transform: translate(-50%, -50%) scale(0);
+    }
+    100% {
+      transform: translate(-50%, -50%) scale(1);
+    }
+  }
+
+  @keyframes ripple-fade {
+    0% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+  /* Old Flashcard Flip Animation - Deprecated, keeping for reference */
+  /*
   .flashcard-flip-wrapper {
     width: 100%;
     min-height: 100vh;
@@ -618,7 +667,6 @@ svg circle[fill*="url(#a-cl-9)"] {
     transform-origin: center center;
   }
 
-  /* Forward flip (login) */
   .flashcard-flip-active {
     transform: rotateY(180deg);
   }
@@ -627,7 +675,6 @@ svg circle[fill*="url(#a-cl-9)"] {
     animation: flipIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   }
 
-  /* Reverse flip (logout) */
   .flashcard-flip-active-reverse {
     transform: rotateY(-180deg);
   }
@@ -663,6 +710,7 @@ svg circle[fill*="url(#a-cl-9)"] {
       opacity: 1;
     }
   }
+  */
 
   /* Speed Game Feedback Animation */
   .animate-ping-once {

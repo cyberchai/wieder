@@ -1,0 +1,33 @@
+body {
+  height: 100dvh;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: monospace;
+  font-size: 2rem;
+}
+
+.page-transition-circle-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+}
+
+.page-transition-circle {
+  position: absolute;
+  border-radius: 50%;
+  background: rebeccapurple;
+  transform: translate(-50%, -50%) scale(0);
+  transition: opacity var(--animation-duration-opacity) ease-in-out;
+  animation: circle-expand var(--animation-duration-circle) ease-out forwards;
+}
+
+@keyframes circle-expand {
+  to {
+    transform: translate(-50%, -50%) scale(1);
+  }
+}

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { IterationCcw, Loader2, Mail, Check } from 'lucide-react';
 import { PublicRoute } from "@/providers/auth-provider";
 import PolyWorldBackground from "@/components/poly-world-background";
@@ -12,32 +12,36 @@ import { Label } from "@/components/ui/label";
 import { Icons } from "@/components/icons";
 import { GoogleAuthProvider, signInWithPopup, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink } from "firebase/auth";
 import { auth } from "@/lib/firebase";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-import { useFlipTransition } from "@/providers/flip-transition-provider";
+import { useRippleTransition } from "@/providers/ripple-transition-provider";
 import type { AuthError } from "firebase/auth";
 import { Suspense } from "react";
 
 const EMAIL_FOR_SIGN_IN_KEY = "emailForSignIn";
 
 function LoginContent() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
-  const { triggerFlip } = useFlipTransition();
+  const { triggerRipple } = useRippleTransition();
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [isEmailLoading, setIsEmailLoading] = useState(false);
   const [showEmailForm, setShowEmailForm] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
   const [email, setEmail] = useState("");
   const [isCompletingSignIn, setIsCompletingSignIn] = useState(false);
+  
+  // Guard to prevent duplicate sign-in attempts
+  const hasSignedInRef = useRef(false);
 
   // Handle email link sign-in completion
   useEffect(() => {
     if (typeof window === "undefined") return;
+    if (hasSignedInRef.current) return; // Prevent duplicate attempts
     
     const completeEmailLinkSignIn = async () => {
       if (isSignInWithEmailLink(auth, window.location.href)) {
+        hasSignedInRef.current = true; // Mark as attempting sign-in
         setIsCompletingSignIn(true);
         
         // Try to get email from: 1) URL params, 2) localStorage, 3) prompt user
@@ -53,6 +57,7 @@ function LoginContent() {
         }
         
         if (!emailForSignIn) {
+          hasSignedInRef.current = false; // Reset on cancel
           setIsCompletingSignIn(false);
           toast({
             title: "sign-in cancelled",
@@ -67,13 +72,12 @@ function LoginContent() {
           // Clear the email from storage
           window.localStorage.removeItem(EMAIL_FOR_SIGN_IN_KEY);
           
-          triggerFlip();
-          setTimeout(() => {
-            router.push("/dashboard");
-            toast({ title: "login successful", description: "welcome!" });
-          }, 400);
+          // Trigger ripple animation - PublicRoute will handle the navigation
+          triggerRipple();
+          toast({ title: "login successful", description: "welcome!" });
         } catch (error) {
           const err = error as AuthError;
+          hasSignedInRef.current = false; // Reset on error
           let message = err.message;
           if (err.code === "auth/invalid-action-code") {
             message = "This sign-in link has expired or already been used.";
@@ -91,18 +95,20 @@ function LoginContent() {
     };
     
     completeEmailLinkSignIn();
-  }, [router, searchParams, toast, triggerFlip]);
+  }, [searchParams, toast, triggerRipple]);
 
   async function handleGoogleSignIn() {
+    if (hasSignedInRef.current) return; // Prevent duplicate attempts
+    
     setIsGoogleLoading(true);
     const provider = new GoogleAuthProvider();
     try {
       await signInWithPopup(auth, provider);
-      triggerFlip();
-      setTimeout(() => {
-        router.push("/dashboard");
-        toast({ title: "login successful", description: "welcome!" });
-      }, 400);
+      hasSignedInRef.current = true;
+      
+      // Trigger ripple animation - PublicRoute will handle the navigation
+      triggerRipple();
+      toast({ title: "login successful", description: "welcome!" });
     } catch (error) {
       const err = error as AuthError;
       toast({
@@ -110,9 +116,9 @@ function LoginContent() {
         description: err.message,
         variant: "destructive",
       });
-    } finally {
       setIsGoogleLoading(false);
     }
+    // Don't reset loading state on success - let PublicRoute redirect
   }
 
   async function handleEmailLinkSignIn(e: React.FormEvent) {
