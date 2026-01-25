@@ -2,14 +2,13 @@
 
 A modern, gamified flashcard app built with Next.js and Firebase. Learn vocabulary, study for exams, or master any subject through interactive study modes and engaging games.
 
-**Live:** [wieder.app](https://wieder-six.vercel.app/)
-App domain to be added: 
+**Live:** [wieder.world](https://wieder.world)
 
 ---
 
 ## What is wieder?
 
-wieder (German for "again") is a flashcard learning platform that makes studying actually fun. Create flashcard sets, study them in multiple ways, compete on leaderboards, and earn **Wieds** (our XP currency) as you learn.
+wieder (German for "again") is a flashcard learning platform that makes studying effective and fun. Create flashcard sets, study them in multiple ways, compete on leaderboards, and earn **Wieds** (our XP currency) as you learn.
 
 ### Core Features
 
@@ -144,9 +143,9 @@ src/
 
 ### Long-term / Experimental
 
-- [ ] **Apple Vision Pro Version** — Already have some spatial computing ideas. Will need:
+- [ ] **Apple Vision Pro Version** — Already have some spatial computing ideas and a basic app going. Will need:
   - VisionOS SDK integration
-  - 3D flashcard interactions
+  - Improved 3D flashcard interactions
   - Spatial audio for study modes
   - Hand gesture recognition for card flipping
 
