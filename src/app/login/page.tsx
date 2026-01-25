@@ -249,7 +249,7 @@ export default function LoginPage() {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
-                        className="h-9 text-sm bg-white border-[#59332e]/20 focus:border-[#59332e]/40"
+                        className="h-9 text-sm bg-white text-[#59332e] placeholder:text-[#59332e]/40 border-[#59332e]/20 focus:border-[#59332e]/40"
                       />
                     </div>
                     <Button
