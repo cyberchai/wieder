@@ -78,7 +78,7 @@ svg circle[fill*="url(#a-cl-9)"] {
     --border: 200 50% 30%;
     --input: 200 50% 18%; /* Lighter blue */
     --ring: 74 30% 47%; /* green */
-    --radius: 0.5rem;
+    --radius: 1rem;
     --tab-bar-bg: 200 50% 8%; /* Darker tab bar background for wiederland theme */
   }
   .neilson {
@@ -106,7 +106,7 @@ svg circle[fill*="url(#a-cl-9)"] {
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
-    --radius: 0.5rem;
+    --radius: 1rem;
     --tab-bar-bg: 45 83.3% 87.5%; /* Darker tab bar background for Neilson theme */
   }
   .dark {
@@ -134,7 +134,7 @@ svg circle[fill*="url(#a-cl-9)"] {
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
-    --radius: 0.5rem;
+    --radius: 1rem;
     --tab-bar-bg: 0 0% 8%; /* Darker tab bar background for dark theme */
   }
   .confesh {
@@ -157,7 +157,7 @@ svg circle[fill*="url(#a-cl-9)"] {
     --border: 205 70% 80%;
     --input: 205 70% 94%; /* #daf3fe with slight adjustment */
     --ring: 205 70% 47%;
-    --radius: 0.5rem;
+    --radius: 1rem;
     --tab-bar-bg: 80 61% 45%; /* Darker tab bar background for confesh theme */
   }
   .skunks {
@@ -180,7 +180,7 @@ svg circle[fill*="url(#a-cl-9)"] {
     --border: 224 60% 40%;
     --input: 224 60% 30%; /* Lighter blue */
     --ring: 41 98% 54%; /* #fcb715 */
-    --radius: 0.5rem;
+    --radius: 1rem;
     --tab-bar-bg: 224 60% 18%; /* Darker tab bar background for skunks theme */
   }
   .light {
@@ -203,7 +203,7 @@ svg circle[fill*="url(#a-cl-9)"] {
     --border: 0 0% 90%; /* light gray */
     --input: 0 0% 98%; /* almost white */
     --ring: 0 0% 0%; /* black */
-    --radius: 0.5rem;
+    --radius: 1rem;
     --tab-bar-bg: 0 0% 96%; /* very light gray tab bar background */
   }
   
@@ -730,5 +730,25 @@ svg circle[fill*="url(#a-cl-9)"] {
       transform: scale(1.5);
       opacity: 0;
     }
+  }
+
+  /* Wieder wordmark: masked so it inherits the current text color in every theme */
+  .wieder-wordmark {
+    display: block;
+    aspect-ratio: 1550 / 328;
+    background-color: currentColor;
+    -webkit-mask-image: url('/wieder-wordmark.png');
+    mask-image: url('/wieder-wordmark.png');
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+  }
+
+  /* confesh's foreground is black, which reads muddy on its lime background */
+  .confesh .wieder-wordmark {
+    background-color: hsl(0 0% 100%);
   }
 }

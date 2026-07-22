@@ -1202,17 +1202,19 @@ const DashboardPage = () => {
                                                         <Card className="p-3 hover:shadow-md transition-shadow cursor-pointer group">
                                                             <div className="flex items-center justify-between gap-4">
                                                                 <div className="flex items-center gap-3 flex-1 min-w-0">
-                                                                    <Globe className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                                                                    <Globe className="h-4 w-4 text-sky-500 flex-shrink-0" />
                                                                     <span className="font-medium truncate group-hover:text-primary transition-colors">
                                                                         {set.title}
                                                                     </span>
-                                                                    <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full flex-shrink-0">
+                                                                    <span className="text-xs font-medium bg-sky-500/15 text-sky-500 px-2 py-0.5 rounded-full flex-shrink-0">
                                                                         public
                                                                     </span>
                                                                 </div>
                                                                 <div className="flex items-center gap-4 text-sm text-muted-foreground flex-shrink-0">
-                                                                    <Badge variant="secondary" className="text-xs">{category}</Badge>
-                                                                    <span className="hidden sm:inline">{cardCount} cards</span>
+                                                                    <Badge variant="secondary" className="text-xs bg-violet-500/15 text-violet-500 border-transparent hover:bg-violet-500/25">{category}</Badge>
+                                                                    <span className="hidden sm:inline">
+                                                                        <span className="font-semibold text-foreground/75">{cardCount}</span> cards
+                                                                    </span>
                                                                     <span className="hidden md:inline text-xs truncate max-w-[100px]">
                                                                         by {set.creatorDisplayName || "someone"}
                                                                     </span>

@@ -1,0 +1,5 @@
+- generic [active]:
+  - button "Open Next.js Dev Tools" [ref=e6] [cursor=pointer]
+  - alert [ref=e10]
+  - region "Notifications (F8)":
+    - list

@@ -6,7 +6,7 @@ import { ThemeSwitcher } from './theme-switcher';
 import { FontSwitcher } from './font-switcher';
 import { UserNav } from './user-nav';
 import { CountdownTimer } from './countdown-timer';
-import { IterationCcw, Search } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
 
@@ -25,9 +25,8 @@ export default function Header({ searchQuery = "", onSearchChange, searchInputRe
         <div className="flex h-14 items-center justify-between">
           {/* Logo Section */}
           <div className="flex items-center">
-            <Link href="/dashboard" className="flex items-center space-x-2">
-              <IterationCcw className="h-6 w-6 text-primary" />
-              <span className="font-bold">Wieder</span>
+            <Link href="/dashboard" className="flex items-center" aria-label="Wieder home">
+              <span className="wieder-wordmark h-5 sm:h-6" />
             </Link>
           </div>
 
