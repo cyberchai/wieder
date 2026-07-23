@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans+Condensed:wght@300;700&family=Open+Sans:wght@400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&family=Open+Sans+Condensed:wght@300;700&family=Open+Sans:wght@400;600&family=Poppins:wght@300;400;500&display=swap');
 
 * {
   margin: 0;
@@ -16,7 +16,7 @@ body {
   font-family: 'Open Sans', sans-serif;
   overflow-x: hidden;
   color: white;
-  background: black;
+  background: #7db8de;
 }
 
 h2, h3 {
@@ -114,7 +114,7 @@ figcaption {
 figcaption p {
   line-height: 1.5;
   text-transform: none;
-  font-family: 'Open Sans', sans-serif;
+  font-family: 'Poppins', sans-serif;
 }
 
 .section {
@@ -170,12 +170,142 @@ figcaption p {
   box-shadow: 0 6px 30px rgba(126, 85, 159, 0.6);
 }
 
+/* wieder logo, pinned top-left. The wordmark is a mask; rising gradient
+   "equalizer" bars fill it from the bottom (à la relooped). Replays on hover. */
+.wieder-logo {
+  position: fixed;
+  top: 20px;
+  left: 24px;
+  z-index: 10;
+  width: 150px;
+  aspect-ratio: 1307 / 276;
+  cursor: pointer;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.22));
+  -webkit-mask: url(/wieder-logo.svg) no-repeat center / 100% 100%;
+  mask: url(/wieder-logo.svg) no-repeat center / 100% 100%;
+}
+.wieder-eq {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  gap: 0; /* bars sit flush — no vertical seams inside the letters */
+}
+.wieder-eq span {
+  flex: 1 1 auto;
+  height: 100%; /* resting state: fully filled */
+  margin-right: -0.5px; /* slight overlap to kill subpixel seams */
+  background: linear-gradient(to top, #05385f 0%, #0a5e9a 55%, #1379c2 100%);
+}
+.wieder-logo.playing .wieder-eq span {
+  animation: eqFill 2.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes eqFill {
+  0%   { height: 0%; }
+  28%  { height: 72%; }
+  42%  { height: 34%; }
+  58%  { height: 92%; }
+  72%  { height: 55%; }
+  86%  { height: 100%; }
+  100% { height: 100%; }
+}
+
+/* Floating sign-in button, pinned top-right */
+.signin-float {
+  position: fixed;
+  top: 20px;
+  right: 24px;
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 18px 9px 15px;
+  background: rgba(255, 255, 255, 0.94);
+  color: #1f2937;
+  border-radius: 999px;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.signin-float:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.28);
+}
+.signin-float svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
 .final-cta {
   text-align: center;
 }
 
 .final-cta h2 {
   margin-bottom: 2rem;
+}
+
+/* Site footer — subtle dark fade-in at the very bottom (series.so style) */
+#site-footer {
+  position: relative;
+  z-index: 2;
+  width: 100vw;
+  padding: 140px 24px 52px;
+  text-align: center;
+  background: linear-gradient(to bottom, transparent 0%, rgba(8, 22, 34, 0.35) 55%, rgba(8, 22, 34, 0.62) 100%);
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+#site-footer.in {
+  opacity: 1;
+}
+
+.footer-mission {
+  font-family: 'Open Sans Condensed', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  text-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+.footer-links {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 1.2rem;
+}
+.footer-links a {
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  transition: color 0.2s;
+}
+.footer-links a:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+.footer-by {
+  font-family: 'Cherry Bomb One', cursive;
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.6);
+}
+.footer-by a {
+  color: rgba(255, 255, 255, 0.78);
+  text-decoration: none;
+}
+.footer-by a:hover {
+  color: #fff;
+  text-decoration: underline;
 }
 </style>
 </head>
@@ -206,31 +336,32 @@ varying vec2 vUv;
 
 void main(void)
 {
-    vec2 position = vUv;
+    // Daytime sky: a deeper blue up top fading to a pale blue near the horizon,
+    // with a gentle animated shimmer.
+    float t = clamp(vUv.y, 0.0, 1.0);
+    vec3 topColor = vec3(0.25, 0.57, 0.83);      // slightly deeper day blue
+    vec3 horizonColor = vec3(0.78, 0.88, 0.95);  // slightly less pale horizon
+    vec3 rgb = mix(horizonColor, topColor, t);
+    rgb.b += cos(vUv.x + delta * 0.3) * 0.02;
+    rgb += sin(delta * 0.1) * 0.008;
 
-    float red = 0.1;
-    float green = 0.0;
-    float blue = 0.1;
-    
-    if (vUv.y < 0.85) {
-        float offset = 0.1 + (0.85 - vUv.y) * (1.0 + sin(delta * 0.1) * 1.0);
-        blue = offset;
-        red = offset;
-        blue *= 1.0 + cos(vUv.x + delta * 0.3) * 0.05;
-    }
-    
-    if (vUv.y < 0.8) {
-        blue += 0.0 + cos(vUv.x + delta * 0.2) * 0.01;
-    }
-
-    vec3 rgb = vec3(red, green, blue);
-    vec4 color = vec4(rgb, 1.0);
-    
-    gl_FragColor = color;
+    gl_FragColor = vec4(rgb, 1.0);
 }
 </script>
 
 <canvas id="ground"></canvas>
+
+<div id="wieder-logo" class="wieder-logo" role="img" aria-label="wieder"><div class="wieder-eq"></div></div>
+
+<a href="/login" target="_top" class="signin-float" aria-label="Sign in with Google">
+  <svg viewBox="0 0 48 48" aria-hidden="true">
+    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+    <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+  </svg>
+  Sign in
+</a>
 
 <div id="deck">
   <section id="cover" class="cover slide" data-x="0" data-y="0" data-z="0">
@@ -242,7 +373,7 @@ void main(void)
     <figure class="right">
       <figcaption>
         <h2>Simple Learning</h2>
-        <p>Create flashcard sets in seconds. Add terms and definitions, then start studying immediately. No complicated setup required.</p>
+        <p>Make a set of cards. Add your terms and their meanings, then start studying.</p>
       </figcaption>
     </figure>
   </section>
@@ -251,7 +382,7 @@ void main(void)
     <figure class="left">
       <figcaption>
         <h2>Flashcards</h2>
-        <p>Flip through your cards at your own pace. Mark cards as learned or keep practicing the ones you need more help with.</p>
+        <p>Flip through your cards at your own pace. Mark the ones you know, and keep practicing the rest.</p>
       </figcaption>
     </figure>
   </section>
@@ -260,7 +391,7 @@ void main(void)
     <figure class="right">
       <figcaption>
         <h2>Test Yourself</h2>
-        <p>Take quizzes to reinforce your learning. Get instant feedback and track your progress over time.</p>
+        <p>Take a quick quiz to see what stuck. It shows what you got right and what to go over again.</p>
       </figcaption>
     </figure>
   </section>
@@ -269,7 +400,7 @@ void main(void)
     <figure class="left">
       <figcaption>
         <h2>Share Sets</h2>
-        <p>Share your flashcard sets with friends, classmates, or study groups. Learn together and help each other succeed.</p>
+        <p>Share your sets with friends or classmates, or study from a set someone else made.</p>
       </figcaption>
     </figure>
   </section>
@@ -278,7 +409,7 @@ void main(void)
     <figure class="right">
       <figcaption>
         <h2>Game Modes</h2>
-        <p>Make studying fun with interactive game modes. Race against the clock, match terms, and compete for high scores.</p>
+        <p>Race the clock, match pairs, or catch falling words — practice that plays like a game.</p>
       </figcaption>
     </figure>
   </section>
@@ -287,7 +418,7 @@ void main(void)
     <figure class="left">
       <figcaption>
         <h2>Track Progress</h2>
-        <p>See detailed statistics about your learning journey. Identify weak areas and focus your study time where it matters most.</p>
+        <p>Build a streak and watch the words you keep missing finally click.</p>
       </figcaption>
     </figure>
   </section>
@@ -296,11 +427,21 @@ void main(void)
     <figure class="right" style="float: none; margin: 0 auto; text-align: center;">
       <figcaption style="border: none; text-align: center; padding: 0;">
         <h2>Ready to Start?</h2>
-        <p style="margin-bottom: 2rem;">Join thousands of students who are already learning smarter with wieder.</p>
-        <a href="/login" class="login-btn">Login Now!</a>
+        <p style="margin-bottom: 2rem;">Jump in and start practicing with wieder.</p>
+        <a href="/login" target="_top" class="login-btn">Login!</a>
       </figcaption>
     </figure>
   </section>
+
+  <footer id="site-footer">
+    <p class="footer-mission">Learn freely, live fully</p>
+    <nav class="footer-links">
+      <a href="/privacy" target="_top">privacy policy</a>
+      <a href="/terms" target="_top">terms of service</a>
+      <a href="/contribute" target="_top">contribute</a>
+    </nav>
+    <p class="footer-by">by <a href="https://nextnode.technology/" target="_blank" rel="noopener noreferrer">nextnode.technology</a></p>
+  </footer>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -438,6 +579,38 @@ $('figure').each(function() {
   });
 });
 
+// Footer: subtle fade-in once it starts entering the viewport (scrolled to bottom)
+window.addEventListener('scroll', function() {
+  var footer = document.getElementById('site-footer');
+  if (!footer) return;
+  var rect = footer.getBoundingClientRect();
+  if (rect.top < window.innerHeight - 80) {
+    footer.classList.add('in');
+  } else {
+    footer.classList.remove('in');
+  }
+});
+
+// Logo: build the equalizer bars, fill on load, replay on hover
+(function() {
+  var logo = document.getElementById('wieder-logo');
+  if (!logo) return;
+  var eq = logo.querySelector('.wieder-eq');
+  var N = 18;
+  for (var i = 0; i < N; i++) {
+    var bar = document.createElement('span');
+    bar.style.animationDelay = (i * 0.045).toFixed(3) + 's';
+    eq.appendChild(bar);
+  }
+  function play() {
+    logo.classList.remove('playing');
+    void logo.offsetWidth; // reflow so every bar's animation restarts together
+    logo.classList.add('playing');
+  }
+  logo.addEventListener('mouseenter', play);
+  play();
+})();
+
 var Background = function() {
   var instance = this;
   this.d = 0;
@@ -457,7 +630,7 @@ var Background = function() {
     }
 
     var material = new THREE.MeshLambertMaterial({
-      color: 0x443053,
+      color: 0x8fa8c8,
       shading: THREE.FlatShading
     });
 
@@ -488,7 +661,7 @@ var Background = function() {
   function addTerrain() {
     var worldGeometry = new THREE.BoxGeometry(14000, 7000, 3000, 100, 50, 50);
 
-    var colorArray = [0x2c1914, 0x231410, 0x341e18, 0x39201a];
+    var colorArray = [0x5a8c3a, 0x4e7d32, 0x669644, 0x578a3e];
 
     for (var i = 0; i < worldGeometry.faces.length; i += 1) {
       var face = worldGeometry.faces[i];
@@ -514,7 +687,7 @@ var Background = function() {
     }
 
     var worldMaterial = new THREE.MeshLambertMaterial({
-      color: 0xcccccc,
+      color: 0xffffff,
       vertexColors: THREE.FaceColors,
       shading: THREE.FlatShading
     });
@@ -529,7 +702,7 @@ var Background = function() {
   function addWater() {
     var geometry = new THREE.BoxGeometry(3010, 7010, 1000, 10, 60, 10);
 
-    var colorArray = [0x142c4c, 0x132a49, 0x1a3a65, 0x112541];
+    var colorArray = [0x124e86, 0x104278, 0x1a5a98, 0x0e3a6a];
 
     for (var i = 0; i < geometry.faces.length; i += 1) {
       var face = geometry.faces[i];
@@ -545,9 +718,9 @@ var Background = function() {
 
     var material = new THREE.MeshPhongMaterial({
       vertexColors: THREE.FaceColors,
-      emissive: 0x333333,
-      specular: 0xcccccc,
-      color: 0xcccccc,
+      emissive: 0x1a3a52,
+      specular: 0xaaccee,
+      color: 0xffffff,
       opacity: 0.85,
       transparent: true,
       shading: THREE.FlatShading
@@ -566,7 +739,7 @@ var Background = function() {
     var materials = [];
 
     // Snow cap (darker white/gray)
-    var colorArray1 = [0x9a9ba5, 0xa8a9b5, 0x8a8b95];
+    var colorArray1 = [0xdadbe5, 0xe8e9f0, 0xcacbd5];
     for (var j = 0; j < geometry.faces.length; j += 1) {
       var face = geometry.faces[j];
       var random = Math.floor(Math.random() * colorArray1.length);
@@ -574,14 +747,14 @@ var Background = function() {
     }
 
     materials[1] = new THREE.MeshLambertMaterial({
-      color: 0x8a8b95,
+      color: 0xcacbd5,
       vertexColors: THREE.FaceColors,
       shading: THREE.FlatShading,
-      ambient: 0x000000
+      ambient: 0x99aabb
     });
 
-    // Rock base (darker gray)
-    var colorArray2 = [0x5a5a6a, 0x6a6a7a, 0x4a4a5a];
+    // Rock base (day-lit gray)
+    var colorArray2 = [0x8a8a9a, 0x9a9aaa, 0x7a7a8a];
     for (var j = 0; j < geometry.faces.length; j += 1) {
       var face = geometry.faces[j];
       var random = Math.floor(Math.random() * colorArray2.length);
@@ -589,10 +762,10 @@ var Background = function() {
     }
 
     materials[0] = new THREE.MeshLambertMaterial({
-      color: 0x3a3a4a,
+      color: 0x7a7a8a,
       vertexColors: THREE.FaceColors,
       shading: THREE.FlatShading,
-      ambient: 0x000000
+      ambient: 0x99aabb
     });
 
     var material = new THREE.MeshFaceMaterial(materials);
@@ -607,8 +780,8 @@ var Background = function() {
     var geometry = models[randCloud].geometry.clone();
 
     var material = new THREE.MeshLambertMaterial({
-      color: 0x7e559f,
-      opacity: 0.2,
+      color: 0xffffff,
+      opacity: 0.7,
       transparent: true,
       side: THREE.DoubleSide,
       shading: THREE.FlatShading
@@ -627,13 +800,13 @@ var Background = function() {
     var geometry = models[randTree].geometry.clone();
     var materials = [];
 
-    var colorArray = [0x1a4008, 0x223606, 0x152d05, 0x1e3a07];
+    var colorArray = [0x0d3c06, 0x123f08, 0x082e04, 0x0f3a06];
 
     for (var i = 0; i < 5; i += 1) {
       materials[i] = new THREE.MeshLambertMaterial({
         color: colorArray[Math.floor(Math.random() * colorArray.length)],
         shading: THREE.FlatShading,
-        ambient: 0x000000
+        ambient: 0x667a88
       });
     }
 
@@ -649,10 +822,10 @@ var Background = function() {
 
   function modelsLoaded() {
     instance.scene = new THREE.Scene();
-    instance.scene.fog = new THREE.Fog(0x3d3248, 3000, 6000);
-    instance.scene.add(new THREE.AmbientLight(0x555566));
+    instance.scene.fog = new THREE.Fog(0xafd6ef, 3000, 7000);
+    instance.scene.add(new THREE.AmbientLight(0x99aabb));
 
-    instance.spotLight = new THREE.SpotLight(0x998899, 2, 10000);
+    instance.spotLight = new THREE.SpotLight(0xfff4e0, 2.2, 12000);
     instance.spotLight.position.set(window.innerWidth, 0, 2000);
     instance.spotLight.castShadow = true;
     instance.scene.add(instance.spotLight);
