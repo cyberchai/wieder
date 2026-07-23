@@ -687,7 +687,7 @@ export default function CrosswordPage() {
       <ProtectedRoute>
         <div className="flex flex-col min-h-screen items-center justify-center bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-gray-900 dark:to-indigo-950 p-6">
           <div className="text-center max-w-md">
-            <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">
+            <h2 className="text-2xl font-bold font-cherry-bomb text-gray-800 dark:text-gray-200 mb-4">
               Oops!
             </h2>
             <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">
@@ -715,7 +715,7 @@ export default function CrosswordPage() {
           <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-200 mb-2">
             {set.title}
           </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-400 mb-8">
+          <p className="text-xl font-cherry-bomb text-indigo-500 dark:text-indigo-400 mb-8">
             Crossword Puzzle
           </p>
 
@@ -773,7 +773,7 @@ export default function CrosswordPage() {
           {/* Complete banner */}
           {gameState === "complete" && (
             <div className="bg-green-500 text-white p-4 text-center">
-              <p className="text-xl font-bold">Congratulations! You solved the crossword!</p>
+              <p className="text-xl font-bold font-cherry-bomb">Congratulations! You solved the crossword!</p>
               <div className="flex justify-center gap-4 mt-3">
                 <Button
                   variant="secondary"

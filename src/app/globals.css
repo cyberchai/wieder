@@ -507,6 +507,12 @@ svg circle[fill*="url(#a-cl-9)"] {
   .dyslexia-font {
     font-family: 'OpenDyslexic', sans-serif !important;
   }
+  .font-cherry-bomb {
+    /* !important so it wins over font-mono/font-bold utilities on game scores;
+       Cherry Bomb One ships a single weight (400), so pin it to avoid faux-bold */
+    font-family: 'Cherry Bomb One', cursive !important;
+    font-weight: 400 !important;
+  }
   
   body.dyslexia-font {
     font-family: 'OpenDyslexic', sans-serif !important;

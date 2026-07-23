@@ -544,7 +544,7 @@ export default function PlayPage() {
 
               <div className="text-right">
                 <h1 className="text-2xl font-bold leading-tight">{set.title}</h1>
-                <p className="text-muted-foreground -mt-1">falling words</p>
+                <p className="font-cherry-bomb text-muted-foreground -mt-1">falling words</p>
               </div>
             </div>
 
@@ -559,7 +559,7 @@ export default function PlayPage() {
             >
               {gameState === "idle" && (
                 <div className="text-center flex flex-col items-center justify-center h-full w-full">
-                  <h2 className="text-3xl font-bold mb-4">lock in!</h2>
+                  <h2 className="text-3xl font-bold font-cherry-bomb mb-4">lock in!</h2>
                   <p className="text-muted-foreground mb-6 px-4">
                     type the {matchMode}. the word falls, don&apos;t let it hit the bottom.
                     {acceptGeneralAnswers && " smart scoring accepts answers with 87%+ similarity."}
@@ -572,10 +572,10 @@ export default function PlayPage() {
 
               {gameState === "gameover" && (
                 <div className="text-center flex flex-col items-center justify-center h-full w-full">
-                  <h2 className="text-3xl font-bold mb-4">
+                  <h2 className="text-3xl font-bold font-cherry-bomb mb-4">
                     {gameEndReason === "success" ? "congrats, game over!" : "womp womp game over!"}
                   </h2>
-                  <p className="text-xl text-muted-foreground mb-6">
+                  <p className="text-xl font-cherry-bomb text-muted-foreground mb-6">
                     <b>final score: {score}</b>
                     {/* {gameEndReason === "success" && ` - you completed the set with ${lives} ${lives === 1 ? 'life' : 'lives'} remaining! 🏆`} */}
                   </p>
@@ -590,8 +590,8 @@ export default function PlayPage() {
                 <>
                   {/* HUD */}
                   <div className="w-full flex justify-between items-center absolute top-4 px-6">
-                    <p className="text-lg font-bold">score: {score}</p>
-                    <p className="text-lg font-bold">
+                    <p className="text-lg font-bold font-cherry-bomb">score: {score}</p>
+                    <p className="text-lg font-bold font-cherry-bomb">
                       lives: {"❤️".repeat(Math.max(0, lives))}
                     </p>
                   </div>

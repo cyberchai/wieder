@@ -307,7 +307,7 @@ export default function MatchPairsPage() {
             <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-200 mb-2">
               {set.title}
             </h1>
-            <p className="text-xl text-gray-600 dark:text-gray-400 mb-8">
+            <p className="text-xl font-cherry-bomb text-emerald-600 dark:text-emerald-400 mb-8">
               Match Pairs
             </p>
 
@@ -316,7 +316,7 @@ export default function MatchPairsPage() {
             </p>
 
             {bestTime !== null && (
-              <p className="text-sm text-emerald-600 dark:text-emerald-400 mb-8">
+              <p className="text-sm font-cherry-bomb text-emerald-600 dark:text-emerald-400 mb-8">
                 Best time: {formatTime(bestTime)}
               </p>
             )}
@@ -352,10 +352,10 @@ export default function MatchPairsPage() {
 
               <div className="flex items-center gap-2 text-lg font-semibold text-gray-800 dark:text-gray-200">
                 <Clock className="w-5 h-5" />
-                <span>{formatTime(elapsedTime)}</span>
+                <span className="font-cherry-bomb">{formatTime(elapsedTime)}</span>
               </div>
 
-              <div className="text-sm text-gray-600 dark:text-gray-400">
+              <div className="text-sm font-cherry-bomb text-gray-600 dark:text-gray-400">
                 {cards.filter(c => c.isMatched).length / 2} / {cards.length / 2} pairs
               </div>
             </div>
@@ -419,15 +419,15 @@ export default function MatchPairsPage() {
         {/* Complete State */}
         {gameState === "complete" && (
           <div className="flex-1 flex flex-col items-center justify-center p-6">
-            <h2 className="text-4xl font-bold text-gray-800 dark:text-gray-200 mb-4">
+            <h2 className="text-4xl font-bold font-cherry-bomb text-gray-800 dark:text-gray-200 mb-4">
               Well Done!
             </h2>
 
             <div className="text-center mb-8">
-              <p className="text-6xl font-bold text-emerald-600 dark:text-emerald-400 mb-2">
+              <p className="text-6xl font-bold font-cherry-bomb text-emerald-600 dark:text-emerald-400 mb-2">
                 {formatTime(elapsedTime)}
               </p>
-              <p className="text-xl text-gray-600 dark:text-gray-400">
+              <p className="text-xl font-cherry-bomb text-gray-600 dark:text-gray-400">
                 {bestTime === elapsedTime ? "New best time!" : `Best: ${formatTime(bestTime!)}`}
               </p>
             </div>

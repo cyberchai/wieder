@@ -748,9 +748,12 @@ const DashboardPage = () => {
                                     {leaderboard.slice(0, 3).map((stat, index) => {
                                         const profile = leaderboardProfiles.get(stat.uid);
                                         const displayName = profile?.displayName || "Anonymous";
-                                        const rankIcon = index === 0 ? <Crown className="h-3 w-3 text-yellow-500" /> : 
-                                                        index === 1 ? <Trophy className="h-3 w-3 text-gray-400" /> : 
+                                        const rankIcon = index === 0 ? <Crown className="h-3 w-3 text-yellow-500" /> :
+                                                        index === 1 ? <Trophy className="h-3 w-3 text-gray-400" /> :
                                                         <Medal className="h-3 w-3 text-amber-600" />;
+                                        const scoreColor = index === 0 ? "text-yellow-500" :
+                                                          index === 1 ? "text-slate-400" :
+                                                          "text-amber-600";
                                         return (
                                             <div key={stat.uid} className="flex items-center gap-2">
                                                 {rankIcon}
@@ -759,7 +762,7 @@ const DashboardPage = () => {
                                                     <AvatarFallback className="text-[8px]">{displayName.charAt(0)}</AvatarFallback>
                                                 </Avatar>
                                                 <span className="text-xs truncate flex-1">{stat.uid === user?.uid ? "You" : displayName}</span>
-                                                <span className="text-[10px] text-muted-foreground">{stat.wieds}</span>
+                                                <span className={`font-cherry-bomb text-base ${scoreColor}`}>{stat.wieds}</span>
                                             </div>
                                         );
                                     })}

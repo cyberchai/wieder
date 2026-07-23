@@ -394,10 +394,10 @@ export default function SpeedPage() {
           <div className="flex-1 flex flex-col">
             {/* Top bar with timer and progress */}
             <div className="flex justify-between items-center p-4">
-              <div className="text-lg font-mono text-gray-800 bg-white/50 px-3 py-1 rounded">
+              <div className="text-lg font-mono font-cherry-bomb text-gray-800 bg-white/50 px-3 py-1 rounded">
                 {timeRemaining.toFixed(1)}s
               </div>
-              <div className="text-lg font-semibold text-gray-800 bg-white/50 px-3 py-1 rounded">
+              <div className="text-lg font-semibold font-cherry-bomb text-gray-800 bg-white/50 px-3 py-1 rounded">
                 {currentIndex + 1} / {gameCards.length}
               </div>
             </div>
@@ -432,7 +432,7 @@ export default function SpeedPage() {
 
             {/* Score display */}
             <div className="p-4 text-center">
-              <p className="text-gray-700">
+              <p className="text-gray-700 font-cherry-bomb">
                 Score: <span className="font-bold">{correctCount}</span> / {totalAttempted}
               </p>
             </div>
@@ -442,7 +442,7 @@ export default function SpeedPage() {
         {/* Timeout State */}
         {gameState === "timeout" && (
           <div className="flex-1 flex flex-col items-center justify-center p-6 bg-red-100">
-            <h2 className="text-3xl font-bold text-red-600 mb-4">Time&apos;s Up!</h2>
+            <h2 className="text-3xl font-bold font-cherry-bomb text-red-600 mb-4">Time&apos;s Up!</h2>
             <p className="text-xl text-gray-600 mb-2">The answer was:</p>
             <p className="text-2xl font-bold text-gray-800 mb-8">{lastCorrectAnswer}</p>
             <p className="text-gray-500">Moving to next word...</p>
@@ -452,14 +452,14 @@ export default function SpeedPage() {
         {/* Complete State */}
         {gameState === "complete" && (
           <div className="flex-1 flex flex-col items-center justify-center p-6">
-            <h2 className="text-4xl font-bold text-gray-800 mb-4">Game Complete!</h2>
-            
+            <h2 className="text-4xl font-bold font-cherry-bomb text-gray-800 mb-4">Game Complete!</h2>
+
             <div className="text-center mb-8">
-              <p className="text-6xl font-bold text-gray-800 mb-2">
+              <p className="text-6xl font-bold font-cherry-bomb text-gray-800 mb-2">
                 {correctCount} / {totalAttempted}
               </p>
-              <p className="text-xl text-gray-600">
-                {totalAttempted > 0 
+              <p className="text-xl text-gray-600 font-cherry-bomb">
+                {totalAttempted > 0
                   ? `${Math.round((correctCount / totalAttempted) * 100)}% accuracy`
                   : "No words attempted"
                 }
