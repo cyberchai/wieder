@@ -1,73 +1,18 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-
 interface LowPolyLandscapeBackgroundProps {
   className?: string;
 }
 
 export default function LowPolyLandscapeBackground({ className = "" }: LowPolyLandscapeBackgroundProps) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    const sky = canvasRef.current;
-    if (!sky) return;
-
-    const updateCanvasSize = () => {
-      sky.width = window.innerWidth;
-      sky.height = window.innerHeight;
-      drawStars();
-    };
-
-    const drawStars = () => {
-      if (!sky.getContext) return;
-      const skyContext = sky.getContext("2d");
-      if (!skyContext) return;
-
-      // Clear the canvas
-      skyContext.clearRect(0, 0, sky.width, sky.height);
-
-      const radius = 2;
-
-      for (let star = 0; star < 240; star++) {
-        const min = (Math.random() * 30) / 10;
-        const max = sky.width - radius;
-
-        const centerX = Math.floor(Math.random() * (max - min + 1)) + min;
-        const centerY = Math.floor(Math.random() * (max - min + 1)) + min;
-
-        skyContext.beginPath();
-        skyContext.arc(centerX, centerY, min, 0, 2 * Math.PI);
-
-        const opacity = Math.random();
-        skyContext.fillStyle = `rgba(255, 255, 255, ${opacity})`;
-        skyContext.fill();
-      }
-    };
-
-    updateCanvasSize();
-    window.addEventListener("resize", updateCanvasSize);
-
-    return () => {
-      window.removeEventListener("resize", updateCanvasSize);
-    };
-  }, []);
-
   return (
     <div className={`fixed inset-0 -z-10 overflow-hidden ${className}`}>
-      {/* Sky background gradient */}
-      <div 
+      {/* Sky background gradient - light blue day sky */}
+      <div
         className="absolute inset-0"
         style={{
-          background: "linear-gradient(40deg, #0a1a27, #4e83b7)",
+          background: "linear-gradient(180deg, #4a9fe0 0%, #7fbfe8 45%, #b8e0f5 80%, #dcf0fb 100%)",
         }}
-      />
-
-      {/* Stars canvas */}
-      <canvas
-        ref={canvasRef}
-        className="absolute inset-0 w-full h-full"
-        style={{ pointerEvents: "none" }}
       />
 
       {/* Mountains SVG */}

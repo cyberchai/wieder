@@ -59,27 +59,53 @@ svg circle[fill*="url(#a-cl-9)"] {
 
 @layer base {
   .wiederland {
-    --background: 200 50% 10%; /* #0a1a27 dark blue sky */
-    --foreground: 0 0% 100%; /* white */
-    --card: 200 50% 14%; /* Slightly lighter than background */
-    --card-foreground: 0 0% 100%; /* white */
+    /* Blue "chrome" (header + landscape scrim) stays dark so the day sky and
+       white wordmark read; the content surfaces are light "paper" cards. */
+    --background: 205 45% 22%; /* blue header bar + scrim base */
+    --foreground: 0 0% 100%; /* white — text sitting on the landscape/header */
+    --card: 210 38% 97%; /* light paper panels (was dark steel-blue) */
+    --card-foreground: 216 32% 18%; /* dark slate text on light cards */
     --popover: 0 0% 100%; /* white */
-    --popover-foreground: 0 0% 0%; /* black */
+    --popover-foreground: 216 32% 18%; /* dark slate */
     --primary: 74 30% 47%; /* #879759 green from ground */
     --primary-foreground: 0 0% 100%; /* white */
-    --secondary: 200 50% 18%; /* Lighter blue for secondary */
-    --secondary-foreground: 0 0% 100%; /* white */
-    --muted: 200 50% 20%; /* Lighter blue for muted */
-    --muted-foreground: 0 0% 80%; /* Lighter grey for muted foreground */
-    --accent: 320 50% 25%; /* #5d2042 purple mountain */
-    --accent-foreground: 0 0% 100%; /* white */
+    --secondary: 205 42% 34%; /* blue — powers the bg-secondary/50 scrim + chips */
+    --secondary-foreground: 0 0% 100%; /* white on the blue chips */
+    --muted: 212 32% 91%; /* light grey-blue for chips and progress tracks */
+    --muted-foreground: 215 16% 42%; /* medium slate — secondary text on light cards */
+    --accent: 210 40% 92%; /* light hover surface for menus/list rows */
+    --accent-foreground: 216 32% 18%; /* dark slate on light accent */
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 200 50% 30%;
-    --input: 200 50% 18%; /* Lighter blue */
+    --border: 214 30% 88%; /* soft light border to separate stacked cards */
+    --input: 214 30% 88%; /* light input border */
     --ring: 74 30% 47%; /* green */
     --radius: 1rem;
-    --tab-bar-bg: 200 50% 8%; /* Darker tab bar background for wiederland theme */
+    --tab-bar-bg: 212 32% 92%; /* light grey tab pill */
+  }
+
+  /* wiederland floats light "paper" cards on a dark-blue header + landscape.
+     Inputs, outline buttons, and dialogs default to bg-background (the blue), so
+     re-point those content surfaces to a light fill with dark text where they
+     actually live — on the cards. */
+  .wiederland input,
+  .wiederland textarea {
+    background-color: hsl(210 38% 98%);
+    color: hsl(216 32% 18%);
+    border-color: hsl(214 30% 85%);
+  }
+  .wiederland input::placeholder,
+  .wiederland textarea::placeholder {
+    color: hsl(215 16% 45%);
+  }
+  .wiederland button.bg-background {
+    background-color: hsl(210 38% 98%);
+    color: hsl(216 32% 18%);
+  }
+  .wiederland [role="dialog"],
+  .wiederland [role="alertdialog"] {
+    background-color: hsl(210 38% 98%);
+    color: hsl(216 32% 18%);
   }
   .neilson {
     --background: 210 20% 98%; /* approx #f2f2f2 */
@@ -450,6 +476,11 @@ svg circle[fill*="url(#a-cl-9)"] {
 @layer base {
   * {
     @apply border-border;
+  }
+  html,
+  body {
+    /* Disable the elastic rubber-band bounce when scrolling past the top/bottom */
+    overscroll-behavior: none;
   }
   body {
     @apply bg-background text-foreground;

@@ -62,7 +62,7 @@ export default function Header({ searchQuery = "", onSearchChange, searchInputRe
                   ×
                 </Button>
               )}
-              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xs text-muted-foreground bg-background px-1">
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xs text-muted-foreground bg-muted px-1 rounded">
                 {navigator.platform.includes('Mac') ? '⌘K' : 'Ctrl+K'}
               </div>
             </div>

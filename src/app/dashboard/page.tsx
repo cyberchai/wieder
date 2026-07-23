@@ -592,7 +592,7 @@ const DashboardPage = () => {
     if (loading) {
         return (
             <ProtectedRoute>
-                <div className="flex flex-col min-h-screen bg-secondary/50 relative">
+                <div className="flex flex-col min-h-screen bg-secondary/15 relative">
                     <AuroraBackground />
                     <DashboardParticlesBackground />
                     <Header 
@@ -611,7 +611,7 @@ const DashboardPage = () => {
     
     return (
         <ProtectedRoute>
-            <div className="flex flex-col min-h-screen bg-secondary/50 relative">
+            <div className="flex flex-col min-h-screen bg-secondary/15 relative">
                 <AuroraBackground />
                 <DashboardParticlesBackground />
                 <Header 
@@ -1213,7 +1213,7 @@ const DashboardPage = () => {
                                                                 <div className="flex items-center gap-4 text-sm text-muted-foreground flex-shrink-0">
                                                                     <Badge variant="secondary" className="text-xs bg-violet-500/15 text-violet-500 border-transparent hover:bg-violet-500/25">{category}</Badge>
                                                                     <span className="hidden sm:inline">
-                                                                        <span className="font-semibold text-foreground/75">{cardCount}</span> cards
+                                                                        <span className="font-semibold text-card-foreground/75">{cardCount}</span> cards
                                                                     </span>
                                                                     <span className="hidden md:inline text-xs truncate max-w-[100px]">
                                                                         by {set.creatorDisplayName || "someone"}
@@ -1533,7 +1533,7 @@ const DashboardPage = () => {
                                 <div className="flex items-center justify-between mb-6">
                                     <div>
                                         <h2 className="text-xl font-semibold">Game Modes</h2>
-                                        <p className="text-sm text-muted-foreground">
+                                        <p className="text-sm text-foreground/70">
                                             Challenge yourself or play with friends
                                         </p>
                                     </div>
@@ -1557,10 +1557,10 @@ const DashboardPage = () => {
 
                     </div>
                 </main>
-                <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 sm:px-6 lg:px-8 border-t mt-auto relative z-10">
+                <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 sm:px-6 lg:px-8 mt-auto relative z-10 bg-gradient-to-b from-transparent to-black/25">
                     <div className="container mx-auto flex flex-col gap-2 sm:flex-row items-center justify-between">
                         {/* <p className="text-xs text-muted-foreground">made with &lt;3</p> */}
-                        <p className="text-xs text-muted-foreground"><a href="https://chairaharder.com" target="_blank" rel="noopener noreferrer" className="hover:underline">best served with yerba mate</a></p>
+                        <p className="text-xs text-foreground"><a href="https://chairaharder.com" target="_blank" rel="noopener noreferrer" className="hover:underline">best served with yerba mate</a></p>
                         <nav className="flex gap-4 sm:gap-6">
                         <Link href="/terms" className="text-xs hover:underline underline-offset-4" prefetch={false}>
                             terms of service
