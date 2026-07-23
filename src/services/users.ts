@@ -10,6 +10,7 @@ import {
   query,
   where,
   documentId,
+  type DocumentData,
 } from "firebase/firestore";
 import { withPerformanceMonitoring } from "@/lib/performance-monitor";
 
@@ -29,6 +30,13 @@ export interface UserProfile {
   joinedGroupSetIds?: string[];
   createdAt: Date;
   updatedAt: Date;
+}
+
+// A user a set is shared to (owner or joiner), trimmed to what avatars need
+export interface SetMember {
+  uid: string;
+  displayName: string;
+  photoURL?: string;
 }
 
 const usersCollection = collection(db, "users");
@@ -60,6 +68,38 @@ export const createOrUpdateUserProfile = async (userProfile: Omit<UserProfile, '
     console.error("Error creating/updating user profile:", error);
     throw error;
   }
+};
+
+// Get every user profile (superadmin only — used by the admin console to pick a
+// user to view. Firestore rules allow any signed-in user to read profiles, and
+// the admin UI is what restricts this to the superadmin).
+export const getAllUsers = async (): Promise<UserProfile[]> => {
+  return withPerformanceMonitoring("getAllUsers", async () => {
+    try {
+      const querySnapshot = await getDocs(usersCollection);
+      const users: UserProfile[] = [];
+      querySnapshot.forEach((docSnap) => {
+        const data = docSnap.data();
+        users.push({
+          uid: docSnap.id,
+          displayName: data.displayName || "some user on this app",
+          email: data.email || "",
+          photoURL: data.photoURL,
+          settings: data.settings,
+          joinedSetIds: data.joinedSetIds || [],
+          joinedGroupSetIds: data.joinedGroupSetIds || [],
+          createdAt: data.createdAt?.toDate() || new Date(),
+          updatedAt: data.updatedAt?.toDate() || new Date(),
+        });
+      });
+      // Newest members first.
+      users.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+      return users;
+    } catch (error) {
+      console.error("Error getting all users:", error);
+      return [];
+    }
+  });
 };
 
 // Get a user profile by UID
@@ -147,6 +187,53 @@ export const getUserProfilesBatch = async (uids: string[]): Promise<Map<string, 
       }
     }
   );
+};
+
+// Find everyone a set is shared to: its owner plus everyone who joined it
+// (as a group set or a regular shared set). Deduped, owner first.
+export const getSetMembers = async (
+  setId: string,
+  ownerId?: string
+): Promise<SetMember[]> => {
+  if (!setId) return [];
+
+  return withPerformanceMonitoring(`getSetMembers(${setId})`, async () => {
+    try {
+      const toMember = (uid: string, data: DocumentData): SetMember => ({
+        uid,
+        displayName: data.displayName || "some user on this app",
+        photoURL: data.photoURL,
+      });
+
+      const members = new Map<string, SetMember>();
+
+      // Owner first, so they lead the avatar stack
+      if (ownerId) {
+        const ownerSnap = await getDoc(doc(usersCollection, ownerId));
+        if (ownerSnap.exists()) {
+          members.set(ownerId, toMember(ownerId, ownerSnap.data()));
+        }
+      }
+
+      // Everyone who joined it (group sets and shared sets both count)
+      const joinerSnapshots = await Promise.all([
+        getDocs(query(usersCollection, where("joinedGroupSetIds", "array-contains", setId))),
+        getDocs(query(usersCollection, where("joinedSetIds", "array-contains", setId))),
+      ]);
+      for (const snap of joinerSnapshots) {
+        snap.forEach((docSnap) => {
+          if (!members.has(docSnap.id)) {
+            members.set(docSnap.id, toMember(docSnap.id, docSnap.data()));
+          }
+        });
+      }
+
+      return Array.from(members.values());
+    } catch (error) {
+      console.error("Error getting set members:", error);
+      return [];
+    }
+  });
 };
 
 // Add a joined set ID to user's profile

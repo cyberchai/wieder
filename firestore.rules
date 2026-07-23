@@ -8,47 +8,57 @@ service cloud.firestore {
     function isOwner(resourceData) {
       return resourceData.userId == request.auth.uid;
     }
+    // Superadmin: identified by the Google account email on the auth token.
+    // Grants READ-ONLY visibility into otherwise-private data (see setProgress
+    // below). Never used to grant writes — impersonation is strictly read-only.
+    function isSuperAdmin() {
+      return isSignedIn()
+        && request.auth.token.email == 'chairachananharder@gmail.com';
+    }
 
     match /flashcardSets/{setId} {
       // Allow read access to all sets for signed-in users
       allow read: if isSignedIn();
-      
+
       // Allow create/update/delete only for sets owned by the user
       allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      
+
       // Updated: Allow anyone to update non-public sets, but only owners can update public sets
       allow update: if isSignedIn() && (
-        resource.data.isPublic == false || 
+        resource.data.isPublic == false ||
         resource.data.isPublic == null ||
         !('isPublic' in resource.data) ||
         isOwner(resource.data)
       );
       allow delete: if isSignedIn() && isOwner(resource.data);
     }
-    
+
     match /users/{userId} {
       // Allow users to read their own profile and other public profiles
       allow read: if isSignedIn();
-      
+
       // Allow users to create/update their own profile
       allow create, update: if isSignedIn() && request.auth.uid == userId;
-      
+
       // No delete allowed for user profiles
       allow delete: if false;
-      
-      // Set progress subcollection - users can only access their own progress
+
+      // Set progress subcollection - users can only access their own progress.
+      // The superadmin may READ (but never write) any user's progress so the
+      // admin console can show a user's per-set study progress.
       match /setProgress/{setId} {
-        allow read, write: if isSignedIn() && request.auth.uid == userId;
+        allow read: if isSignedIn() && (request.auth.uid == userId || isSuperAdmin());
+        allow write: if isSignedIn() && request.auth.uid == userId;
       }
     }
-    
+
     match /userStats/{userId} {
       // Allow users to read all stats (needed for leaderboard)
       allow read: if isSignedIn();
-      
+
       // Allow users to create/update only their own stats
       allow create, update: if isSignedIn() && request.auth.uid == userId;
-      
+
       // Prevent deletion of stats to maintain data integrity
       allow delete: if false;
     }

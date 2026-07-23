@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -16,12 +16,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Settings, Volume2, VolumeX, Eye, EyeOff } from "lucide-react";
 import { useSettings } from "@/hooks/use-settings";
 
-export function SettingsDialog() {
+export function SettingsDialog({ trigger }: { trigger?: ReactNode }) {
   const { settings, loading, toggleSound, toggleShowNameOnPublicSets } = useSettings();
   const [open, setOpen] = useState(false);
 
   if (loading) {
-    return (
+    return trigger ? (
+      <>{trigger}</>
+    ) : (
       <Button variant="outline" disabled>
         <Settings className="h-4 w-4 mr-2" />
         Settings
@@ -32,10 +34,12 @@ export function SettingsDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">
-          <Settings className="h-4 w-4 mr-2" />
-          Settings
-        </Button>
+        {trigger ?? (
+          <Button variant="outline">
+            <Settings className="h-4 w-4 mr-2" />
+            Settings
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>

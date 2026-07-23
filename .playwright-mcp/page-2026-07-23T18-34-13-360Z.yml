@@ -1,0 +1,124 @@
+- generic [active] [ref=f17e1]:
+  - alert [ref=f17e2]
+  - generic [ref=f17e3]:
+    - banner [ref=f17e76]:
+      - generic [ref=f17e77]:
+        - link "wieder" [ref=f17e78] [cursor=pointer]:
+          - /url: /
+        - link "home" [ref=f17e83] [cursor=pointer]:
+          - /url: /
+    - main [ref=f17e86]:
+      - article [ref=f17e87]:
+        - generic [ref=f17e88]:
+          - heading "contribute to wieder" [level=1] [ref=f17e89]
+          - paragraph [ref=f17e90]: hey! we'd love your help making wieder better. whether you're fixing bugs, adding features, or improving the UI — every contribution matters.
+          - generic [ref=f17e91]:
+            - paragraph [ref=f17e92]: a note on our mission
+            - paragraph [ref=f17e93]:
+              - text: a big part of this project is getting the
+              - strong [ref=f17e94]: Smith College community
+              - text: more involved in tech and app development — building tools that benefit Smithies and the broader education space. we'd especially love contributions from
+              - strong [ref=f17e95]: Smith students, alums, and developers
+              - text: . if that's you, please reach out!
+          - heading "how to get started" [level=2] [ref=f17e96]
+          - paragraph [ref=f17e97]:
+            - text: this repo is usually
+            - strong [ref=f17e98]: private
+            - text: ", so if you'd like to contribute, reach out and we'll add you as a collaborator. once you have access:"
+          - list [ref=f17e99]:
+            - listitem [ref=f17e100]:
+              - strong [ref=f17e101]: pick something to work on
+              - text: — check out our roadmap below or look for open issues
+            - listitem [ref=f17e102]:
+              - strong [ref=f17e103]: create a branch
+              - text: — branch off from
+              - code [ref=f17e104]: main
+              - text: with a descriptive name
+            - listitem [ref=f17e105]:
+              - strong [ref=f17e106]: make your changes
+              - text: — keep commits atomic and descriptive
+            - listitem [ref=f17e107]:
+              - strong [ref=f17e108]: test locally
+              - text: — make sure nothing breaks
+            - listitem [ref=f17e109]:
+              - strong [ref=f17e110]: open a PR
+              - text: — describe what you changed and why
+          - heading "what we're working on" [level=2] [ref=f17e111]
+          - paragraph [ref=f17e112]: here's our current roadmap, organized by priority. pick something that interests you!
+          - generic [ref=f17e113]:
+            - generic [ref=f17e114]:
+              - generic [ref=f17e115]:
+                - generic [ref=f17e116]: "1"
+                - generic [ref=f17e117]: high priority
+              - list [ref=f17e118]:
+                - listitem [ref=f17e119]: • Image cards with ImageKit.io
+                - listitem [ref=f17e120]: • Theme accessibility fixes
+                - listitem [ref=f17e121]: • Mobile view improvements
+                - listitem [ref=f17e122]: • Voting/polling system
+            - generic [ref=f17e123]:
+              - generic [ref=f17e124]: medium priority
+              - list [ref=f17e129]:
+                - listitem [ref=f17e130]: • Analytics dashboard
+                - listitem [ref=f17e131]: • Testing infrastructure
+                - listitem [ref=f17e132]: • Error boundaries & graceful failing
+                - listitem [ref=f17e133]: • Offline mode indicators
+            - generic [ref=f17e134]:
+              - generic [ref=f17e135]: graphics & themes
+              - list [ref=f17e143]:
+                - listitem [ref=f17e144]: • More unlockable themes
+                - listitem [ref=f17e145]: • Theme store UI
+                - listitem [ref=f17e146]: • Seasonal themes
+                - listitem [ref=f17e147]: • Animated backgrounds
+            - generic [ref=f17e148]:
+              - generic [ref=f17e149]: long-term
+              - list [ref=f17e160]:
+                - listitem [ref=f17e161]: • Apple Vision Pro version
+                - listitem [ref=f17e162]: • Multiplayer speed mode
+                - listitem [ref=f17e163]: • Smart-suggest flashcards
+                - listitem [ref=f17e164]: • Spaced repetition algorithm
+          - heading "code style" [level=2] [ref=f17e165]
+          - paragraph [ref=f17e166]: "a few guidelines to keep things consistent:"
+          - list [ref=f17e167]:
+            - listitem [ref=f17e168]:
+              - text: we use
+              - strong [ref=f17e169]: TypeScript
+              - text: everywhere — please maintain type safety
+            - listitem [ref=f17e170]:
+              - text: components go in
+              - code [ref=f17e171]: src/components/
+              - text: ", hooks in"
+              - code [ref=f17e172]: src/hooks/
+            - listitem [ref=f17e173]: use React Query for server state, local state for UI-only state
+            - listitem [ref=f17e174]: follow existing patterns for new features
+          - heading "tech stack" [level=2] [ref=f17e175]
+          - list [ref=f17e176]:
+            - listitem [ref=f17e177]:
+              - strong [ref=f17e178]: "Framework:"
+              - text: Next.js 15 (App Router)
+            - listitem [ref=f17e179]:
+              - strong [ref=f17e180]: "Styling:"
+              - text: Tailwind CSS + shadcn/ui
+            - listitem [ref=f17e181]:
+              - strong [ref=f17e182]: "Database:"
+              - text: Firebase Firestore
+            - listitem [ref=f17e183]:
+              - strong [ref=f17e184]: "Auth:"
+              - text: Firebase Authentication
+            - listitem [ref=f17e185]:
+              - strong [ref=f17e186]: "State:"
+              - text: TanStack Query (React Query)
+          - heading "questions?" [level=2] [ref=f17e187]
+          - generic [ref=f17e188]:
+            - paragraph [ref=f17e191]: we're friendly!
+            - paragraph [ref=f17e192]: reach out if you have questions, want repo access, or just want to say hi.
+            - generic [ref=f17e193]:
+              - link "chairaharder.com" [ref=f17e194] [cursor=pointer]:
+                - /url: https://chairaharder.com
+              - link "send feedback" [ref=f17e197] [cursor=pointer]:
+                - /url: https://formspree.io/f/xldednky
+              - link "view on github" [ref=f17e198] [cursor=pointer]:
+                - /url: https://github.com/cyberchai/wieder
+            - paragraph [ref=f17e202]: "note: the repo is sometimes private. request access via the links above."
+          - paragraph [ref=f17e203]: thanks for helping make wieder better 💛
+  - region "Notifications (F8)":
+    - list

@@ -1,0 +1,40 @@
+- generic [active]:
+  - button "Open Next.js Dev Tools" [ref=f28e6] [cursor=pointer]
+  - alert [ref=f28e10]
+  - iframe [ref=f28e11]:
+    - generic [ref=f29e3]:
+      - generic [ref=f29e4]:
+        - heading "wieder" [level=2] [ref=f29e5]
+        - heading "scroll down to explore" [level=3] [ref=f29e6]
+      - figure [ref=f29e8]:
+        - generic [ref=f29e9]:
+          - heading "Simple Learning" [level=2] [ref=f29e10]
+          - paragraph [ref=f29e11]: Create flashcard sets in seconds. Add terms and definitions, then start studying immediately. No complicated setup required.
+      - figure [ref=f29e13]:
+        - generic [ref=f29e14]:
+          - heading "Flashcards" [level=2] [ref=f29e15]
+          - paragraph [ref=f29e16]: Flip through your cards at your own pace. Mark cards as learned or keep practicing the ones you need more help with.
+      - figure [ref=f29e18]:
+        - generic [ref=f29e19]:
+          - heading "Test Yourself" [level=2] [ref=f29e20]
+          - paragraph [ref=f29e21]: Take quizzes to reinforce your learning. Get instant feedback and track your progress over time.
+      - figure [ref=f29e23]:
+        - generic [ref=f29e24]:
+          - heading "Share Sets" [level=2] [ref=f29e25]
+          - paragraph [ref=f29e26]: Share your flashcard sets with friends, classmates, or study groups. Learn together and help each other succeed.
+      - figure [ref=f29e28]:
+        - generic [ref=f29e29]:
+          - heading "Game Modes" [level=2] [ref=f29e30]
+          - paragraph [ref=f29e31]: Make studying fun with interactive game modes. Race against the clock, match terms, and compete for high scores.
+      - figure [ref=f29e33]:
+        - generic [ref=f29e34]:
+          - heading "Track Progress" [level=2] [ref=f29e35]
+          - paragraph [ref=f29e36]: See detailed statistics about your learning journey. Identify weak areas and focus your study time where it matters most.
+      - figure [ref=f29e38]:
+        - generic [ref=f29e39]:
+          - heading "Ready to Start?" [level=2] [ref=f29e40]
+          - paragraph [ref=f29e41]: Join thousands of students who are already learning smarter with wieder.
+          - link "Login Now!" [ref=f29e42] [cursor=pointer]:
+            - /url: /login
+  - region "Notifications (F8)":
+    - list

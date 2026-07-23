@@ -1,0 +1,51 @@
+- generic [active] [ref=e1]:
+  - link "Sign in with Google" [ref=e3] [cursor=pointer]:
+    - /url: /login
+    - text: Sign in
+  - generic [ref=e9]:
+    - generic [ref=e10]:
+      - heading "wieder" [level=2] [ref=e11]
+      - heading "scroll down to explore" [level=3] [ref=e12]
+    - figure [ref=e14]:
+      - generic [ref=e15]:
+        - heading "Simple Learning" [level=2] [ref=e16]
+        - paragraph [ref=e17]: Make a set of cards. Add your terms and their meanings, then start studying.
+    - figure [ref=e19]:
+      - generic [ref=e20]:
+        - heading "Flashcards" [level=2] [ref=e21]
+        - paragraph [ref=e22]: Flip through your cards at your own pace. Mark the ones you know, and keep practicing the rest.
+    - figure [ref=e24]:
+      - generic [ref=e25]:
+        - heading "Test Yourself" [level=2] [ref=e26]
+        - paragraph [ref=e27]: Take a quick quiz to see what stuck. It shows what you got right and what to go over again.
+    - figure [ref=e29]:
+      - generic [ref=e30]:
+        - heading "Share Sets" [level=2] [ref=e31]
+        - paragraph [ref=e32]: Share your sets with friends or classmates, or study from a set someone else made.
+    - figure [ref=e34]:
+      - generic [ref=e35]:
+        - heading "Game Modes" [level=2] [ref=e36]
+        - paragraph [ref=e37]: A few small games for when plain cards get dull — same practice, just more fun.
+    - figure [ref=e39]:
+      - generic [ref=e40]:
+        - heading "Track Progress" [level=2] [ref=e41]
+        - paragraph [ref=e42]: See what you've practiced and what you keep missing, so you know what to go over.
+    - figure [ref=e44]:
+      - generic [ref=e45]:
+        - heading "Ready to Start?" [level=2] [ref=e46]
+        - paragraph [ref=e47]: Jump in and start practicing with wieder.
+        - link "Login!" [ref=e48] [cursor=pointer]:
+          - /url: /login
+    - contentinfo [ref=e49]:
+      - paragraph [ref=e50]: Learn freely, live fully
+      - navigation [ref=e51]:
+        - link "privacy policy" [ref=e52] [cursor=pointer]:
+          - /url: /privacy
+        - link "terms of service" [ref=e53] [cursor=pointer]:
+          - /url: /terms
+        - link "contribute" [ref=e54] [cursor=pointer]:
+          - /url: /contribute
+      - paragraph [ref=e55]:
+        - text: by
+        - link "nextnode.technology" [ref=e56] [cursor=pointer]:
+          - /url: https://nextnode.technology/

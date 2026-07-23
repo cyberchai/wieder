@@ -1,0 +1,21 @@
+- generic [active] [ref=f1e1]:
+  - button "Open Next.js Dev Tools" [ref=f1e7] [cursor=pointer]
+  - alert [ref=f1e11]
+  - generic [ref=f1e12]:
+    - link "wieder" [ref=f1e16] [cursor=pointer]:
+      - /url: /
+    - generic [ref=f1e20]:
+      - generic:
+        - heading "log in to join your peers" [level=1]
+        - img:
+          - generic: log in to join your peers
+        - paragraph: study together with flashcards
+      - generic [ref=f1e22]:
+        - button "sign in with google" [ref=f1e23] [cursor=pointer]
+        - button "or sign in with email link" [ref=f1e24] [cursor=pointer]
+    - paragraph [ref=f1e28]:
+      - text: for issues, questions or comments
+      - link "reach out to me" [ref=f1e29] [cursor=pointer]:
+        - /url: https://chairaharder.com
+  - region "Notifications (F8)":
+    - list

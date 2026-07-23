@@ -30,6 +30,8 @@ export interface FlashcardSet {
   shared: boolean;
   isPublic?: boolean;
   creatorDisplayName?: string;
+  creatorPhotoURL?: string;
+  creatorAnonymous?: boolean;
   tags?: string[];
 }
 
@@ -119,8 +121,10 @@ export const getFlashcardSet = async (setId: string): Promise<FlashcardSet | nul
               // Check if the creator wants to show their name on public sets
               if (userProfile.settings?.showNameOnPublicSets !== false) {
                 set.creatorDisplayName = userProfile.displayName || "some user on this app";
+                set.creatorPhotoURL = userProfile.photoURL;
               } else {
                 set.creatorDisplayName = "someone";
+                set.creatorAnonymous = true;
               }
             } else {
               set.creatorDisplayName = "some user on this app";
@@ -233,8 +237,10 @@ export const getPublicFlashcardSets = (
                         // Check if the creator wants to show their name on public sets
                         if (userProfile.settings?.showNameOnPublicSets !== false) {
                             set.creatorDisplayName = userProfile.displayName || "some user on this app";
+                            set.creatorPhotoURL = userProfile.photoURL;
                         } else {
                             set.creatorDisplayName = "someone";
+                            set.creatorAnonymous = true;
                         }
                     } else {
                         set.creatorDisplayName = "some user on this app";

@@ -1,0 +1,546 @@
+[     138ms] [LOG] THREE.WebGLRenderer 68 @ https://cdnjs.cloudflare.com/ajax/libs/three.js/r68/three.min.js:519
+[  104933ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_compiled_react-dom_1e674e59._.js:14537
+[  134994ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:938
+[  134994ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:939
+[  134994ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:938
+[  134994ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:939
+[  164997ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:938
+[  164997ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:939
+[  164997ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:938
+[  164997ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:939
+[  194997ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:938
+[  194997ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:939
+[  194997ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:938
+[  194997ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:939
+[  224997ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:938
+[  224997ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:939
+[  224997ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:938
+[  224997ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:939
+[  254996ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:938
+[  254996ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:939
+[  254996ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:938
+[  254996ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:939
+[  284995ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:938
+[  284995ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:939
+[  284995ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:938
+[  284995ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:939
+[  314994ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:938
+[  314994ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:939
+[  314995ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:938
+[  314995ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:939
+[  344995ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:938
+[  344995ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:939
+[  344995ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:938
+[  344995ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:939
+[  374996ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:938
+[  374996ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:939
+[  374996ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:938
+[  374996ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:939
+[  404993ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:938
+[  404993ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:939
+[  404993ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:938
+[  404993ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:939
+[  434995ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:938
+[  434995ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:939
+[  434995ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:938
+[  434995ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:939
+[  464994ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:938
+[  464994ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:939
+[  464995ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:938
+[  464995ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:939
+[  494994ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:938
+[  494994ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:939
+[  494994ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:938
+[  494994ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:939
+[  498570ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5949
+[  498661ms] [LOG] [Fast Refresh] done in 52ms @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5809
+[  503503ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5949
+[  503623ms] [ERROR] ./src/app/layout.tsx:9:1
+Module not found: Can't resolve '@/components/impersonation-banner'
+   7 | import { RippleTransitionProvider } from '@/providers/ripple-transition-provider';
+   8 | import { RippleTransition } from '@/components/ripple-transition';
+>  9 | import { ImpersonationBanner } from '@/components/impersonation-banner';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  10 | import { Toaster } from "@/components/ui/toaster";
+  11 | import { ThemedBody } from '@/components/themed-body';
+  12 |
+
+Import map: aliased to relative './src/components/impersonation-banner' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_b0daae9a._.js:2359
+[  503634ms] [LOG] {file: Object} @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_a9cb0712.js:16058
+[  521678ms] [ERROR] ./src/app/layout.tsx:9:1
+Module not found: Can't resolve '@/components/impersonation-banner'
+   7 | import { RippleTransitionProvider } from '@/providers/ripple-transition-provider';
+   8 | import { RippleTransition } from '@/components/ripple-transition';
+>  9 | import { ImpersonationBanner } from '@/components/impersonation-banner';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  10 | import { Toaster } from "@/components/ui/toaster";
+  11 | import { ThemedBody } from '@/components/themed-body';
+  12 |
+
+Import map: aliased to relative './src/components/impersonation-banner' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_b0daae9a._.js:2359
+[  521737ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5949
+[  524994ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:938
+[  524994ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:939
+[  524994ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:938
+[  524994ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:939
+[  526419ms] [ERROR] ./src/app/layout.tsx:9:1
+Module not found: Can't resolve '@/components/impersonation-banner'
+   7 | import { RippleTransitionProvider } from '@/providers/ripple-transition-provider';
+   8 | import { RippleTransition } from '@/components/ripple-transition';
+>  9 | import { ImpersonationBanner } from '@/components/impersonation-banner';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  10 | import { Toaster } from "@/components/ui/toaster";
+  11 | import { ThemedBody } from '@/components/themed-body';
+  12 |
+
+Import map: aliased to relative './src/components/impersonation-banner' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_b0daae9a._.js:2359
+[  526423ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5949
+[  534255ms] [ERROR] ./src/app/layout.tsx:9:1
+Module not found: Can't resolve '@/components/impersonation-banner'
+   7 | import { RippleTransitionProvider } from '@/providers/ripple-transition-provider';
+   8 | import { RippleTransition } from '@/components/ripple-transition';
+>  9 | import { ImpersonationBanner } from '@/components/impersonation-banner';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  10 | import { Toaster } from "@/components/ui/toaster";
+  11 | import { ThemedBody } from '@/components/themed-body';
+  12 |
+
+Import map: aliased to relative './src/components/impersonation-banner' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_b0daae9a._.js:2359
+[  534313ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5949
+[  540355ms] [ERROR] ./src/app/layout.tsx:9:1
+Module not found: Can't resolve '@/components/impersonation-banner'
+   7 | import { RippleTransitionProvider } from '@/providers/ripple-transition-provider';
+   8 | import { RippleTransition } from '@/components/ripple-transition';
+>  9 | import { ImpersonationBanner } from '@/components/impersonation-banner';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  10 | import { Toaster } from "@/components/ui/toaster";
+  11 | import { ThemedBody } from '@/components/themed-body';
+  12 |
+
+Import map: aliased to relative './src/components/impersonation-banner' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_b0daae9a._.js:2359
+[  540412ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5949
+[  548430ms] [ERROR] ./src/app/layout.tsx:9:1
+Module not found: Can't resolve '@/components/impersonation-banner'
+   7 | import { RippleTransitionProvider } from '@/providers/ripple-transition-provider';
+   8 | import { RippleTransition } from '@/components/ripple-transition';
+>  9 | import { ImpersonationBanner } from '@/components/impersonation-banner';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  10 | import { Toaster } from "@/components/ui/toaster";
+  11 | import { ThemedBody } from '@/components/themed-body';
+  12 |
+
+Import map: aliased to relative './src/components/impersonation-banner' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_b0daae9a._.js:2359
+[  548495ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5949
+[  553161ms] [ERROR] ./src/app/layout.tsx:9:1
+Module not found: Can't resolve '@/components/impersonation-banner'
+   7 | import { RippleTransitionProvider } from '@/providers/ripple-transition-provider';
+   8 | import { RippleTransition } from '@/components/ripple-transition';
+>  9 | import { ImpersonationBanner } from '@/components/impersonation-banner';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  10 | import { Toaster } from "@/components/ui/toaster";
+  11 | import { ThemedBody } from '@/components/themed-body';
+  12 |
+
+Import map: aliased to relative './src/components/impersonation-banner' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_b0daae9a._.js:2359
+[  553221ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5949
+[  554993ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:938
+[  554993ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:939
+[  554994ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:938
+[  554994ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:939
+[  564345ms] [ERROR] ./src/app/layout.tsx:9:1
+Module not found: Can't resolve '@/components/impersonation-banner'
+   7 | import { RippleTransitionProvider } from '@/providers/ripple-transition-provider';
+   8 | import { RippleTransition } from '@/components/ripple-transition';
+>  9 | import { ImpersonationBanner } from '@/components/impersonation-banner';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  10 | import { Toaster } from "@/components/ui/toaster";
+  11 | import { ThemedBody } from '@/components/themed-body';
+  12 |
+
+Import map: aliased to relative './src/components/impersonation-banner' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_b0daae9a._.js:2359
+[  564412ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5949
+[  571494ms] [ERROR] ./src/app/layout.tsx:9:1
+Module not found: Can't resolve '@/components/impersonation-banner'
+   7 | import { RippleTransitionProvider } from '@/providers/ripple-transition-provider';
+   8 | import { RippleTransition } from '@/components/ripple-transition';
+>  9 | import { ImpersonationBanner } from '@/components/impersonation-banner';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  10 | import { Toaster } from "@/components/ui/toaster";
+  11 | import { ThemedBody } from '@/components/themed-body';
+  12 |
+
+Import map: aliased to relative './src/components/impersonation-banner' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_b0daae9a._.js:2359
+[  571506ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5949
+[  576164ms] [ERROR] ./src/app/layout.tsx:9:1
+Module not found: Can't resolve '@/components/impersonation-banner'
+   7 | import { RippleTransitionProvider } from '@/providers/ripple-transition-provider';
+   8 | import { RippleTransition } from '@/components/ripple-transition';
+>  9 | import { ImpersonationBanner } from '@/components/impersonation-banner';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  10 | import { Toaster } from "@/components/ui/toaster";
+  11 | import { ThemedBody } from '@/components/themed-body';
+  12 |
+
+Import map: aliased to relative './src/components/impersonation-banner' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_b0daae9a._.js:2359
+[  576228ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5949
+[  584145ms] [ERROR] ./src/app/layout.tsx:9:1
+Module not found: Can't resolve '@/components/impersonation-banner'
+   7 | import { RippleTransitionProvider } from '@/providers/ripple-transition-provider';
+   8 | import { RippleTransition } from '@/components/ripple-transition';
+>  9 | import { ImpersonationBanner } from '@/components/impersonation-banner';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  10 | import { Toaster } from "@/components/ui/toaster";
+  11 | import { ThemedBody } from '@/components/themed-body';
+  12 |
+
+Import map: aliased to relative './src/components/impersonation-banner' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_b0daae9a._.js:2359
+[  584204ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5949
+[  584994ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:938
+[  584994ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:939
+[  584994ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:938
+[  584994ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:939
+[  592120ms] [ERROR] ./src/app/layout.tsx:9:1
+Module not found: Can't resolve '@/components/impersonation-banner'
+   7 | import { RippleTransitionProvider } from '@/providers/ripple-transition-provider';
+   8 | import { RippleTransition } from '@/components/ripple-transition';
+>  9 | import { ImpersonationBanner } from '@/components/impersonation-banner';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  10 | import { Toaster } from "@/components/ui/toaster";
+  11 | import { ThemedBody } from '@/components/themed-body';
+  12 |
+
+Import map: aliased to relative './src/components/impersonation-banner' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_b0daae9a._.js:2359
+[  592176ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5949
+[  596519ms] [ERROR] ./src/app/layout.tsx:9:1
+Module not found: Can't resolve '@/components/impersonation-banner'
+   7 | import { RippleTransitionProvider } from '@/providers/ripple-transition-provider';
+   8 | import { RippleTransition } from '@/components/ripple-transition';
+>  9 | import { ImpersonationBanner } from '@/components/impersonation-banner';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  10 | import { Toaster } from "@/components/ui/toaster";
+  11 | import { ThemedBody } from '@/components/themed-body';
+  12 |
+
+Import map: aliased to relative './src/components/impersonation-banner' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_b0daae9a._.js:2359
+[  596579ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5949
+[  605046ms] [ERROR] ./src/app/layout.tsx:9:1
+Module not found: Can't resolve '@/components/impersonation-banner'
+   7 | import { RippleTransitionProvider } from '@/providers/ripple-transition-provider';
+   8 | import { RippleTransition } from '@/components/ripple-transition';
+>  9 | import { ImpersonationBanner } from '@/components/impersonation-banner';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  10 | import { Toaster } from "@/components/ui/toaster";
+  11 | import { ThemedBody } from '@/components/themed-body';
+  12 |
+
+Import map: aliased to relative './src/components/impersonation-banner' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_b0daae9a._.js:2359
+[  605111ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5949
+[  609401ms] [ERROR] ./src/app/layout.tsx:9:1
+Module not found: Can't resolve '@/components/impersonation-banner'
+   7 | import { RippleTransitionProvider } from '@/providers/ripple-transition-provider';
+   8 | import { RippleTransition } from '@/components/ripple-transition';
+>  9 | import { ImpersonationBanner } from '@/components/impersonation-banner';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  10 | import { Toaster } from "@/components/ui/toaster";
+  11 | import { ThemedBody } from '@/components/themed-body';
+  12 |
+
+Import map: aliased to relative './src/components/impersonation-banner' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_b0daae9a._.js:2359
+[  609462ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5949
+[  614610ms] [ERROR] ./src/app/layout.tsx:9:1
+Module not found: Can't resolve '@/components/impersonation-banner'
+   7 | import { RippleTransitionProvider } from '@/providers/ripple-transition-provider';
+   8 | import { RippleTransition } from '@/components/ripple-transition';
+>  9 | import { ImpersonationBanner } from '@/components/impersonation-banner';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  10 | import { Toaster } from "@/components/ui/toaster";
+  11 | import { ThemedBody } from '@/components/themed-body';
+  12 |
+
+Import map: aliased to relative './src/components/impersonation-banner' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_b0daae9a._.js:2359
+[  614670ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5949
+[  614994ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:938
+[  614994ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:939
+[  614994ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:938
+[  614994ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:939
+[  627059ms] [ERROR] ./src/app/layout.tsx:9:1
+Module not found: Can't resolve '@/components/impersonation-banner'
+   7 | import { RippleTransitionProvider } from '@/providers/ripple-transition-provider';
+   8 | import { RippleTransition } from '@/components/ripple-transition';
+>  9 | import { ImpersonationBanner } from '@/components/impersonation-banner';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  10 | import { Toaster } from "@/components/ui/toaster";
+  11 | import { ThemedBody } from '@/components/themed-body';
+  12 |
+
+Import map: aliased to relative './src/components/impersonation-banner' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_b0daae9a._.js:2359
+[  627096ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5949
+[  644994ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:938
+[  644994ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:939
+[  644994ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:938
+[  644994ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:939
+[  674540ms] [ERROR] ./src/app/layout.tsx:9:1
+Module not found: Can't resolve '@/components/impersonation-banner'
+   7 | import { RippleTransitionProvider } from '@/providers/ripple-transition-provider';
+   8 | import { RippleTransition } from '@/components/ripple-transition';
+>  9 | import { ImpersonationBanner } from '@/components/impersonation-banner';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  10 | import { Toaster } from "@/components/ui/toaster";
+  11 | import { ThemedBody } from '@/components/themed-body';
+  12 |
+
+Import map: aliased to relative './src/components/impersonation-banner' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_b0daae9a._.js:2359
+[  674549ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5949
+[  674600ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5949
+[  674640ms] [ERROR] ./src/app/layout.tsx:9:1
+Module not found: Can't resolve '@/components/impersonation-banner'
+   7 | import { RippleTransitionProvider } from '@/providers/ripple-transition-provider';
+   8 | import { RippleTransition } from '@/components/ripple-transition';
+>  9 | import { ImpersonationBanner } from '@/components/impersonation-banner';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  10 | import { Toaster } from "@/components/ui/toaster";
+  11 | import { ThemedBody } from '@/components/themed-body';
+  12 |
+
+Import map: aliased to relative './src/components/impersonation-banner' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_b0daae9a._.js:2359
+[  674642ms] [LOG] {file: Object} @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_a9cb0712.js:16058
+[  674747ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5949
+[  674997ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:938
+[  674997ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:939
+[  674997ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:938
+[  674997ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:939
+[  675116ms] [ERROR] ./src/app/layout.tsx:9:1
+Module not found: Can't resolve '@/components/impersonation-banner'
+   7 | import { RippleTransitionProvider } from '@/providers/ripple-transition-provider';
+   8 | import { RippleTransition } from '@/components/ripple-transition';
+>  9 | import { ImpersonationBanner } from '@/components/impersonation-banner';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  10 | import { Toaster } from "@/components/ui/toaster";
+  11 | import { ThemedBody } from '@/components/themed-body';
+  12 |
+
+Import map: aliased to relative './src/components/impersonation-banner' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_b0daae9a._.js:2359
+[  675190ms] [ERROR] ./src/app/layout.tsx:9:1
+Module not found: Can't resolve '@/components/impersonation-banner'
+   7 | import { RippleTransitionProvider } from '@/providers/ripple-transition-provider';
+   8 | import { RippleTransition } from '@/components/ripple-transition';
+>  9 | import { ImpersonationBanner } from '@/components/impersonation-banner';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  10 | import { Toaster } from "@/components/ui/toaster";
+  11 | import { ThemedBody } from '@/components/themed-body';
+  12 |
+
+Import map: aliased to relative './src/components/impersonation-banner' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_b0daae9a._.js:2359
+[  675290ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5949
+[  675380ms] [ERROR] ./src/app/layout.tsx:9:1
+Module not found: Can't resolve '@/components/impersonation-banner'
+   7 | import { RippleTransitionProvider } from '@/providers/ripple-transition-provider';
+   8 | import { RippleTransition } from '@/components/ripple-transition';
+>  9 | import { ImpersonationBanner } from '@/components/impersonation-banner';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  10 | import { Toaster } from "@/components/ui/toaster";
+  11 | import { ThemedBody } from '@/components/themed-body';
+  12 |
+
+Import map: aliased to relative './src/components/impersonation-banner' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_b0daae9a._.js:2359
+[  675381ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:9002/login?_rsc=ryjdm:0
+[  675406ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:9002/login?_rsc=ryjdm:0
+[  675465ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:9002/login:0
+[  675511ms] [INFO] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold @ http://localhost:9002/_next/static/chunks/node_modules_react-dom_cjs_react-dom_development_2b5e0eb3.js:25055
+[  675539ms] Error: ./src/app/layout.tsx:9:1
+Module not found: Can't resolve '@/components/impersonation-banner'
+   7 | import { RippleTransitionProvider } from '@/providers/ripple-transition-provider';
+   8 | import { RippleTransition } from '@/components/ripple-transition';
+>  9 | import { ImpersonationBanner } from '@/components/impersonation-banner';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  10 | import { Toaster } from "@/components/ui/toaster";
+  11 | import { ThemedBody } from '@/components/themed-body';
+  12 |
+
+Import map: aliased to relative './src/components/impersonation-banner' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+    at <unknown> (Error: ./src/app/layout.tsx:9:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+    at Object.getCompilationErrors (file:///Users/charder/Desktop/wieder/node_modules/next/dist/server/dev/hot-reloader-turbopack.js:775:59)
+    at DevBundlerService.getCompilationError (file:///Users/charder/Desktop/wieder/node_modules/next/dist/server/lib/dev-bundler-service.js:39:55)
+    at DevServer.getCompilationError (file:///Users/charder/Desktop/wieder/node_modules/next/dist/server/dev/next-dev-server.js:720:42)
+    at DevServer.findPageComponents (file:///Users/charder/Desktop/wieder/node_modules/next/dist/server/dev/next-dev-server.js:690:43)
+    at async DevServer.renderErrorToResponseImpl (file:///Users/charder/Desktop/wieder/node_modules/next/dist/server/base-server.js:1687:26)
+[  675538ms] [LOG] [HMR] connected @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_client_d0aa886c._.js:2207
+[  675540ms] [ERROR] ./src/app/layout.tsx:9:1
+Module not found: Can't resolve '@/components/impersonation-banner'
+   7 | import { RippleTransitionProvider } from '@/providers/ripple-transition-provider';
+   8 | import { RippleTransition } from '@/components/ripple-transition';
+>  9 | import { ImpersonationBanner } from '@/components/impersonation-banner';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  10 | import { Toaster } from "@/components/ui/toaster";
+  11 | import { ThemedBody } from '@/components/themed-body';
+  12 |
+
+Import map: aliased to relative './src/components/impersonation-banner' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_5b402162._.js:1747
+[  675540ms] [ERROR] ./src/app/layout.tsx:9:1
+Module not found: Can't resolve '@/components/impersonation-banner'
+   7 | import { RippleTransitionProvider } from '@/providers/ripple-transition-provider';
+   8 | import { RippleTransition } from '@/components/ripple-transition';
+>  9 | import { ImpersonationBanner } from '@/components/impersonation-banner';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  10 | import { Toaster } from "@/components/ui/toaster";
+  11 | import { ThemedBody } from '@/components/themed-body';
+  12 |
+
+Import map: aliased to relative './src/components/impersonation-banner' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_5b402162._.js:1747
+[  675540ms] [ERROR] ./src/app/layout.tsx:9:1
+Module not found: Can't resolve '@/components/impersonation-banner'
+   7 | import { RippleTransitionProvider } from '@/providers/ripple-transition-provider';
+   8 | import { RippleTransition } from '@/components/ripple-transition';
+>  9 | import { ImpersonationBanner } from '@/components/impersonation-banner';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  10 | import { Toaster } from "@/components/ui/toaster";
+  11 | import { ThemedBody } from '@/components/themed-body';
+  12 |
+
+Import map: aliased to relative './src/components/impersonation-banner' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_5b402162._.js:1747
+[  675540ms] [ERROR] ./src/app/layout.tsx:9:1
+Module not found: Can't resolve '@/components/impersonation-banner'
+   7 | import { RippleTransitionProvider } from '@/providers/ripple-transition-provider';
+   8 | import { RippleTransition } from '@/components/ripple-transition';
+>  9 | import { ImpersonationBanner } from '@/components/impersonation-banner';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  10 | import { Toaster } from "@/components/ui/toaster";
+  11 | import { ThemedBody } from '@/components/themed-body';
+  12 |
+
+Import map: aliased to relative './src/components/impersonation-banner' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_5b402162._.js:1747
+[  675561ms] [LOG] {file: Object} @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_5277ebc8.js:16058
+[  675586ms] [ERROR] ./src/app/layout.tsx:9:1
+Module not found: Can't resolve '@/components/impersonation-banner'
+   7 | import { RippleTransitionProvider } from '@/providers/ripple-transition-provider';
+   8 | import { RippleTransition } from '@/components/ripple-transition';
+>  9 | import { ImpersonationBanner } from '@/components/impersonation-banner';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  10 | import { Toaster } from "@/components/ui/toaster";
+  11 | import { ThemedBody } from '@/components/themed-body';
+  12 |
+
+Import map: aliased to relative './src/components/impersonation-banner' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_5b402162._.js:1747
+[  675641ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_client_d0aa886c._.js:2495
+[  705988ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_client_d0aa886c._.js:2495
+[  706113ms] [LOG] [Fast Refresh] done in 141ms @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_client_d0aa886c._.js:2355
+[  706362ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_compiled_react-dom_1e674e59._.js:14537
+[  721967ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5949
+[  721980ms] [LOG] [Fast Refresh] done in 113ms @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5809
+[  727189ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5949
+[  727217ms] [LOG] [Fast Refresh] done in 52ms @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5809
+[  736420ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__1218e08a._.js:1134
+[  736420ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__1218e08a._.js:1135
+[  736420ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__1218e08a._.js:1134
+[  736420ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__1218e08a._.js:1135
+[  740296ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5949
+[  740354ms] [LOG] [Fast Refresh] done in 50ms @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5809
+[  766420ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__1218e08a._.js:1134
+[  766420ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__1218e08a._.js:1135
+[  766420ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__1218e08a._.js:1134
+[  766420ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__1218e08a._.js:1135
+[  775780ms] [ERROR] ./src/app/dashboard/page.tsx:954:70
+Parsing ecmascript source code failed
+  952 |                                                                             </DropdownMenuContent>
+  953 |                                                                         </DropdownMenu>
+> 954 |                                                                     </div>
+      |                                                                      ^^^^^
+  955 |                                                                 </div>
+  956 |                                                             </Card>
+  957 |                                                         </Link>
+
+Unterminated regexp literal
+
+Import traces:
+  Client Component Browser:
+    ./src/app/dashboard/page.tsx [Client Component Browser]
+    ./src/app/dashboard/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/dashboard/page.tsx [Client Component SSR]
+    ./src/app/dashboard/page.tsx [Server Component] @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_b0daae9a._.js:2359
+[  775786ms] [LOG] {file: Object} @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_a9cb0712.js:16058
+[  775805ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5949
+[  782634ms] [ERROR] ./src/app/dashboard/page.tsx:954:70
+Parsing ecmascript source code failed
+  952 |                                                                             </DropdownMenuContent>
+  953 |                                                                         </DropdownMenu>
+> 954 |                                                                     </div>
+      |                                                                      ^^^^^
+  955 |                                                                 </div>
+  956 |                                                             </Card>
+  957 |                                                         </Link>
+
+Unterminated regexp literal
+
+Import traces:
+  Client Component Browser:
+    ./src/app/dashboard/page.tsx [Client Component Browser]
+    ./src/app/dashboard/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/dashboard/page.tsx [Client Component SSR]
+    ./src/app/dashboard/page.tsx [Server Component] @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_b0daae9a._.js:2359
+[  782651ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5949
+[  786801ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5949
+[  786804ms] [LOG] [Fast Refresh] done in 84ms @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5809

@@ -110,6 +110,40 @@ export const getUserSetsProgress = async (
   );
 };
 
+export interface ProgressTotals {
+  studied: number;
+  strong: number;
+  weak: number;
+  setsWithProgress: number;
+}
+
+// Aggregate every set's progress for a user — powers the profile accuracy stat.
+// Accuracy = strong / (strong + weak); returns zeros when there's no data yet.
+export const getUserProgressTotals = async (
+  userId: string
+): Promise<ProgressTotals> => {
+  return withPerformanceMonitoring(
+    `getUserProgressTotals(${userId})`,
+    async () => {
+      const totals: ProgressTotals = { studied: 0, strong: 0, weak: 0, setsWithProgress: 0 };
+      try {
+        const snapshot = await getDocs(getSetProgressCollection(userId));
+        snapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          totals.studied += (data.studiedCardIds || []).length;
+          totals.strong += (data.strongCardIds || []).length;
+          totals.weak += (data.weakCardIds || []).length;
+          totals.setsWithProgress += 1;
+        });
+        return totals;
+      } catch (error) {
+        console.error("Error getting user progress totals:", error);
+        return totals;
+      }
+    }
+  );
+};
+
 // Track a card as studied for a specific set
 export const trackSetCardStudied = async (
   userId: string,

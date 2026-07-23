@@ -2,9 +2,11 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { ThemeProvider } from '@/providers/theme-provider';
 import { AuthProvider } from '@/providers/auth-provider';
+import { ImpersonationProvider } from '@/providers/impersonation-provider';
 import { QueryProvider } from '@/providers/simple-query-provider';
 import { RippleTransitionProvider } from '@/providers/ripple-transition-provider';
 import { RippleTransition } from '@/components/ripple-transition';
+import { ImpersonationBanner } from '@/components/impersonation-banner';
 import { Toaster } from "@/components/ui/toaster";
 import { ThemedBody } from '@/components/themed-body';
 
@@ -67,14 +69,17 @@ export default function RootLayout({
         <QueryProvider>
           <ThemeProvider>
             <AuthProvider>
-              <RippleTransitionProvider>
-                <RippleTransition>
-                  <ThemedBody>
-                    {children}
-                    <Toaster />
-                  </ThemedBody>
-                </RippleTransition>
-              </RippleTransitionProvider>
+              <ImpersonationProvider>
+                <RippleTransitionProvider>
+                  <RippleTransition>
+                    <ThemedBody>
+                      <ImpersonationBanner />
+                      {children}
+                      <Toaster />
+                    </ThemedBody>
+                  </RippleTransition>
+                </RippleTransitionProvider>
+              </ImpersonationProvider>
             </AuthProvider>
           </ThemeProvider>
         </QueryProvider>

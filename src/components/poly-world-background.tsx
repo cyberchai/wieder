@@ -542,9 +542,11 @@ export default function PolyWorldBackground() {
       skyRef.current.mesh.rotation.z += 0.003;
       forestRef.current.mesh.rotation.z += 0.005;
 
-      // Update airplane position based on mouse
-      const targetY = normalize(mouseRef.current.y, -0.75, 0.75, 50, 190);
-      const targetX = normalize(mouseRef.current.x, -0.75, 0.75, -100, -20);
+      // Update airplane position based on mouse. Rest position sits up and to
+      // the left so the plane is out in open sky by default rather than tucked
+      // behind the sign-in panel.
+      const targetY = normalize(mouseRef.current.y, -0.75, 0.75, 80, 220);
+      const targetX = normalize(mouseRef.current.x, -0.75, 0.75, -140, -60);
 
       airplaneRef.current.mesh.position.y +=
         (targetY - airplaneRef.current.mesh.position.y) * 0.1;

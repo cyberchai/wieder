@@ -21,18 +21,20 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { useAuth } from "@/providers/auth-provider";
+import { useImpersonation } from "@/providers/impersonation-provider";
 import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { useRippleTransition } from "@/providers/ripple-transition-provider";
 import Link from "next/link";
-import { LogOut, User as UserIcon, MessageSquare } from "lucide-react";
+import { LogOut, User as UserIcon, MessageSquare, Shield } from "lucide-react";
 import { Textarea } from './ui/textarea';
 import { Label } from './ui/label';
 
 export function UserNav() {
   const { user } = useAuth();
+  const { isSuperAdmin } = useImpersonation();
   const router = useRouter();
   const { toast } = useToast();
   const { triggerRipple } = useRippleTransition();
@@ -129,6 +131,14 @@ export function UserNav() {
               <MessageSquare className="mr-2 h-4 w-4" />
               <span>feedback</span>
             </DropdownMenuItem>
+            {isSuperAdmin && (
+              <DropdownMenuItem asChild>
+                <Link href="/admin">
+                  <Shield className="mr-2 h-4 w-4" />
+                  <span>superadmin</span>
+                </Link>
+              </DropdownMenuItem>
+            )}
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={handleSignOut}>

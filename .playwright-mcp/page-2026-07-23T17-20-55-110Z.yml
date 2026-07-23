@@ -1,0 +1,101 @@
+- generic [ref=e3]:
+  - generic [ref=e4]:
+    - generic [ref=e6] [cursor=pointer]:
+      - img [ref=e7]:
+        - generic: RELOOPED
+        - generic [ref=e10]: RELOOPED
+      - generic [ref=e11]: AGENTIC DJS BEFORE GTA 6
+    - generic [ref=e12]:
+      - generic [ref=e13]:
+        - generic [ref=e14]:
+          - heading "Presets" [level=3] [ref=e15]
+          - button "+Preset" [ref=e16] [cursor=pointer]
+        - generic [ref=e17]:
+          - button "Basic Techno" [ref=e18] [cursor=pointer]
+          - button "Ambient Pad" [ref=e19] [cursor=pointer]
+          - button "Acid Bass" [ref=e20] [cursor=pointer]
+          - button "German Fall" [ref=e21] [cursor=pointer]
+          - button "Jazz Wash" [ref=e22] [cursor=pointer]
+      - generic [ref=e23]:
+        - heading "My Tracks" [level=3] [ref=e24]
+        - generic [ref=e25]: No tracks yet. Your songs will appear here automatically.
+      - heading "Session Log" [level=3] [ref=e28]
+    - generic [ref=e29]:
+      - generic [ref=e30]: "Status: STOPPED"
+      - generic [ref=e32]: Sign in to save songs
+  - generic [ref=e33]:
+    - generic [ref=e34]:
+      - generic [ref=e35]:
+        - heading "Main Stage" [level=2] [ref=e37]
+        - generic [ref=e38]:
+          - button "Join Jam" [ref=e39] [cursor=pointer]
+          - generic [ref=e40]:
+            - generic [ref=e41]: "This Jam:"
+            - generic [ref=e42]: "157699"
+          - generic:
+            - generic:
+              - generic:
+                - img:
+                  - generic: DJNANA
+                  - generic:
+                    - generic: ♪
+                    - generic: ♫
+                    - generic: ♩
+        - button "Signing in..." [disabled] [ref=e44]
+      - generic [ref=e48]: Visualizer Output
+    - generic [ref=e56]:
+      - generic [ref=e57]:
+        - button "Rhythm Droid Percussionist Generates drum patterns and rhythmic textures." [ref=e58] [cursor=pointer]:
+          - generic [ref=e59]:
+            - generic [ref=e60]: Rhythm Droid
+            - generic [ref=e63]: Percussionist
+            - paragraph [ref=e64]: Generates drum patterns and rhythmic textures.
+        - button "Melody Maker Lead Synth Creates melodic hooks and harmonies." [ref=e65] [cursor=pointer]:
+          - generic [ref=e66]:
+            - generic [ref=e67]: Melody Maker
+            - generic [ref=e70]: Lead Synth
+            - paragraph [ref=e71]: Creates melodic hooks and harmonies.
+        - button "The Glitch FX Specialist Applies distortion, time-stretching, and randomization." [ref=e72] [cursor=pointer]:
+          - generic [ref=e73]:
+            - generic [ref=e74]: The Glitch
+            - generic [ref=e77]: FX Specialist
+            - paragraph [ref=e78]: Applies distortion, time-stretching, and randomization.
+        - button "Music Theory Agent Music Theorist Detects key, evaluates harmony, validates rhythm. Old academic energy but unhinged underneath." [ref=e79] [cursor=pointer]:
+          - generic [ref=e80]:
+            - generic [ref=e81]: Music Theory Agent
+            - generic [ref=e84]: Music Theorist
+            - paragraph [ref=e85]: Detects key, evaluates harmony, validates rhythm. Old academic energy but unhinged underneath.
+        - button "Mixer / Mr. Frat Vibes Maximizer DJ mixing engineer. Adjusts volume, panning, brightness. Adds transitions, drops, builds. Absolutely frat energy." [ref=e86] [cursor=pointer]:
+          - generic [ref=e87]:
+            - generic [ref=e88]: Mixer / Mr. Frat
+            - generic [ref=e91]: Vibes Maximizer
+            - paragraph [ref=e92]: DJ mixing engineer. Adjusts volume, panning, brightness. Adds transitions, drops, builds. Absolutely frat energy.
+      - generic [ref=e93]:
+        - generic [ref=e95]:
+          - generic [ref=e96]:
+            - generic [ref=e97]: main.js
+            - generic [ref=e103]:
+              - generic [ref=e104]:
+                - button "Undo (Ctrl+Z)" [disabled] [ref=e105]
+                - button "Redo (Ctrl+Shift+Z)" [disabled] [ref=e108]
+              - generic [ref=e111]: Shift+Enter to Run
+          - textbox [ref=e113]: note('c e a').s('sawtooth')
+        - generic [ref=e115]:
+          - generic [ref=e116]:
+            - heading "AI Director" [level=3] [ref=e117]
+            - paragraph [ref=e118]: Use natural language to instruct the AI to modify the code. It understands musical terms.
+          - generic [ref=e119]:
+            - text: "Examples:"
+            - list [ref=e120]:
+              - listitem [ref=e121]: "\"Make the bassline faster\""
+              - listitem [ref=e122]: "\"Add a dreamy reverb pad\""
+              - listitem [ref=e123]: "\"Add a sick transition\""
+              - listitem [ref=e124]: "\"Resolve this tension\""
+              - listitem [ref=e125]: "\"Add a funky little surprise\""
+              - listitem [ref=e126]: "\"Add a build-up\""
+  - generic [ref=e127]:
+    - generic [ref=e129]:
+      - textbox "AI Director..." [ref=e130]
+      - button [disabled] [ref=e131]
+    - button "Loading..." [disabled] [ref=e134]
+    - button "Stop" [ref=e138] [cursor=pointer]

@@ -1,0 +1,36 @@
+- generic [active] [ref=f16e1]:
+  - button "Open Next.js Dev Tools" [ref=f16e7] [cursor=pointer]
+  - alert [ref=f16e11]
+  - generic [ref=f16e12]:
+    - banner [ref=f16e85]:
+      - generic [ref=f16e86]:
+        - link "wieder" [ref=f16e87] [cursor=pointer]:
+          - /url: /
+        - link "home" [ref=f16e92] [cursor=pointer]:
+          - /url: /
+    - main [ref=f16e95]:
+      - article [ref=f16e96]:
+        - generic [ref=f16e97]:
+          - heading "privacy policy" [level=1] [ref=f16e98]
+          - paragraph [ref=f16e99]: your privacy matters to us. it’s wieder’s policy to respect your privacy and keep any info you share with us safe and minimal.
+          - heading "1. what we collect" [level=2] [ref=f16e100]
+          - paragraph [ref=f16e101]: we only ask for info when we actually need it to run the site or help you use it. right now, that’s just your google account email and associated name so you can log in, nothing else.
+          - heading "2. how we use it" [level=2] [ref=f16e102]
+          - paragraph [ref=f16e103]: we use your info to save your flashcard sets under your user id.
+          - heading "3. storing your data" [level=2] [ref=f16e104]
+          - paragraph [ref=f16e105]: we only keep your info as long as we need it to run the service. we do our best to protect it from anything sketchy like loss, theft, or unauthorized access. if you delete your account, we will delete your info within 30 days.
+          - heading "4. sharing info" [level=2] [ref=f16e106]
+          - paragraph [ref=f16e107]: we don’t share your personal info with anyone, unless we're legally required to. if you share your sets with others, they will be able to view your sets.
+          - heading "5. your consent" [level=2] [ref=f16e108]
+          - paragraph [ref=f16e109]: by using wieder, you’re saying it’s cool for us to use your info this way.
+          - heading "questions?" [level=2] [ref=f16e110]
+          - paragraph [ref=f16e111]:
+            - text: if you have any questions, comments or concerns, reach out anytime at
+            - link "support@nextnode.ventures" [ref=f16e112] [cursor=pointer]:
+              - /url: mailto:support@nextnode.ventures
+            - text: or
+            - link "chairaharder.com" [ref=f16e113] [cursor=pointer]:
+              - /url: https://chairaharder.com
+            - text: .
+  - region "Notifications (F8)":
+    - list

@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/providers/auth-provider";
+import { useEffectiveUser } from "@/providers/impersonation-provider";
 import {
   getUserStats,
   getLeaderboard,
@@ -33,10 +34,11 @@ export const progressKeys = {
   userSets: (uid: string) => [...progressKeys.all, uid, "all"] as const,
 };
 
-// Get current user's stats
+// Get the effective user's stats (impersonated user when the superadmin is
+// viewing someone, otherwise the signed-in user).
 export const useUserStats = () => {
-  const { user } = useAuth();
-  
+  const { user } = useEffectiveUser();
+
   return useQuery({
     queryKey: statsKeys.user(user?.uid || ""),
     queryFn: () => getUserStats(user!.uid),
@@ -54,10 +56,10 @@ export const useLeaderboard = () => {
   });
 };
 
-// Get current user's rank
+// Get the effective user's rank
 export const useUserRank = () => {
-  const { user } = useAuth();
-  
+  const { user } = useEffectiveUser();
+
   return useQuery({
     queryKey: statsKeys.rank(user?.uid || ""),
     queryFn: () => getUserRank(user!.uid),
@@ -69,10 +71,12 @@ export const useUserRank = () => {
 // Track card studied mutation
 export const useTrackCardStudied = () => {
   const { user } = useAuth();
+  const { isImpersonating } = useEffectiveUser();
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: () => trackCardStudied(user!.uid),
+    // No-op while impersonating: viewing another user must never write data.
+    mutationFn: () => (isImpersonating || !user ? Promise.resolve() : trackCardStudied(user.uid)),
     onSuccess: () => {
       // Invalidate and refetch user stats
       if (user) {
@@ -87,10 +91,11 @@ export const useTrackCardStudied = () => {
 // Track game played mutation
 export const useTrackGamePlayed = () => {
   const { user } = useAuth();
+  const { isImpersonating } = useEffectiveUser();
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: () => trackGamePlayed(user!.uid),
+    mutationFn: () => (isImpersonating || !user ? Promise.resolve() : trackGamePlayed(user.uid)),
     onSuccess: () => {
       // Invalidate and refetch user stats
       if (user) {
@@ -106,10 +111,10 @@ export const useTrackGamePlayed = () => {
 // Set Progress Hooks
 // ============================================
 
-// Get progress for a single set
+// Get progress for a single set (effective user)
 export const useSetProgress = (setId: string) => {
-  const { user } = useAuth();
-  
+  const { user } = useEffectiveUser();
+
   return useQuery({
     queryKey: progressKeys.set(user?.uid || "", setId),
     queryFn: () => getSetProgress(user!.uid, setId),
@@ -118,10 +123,10 @@ export const useSetProgress = (setId: string) => {
   });
 };
 
-// Get progress for multiple sets (for dashboard)
+// Get progress for multiple sets (for dashboard, effective user)
 export const useUserSetsProgress = (setIds: string[]) => {
-  const { user } = useAuth();
-  
+  const { user } = useEffectiveUser();
+
   return useQuery({
     queryKey: progressKeys.userSets(user?.uid || ""),
     queryFn: () => getUserSetsProgress(user!.uid, setIds),
@@ -133,11 +138,14 @@ export const useUserSetsProgress = (setIds: string[]) => {
 // Track a card studied for a specific set
 export const useTrackSetCardStudied = () => {
   const { user } = useAuth();
+  const { isImpersonating } = useEffectiveUser();
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: ({ setId, cardId }: { setId: string; cardId: string }) => 
-      trackSetCardStudied(user!.uid, setId, cardId),
+    mutationFn: ({ setId, cardId }: { setId: string; cardId: string }) =>
+      isImpersonating || !user
+        ? Promise.resolve()
+        : trackSetCardStudied(user.uid, setId, cardId),
     onSuccess: (_, variables) => {
       // Invalidate set progress queries
       if (user) {
@@ -155,10 +163,12 @@ export const useTrackSetCardStudied = () => {
 // Reset progress for a set
 export const useResetSetProgress = () => {
   const { user } = useAuth();
+  const { isImpersonating } = useEffectiveUser();
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: (setId: string) => resetSetProgress(user!.uid, setId),
+    mutationFn: (setId: string) =>
+      isImpersonating || !user ? Promise.resolve() : resetSetProgress(user.uid, setId),
     onSuccess: (_, setId) => {
       // Invalidate set progress queries
       if (user) {
@@ -176,14 +186,18 @@ export const useResetSetProgress = () => {
 // Set card performance (weak/strong/neutral)
 export const useSetCardPerformance = () => {
   const { user } = useAuth();
+  const { isImpersonating } = useEffectiveUser();
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: ({ setId, cardId, performance }: { 
-      setId: string; 
-      cardId: string; 
-      performance: CardPerformance 
-    }) => setCardPerformance(user!.uid, setId, cardId, performance),
+    mutationFn: ({ setId, cardId, performance }: {
+      setId: string;
+      cardId: string;
+      performance: CardPerformance
+    }) =>
+      isImpersonating || !user
+        ? Promise.resolve()
+        : setCardPerformance(user.uid, setId, cardId, performance),
     onSuccess: (_, variables) => {
       // Invalidate set progress queries
       if (user) {

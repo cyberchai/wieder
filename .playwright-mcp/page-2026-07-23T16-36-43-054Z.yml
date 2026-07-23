@@ -1,0 +1,47 @@
+- generic [ref=f35e3]:
+  - generic [ref=f35e4]:
+    - heading "wieder" [level=2] [ref=f35e5]
+    - heading "scroll down to explore" [level=3] [ref=f35e6]
+  - figure [ref=f35e8]:
+    - generic [ref=f35e9]:
+      - heading "Simple Learning" [level=2] [ref=f35e10]
+      - paragraph [ref=f35e11]: Create flashcard sets in seconds. Add terms and definitions, then start studying immediately. No complicated setup required.
+  - figure [ref=f35e13]:
+    - generic [ref=f35e14]:
+      - heading "Flashcards" [level=2] [ref=f35e15]
+      - paragraph [ref=f35e16]: Flip through your cards at your own pace. Mark cards as learned or keep practicing the ones you need more help with.
+  - figure [ref=f35e18]:
+    - generic [ref=f35e19]:
+      - heading "Test Yourself" [level=2] [ref=f35e20]
+      - paragraph [ref=f35e21]: Take quizzes to reinforce your learning. Get instant feedback and track your progress over time.
+  - figure [ref=f35e23]:
+    - generic [ref=f35e24]:
+      - heading "Share Sets" [level=2] [ref=f35e25]
+      - paragraph [ref=f35e26]: Share your flashcard sets with friends, classmates, or study groups. Learn together and help each other succeed.
+  - figure [ref=f35e28]:
+    - generic [ref=f35e29]:
+      - heading "Game Modes" [level=2] [ref=f35e30]
+      - paragraph [ref=f35e31]: Make studying fun with interactive game modes. Race against the clock, match terms, and compete for high scores.
+  - figure [ref=f35e33]:
+    - generic [ref=f35e34]:
+      - heading "Track Progress" [level=2] [ref=f35e35]
+      - paragraph [ref=f35e36]: See detailed statistics about your learning journey. Identify weak areas and focus your study time where it matters most.
+  - figure [ref=f35e38]:
+    - generic [ref=f35e39]:
+      - heading "Ready to Start?" [level=2] [ref=f35e40]
+      - paragraph [ref=f35e41]: Join thousands of students who are already learning smarter with wieder.
+      - link "Login Now!" [ref=f35e42] [cursor=pointer]:
+        - /url: /login
+  - contentinfo [ref=f35e43]:
+    - paragraph [ref=f35e44]: Learn freely, live fully
+    - navigation [ref=f35e45]:
+      - link "privacy policy" [ref=f35e46] [cursor=pointer]:
+        - /url: /privacy
+      - link "terms of service" [ref=f35e47] [cursor=pointer]:
+        - /url: /terms
+      - link "contribute" [ref=f35e48] [cursor=pointer]:
+        - /url: /contribute
+    - paragraph [ref=f35e49]:
+      - text: by
+      - link "nextnode.technology" [ref=f35e50] [cursor=pointer]:
+        - /url: https://nextnode.technology/

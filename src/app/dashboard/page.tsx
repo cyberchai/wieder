@@ -1,7 +1,8 @@
 "use client"
 
 import { useState, useEffect, useMemo, useRef } from "react";
-import { ProtectedRoute, useAuth } from "@/providers/auth-provider";
+import { ProtectedRoute } from "@/providers/auth-provider";
+import { useEffectiveUser } from "@/providers/impersonation-provider";
 import Header from "@/components/header";
 import AuroraBackground from "@/components/aurora-background";
 import DashboardParticlesBackground from "@/components/dashboard-particles-background";
@@ -39,6 +40,8 @@ import { useSettings } from "@/hooks/use-settings";
 import { trackUserEngagement, trackPageView } from "@/lib/analytics";
 import { SilentCircleHider } from "@/components/silent-element-hider";
 import { AnimatedSetCard } from "@/components/animated-set-card";
+import { SetMembersAvatars } from "@/components/set-members-avatars";
+import { SmileyBlobAvatar } from "@/components/smiley-blob-avatar";
 import { StatCard } from "@/components/stat-card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { GameModeCard } from "@/components/game-mode-card";
@@ -65,7 +68,9 @@ import { getUserProfilesBatch } from "@/services/users";
 
 
 const DashboardPage = () => {
-    const { user } = useAuth();
+    // Effective user: the impersonated user while the superadmin is viewing
+    // someone, otherwise the signed-in user. Drives all displayed data.
+    const { user, isImpersonating } = useEffectiveUser();
     const { toast } = useToast();
     const router = useRouter();
     
@@ -393,6 +398,7 @@ const DashboardPage = () => {
     };
 
     const handleConfirmDelete = async () => {
+        if (isImpersonating) return; // read-only guard
         if (deletingId) {
             try {
                 await deleteSetMutation.mutateAsync(deletingId);
@@ -444,7 +450,7 @@ const DashboardPage = () => {
     };
 
     const handleDuplicate = async (set: FlashcardSet) => {
-        if (!user) return;
+        if (!user || isImpersonating) return;
         try {
             await duplicateSetMutation.mutateAsync(set);
             // Track duplication
@@ -460,7 +466,7 @@ const DashboardPage = () => {
     }
 
     const handleDuplicatePublicSet = async (publicSet: FlashcardSet) => {
-        if (!user) return;
+        if (!user || isImpersonating) return;
         try {
             await duplicatePublicSetMutation.mutateAsync(publicSet);
             // Track duplication
@@ -476,6 +482,7 @@ const DashboardPage = () => {
     }
 
     const handleContextMenu = (e: React.MouseEvent, setId: string) => {
+        if (isImpersonating) return; // read-only: no duplicate action while viewing as a user
         e.preventDefault();
         e.stopPropagation();
         setContextMenu({
@@ -500,6 +507,7 @@ const DashboardPage = () => {
 
     const handleJoinSet = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (isImpersonating) return; // read-only guard
         const trimmedId = joinSetId.trim();
         if (trimmedId) {
             try {
@@ -518,7 +526,7 @@ const DashboardPage = () => {
     }
 
     const handleJoinGroupSet = async (input: string) => {
-        if (!input.trim()) return;
+        if (!input.trim() || isImpersonating) return;
         
         try {
             // Parse the input - could be a set ID or a full URL
@@ -560,6 +568,7 @@ const DashboardPage = () => {
     }
 
     const handleRemoveGroupSet = (setIdToRemove: string) => {
+        if (isImpersonating) return; // read-only guard
         leaveGroupSetMutation.mutate(setIdToRemove);
     };
 
@@ -570,8 +579,8 @@ const DashboardPage = () => {
     };
 
     const handleTogglePublic = async (set: FlashcardSet) => {
-        if (!user) return;
-        
+        if (!user || isImpersonating) return;
+
         try {
             const newPublicStatus = !set.isPublic;
             await updateSetMutation.mutateAsync({ 
@@ -585,6 +594,7 @@ const DashboardPage = () => {
     };
 
     const handleRemoveSharedSet = (setIdToRemove: string) => {
+        if (isImpersonating) return; // read-only guard
         leaveSharedSetMutation.mutate(setIdToRemove);
     };
 
@@ -826,18 +836,22 @@ const DashboardPage = () => {
                                                     <List className="h-4 w-4" />
                                                 </Button>
                                             </div>
-                                            <Button 
-                                                variant="outline"
-                                                onClick={() => setIsJoinDialogOpen(true)}
-                                            >
-                                                <LinkIcon className="mr-2 h-4 w-4"/>join set
-                                            </Button>
-                                            <Button className="hover:shadow-lg hover:scale-105 transition-all duration-200 ease-in-out transform" asChild>
-                                                <Link href="/sets/create">
-                                                    <PlusCircle className="mr-2 h-4 w-4" />
-                                                    new set
-                                                </Link>
-                                            </Button>
+                                            {!isImpersonating && (
+                                              <>
+                                                <Button
+                                                    variant="outline"
+                                                    onClick={() => setIsJoinDialogOpen(true)}
+                                                >
+                                                    <LinkIcon className="mr-2 h-4 w-4"/>join set
+                                                </Button>
+                                                <Button className="hover:shadow-lg hover:scale-105 transition-all duration-200 ease-in-out transform" asChild>
+                                                    <Link href="/sets/create">
+                                                        <PlusCircle className="mr-2 h-4 w-4" />
+                                                        new set
+                                                    </Link>
+                                                </Button>
+                                              </>
+                                            )}
                                         </div>
                                     </div>
 
@@ -903,6 +917,7 @@ const DashboardPage = () => {
                                                                     <div className="flex items-center gap-4 text-sm text-muted-foreground flex-shrink-0">
                                                                         <Badge variant="secondary" className="text-xs">{category}</Badge>
                                                                         <span className="hidden sm:inline">{cardCount} cards</span>
+                                                                        {!isImpersonating && (
                                                                         <DropdownMenu>
                                                                             <DropdownMenuTrigger asChild>
                                                                                 <Button
@@ -941,6 +956,7 @@ const DashboardPage = () => {
                                                                                 </DropdownMenuItem>
                                                                             </DropdownMenuContent>
                                                                         </DropdownMenu>
+                                                                        )}
                                                                     </div>
                                                                 </div>
                                                             </Card>
@@ -965,6 +981,7 @@ const DashboardPage = () => {
                                                                 </p>
                                                                 <Badge variant="secondary">{category}</Badge>
                                                             </div>
+                                                            {!isImpersonating && (
                                                             <DropdownMenu>
                                                                 <DropdownMenuTrigger asChild>
                                                                     <Button
@@ -1048,6 +1065,7 @@ const DashboardPage = () => {
                                                                     </DropdownMenuItem>
                                                                 </DropdownMenuContent>
                                                             </DropdownMenu>
+                                                            )}
                                                         </div>
 
                                                         <div className="flex items-center justify-between mt-4 pt-4 border-t">
@@ -1250,9 +1268,21 @@ const DashboardPage = () => {
                                                             </p>
                                                             <div className="flex items-center gap-2 mb-2">
                                                                 <Badge variant="secondary">{category}</Badge>
-                                                                <span className="text-xs text-muted-foreground">
-                                                                    by {set.creatorDisplayName || "some user on this app"}
-                                                                </span>
+                                                                <div className="flex items-center gap-1.5 min-w-0">
+                                                                    {set.creatorAnonymous ? (
+                                                                        <SmileyBlobAvatar seed={set.id} className="h-5 w-5" />
+                                                                    ) : (
+                                                                        <Avatar className="h-5 w-5">
+                                                                            <AvatarImage src={set.creatorPhotoURL} alt={set.creatorDisplayName} />
+                                                                            <AvatarFallback className="text-[8px]">
+                                                                                {(set.creatorDisplayName || "?").charAt(0).toUpperCase()}
+                                                                            </AvatarFallback>
+                                                                        </Avatar>
+                                                                    )}
+                                                                    <span className="text-xs text-muted-foreground truncate">
+                                                                        by {set.creatorDisplayName || "some user on this app"}
+                                                                    </span>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -1327,14 +1357,16 @@ const DashboardPage = () => {
                              <div className="space-y-6">
                                  <div className="flex items-center justify-between">
                                      <h2 className="text-2xl font-bold tracking-tight">group sets</h2>
-                                     <Button 
-                                         variant="outline" 
+                                     {!isImpersonating && (
+                                       <Button
+                                         variant="outline"
                                          size="sm"
                                          onClick={() => setIsJoinDialogOpen(true)}
-                                     >
+                                       >
                                          <Users className="mr-2 h-4 w-4" />
                                          join by set ID
-                                     </Button>
+                                       </Button>
+                                     )}
                                  </div>
                                  
                                  {loadingGroup ? (
@@ -1364,6 +1396,7 @@ const DashboardPage = () => {
                                                                 <div className="flex items-center gap-4 text-sm text-muted-foreground flex-shrink-0">
                                                                     <Badge variant="secondary" className="text-xs">{category}</Badge>
                                                                     <span className="hidden sm:inline">{cardCount} cards</span>
+                                                                    {!isImpersonating && (
                                                                     <DropdownMenu>
                                                                         <DropdownMenuTrigger asChild>
                                                                             <Button variant="ghost" size="icon" className="h-7 w-7" onClick={(e) => e.preventDefault()}>
@@ -1385,6 +1418,7 @@ const DashboardPage = () => {
                                                                             </DropdownMenuItem>
                                                                         </DropdownMenuContent>
                                                                     </DropdownMenu>
+                                                                    )}
                                                                 </div>
                                                             </div>
                                                         </Card>
@@ -1408,11 +1442,12 @@ const DashboardPage = () => {
                                                             </p>
                                                             <Badge variant="secondary">{category}</Badge>
                                                         </div>
+                                                        {!isImpersonating && (
                                                         <DropdownMenu>
                                                             <DropdownMenuTrigger asChild>
-                                                                <Button 
-                                                                    variant="ghost" 
-                                                                    size="icon" 
+                                                                <Button
+                                                                    variant="ghost"
+                                                                    size="icon"
                                                                     className="h-8 w-8"
                                                                     onClick={(e) => e.preventDefault()}
                                                                 >
@@ -1459,13 +1494,14 @@ const DashboardPage = () => {
                                                                 </DropdownMenuItem>
                                                             </DropdownMenuContent>
                                                         </DropdownMenu>
+                                                        )}
                                                     </div>
                                                     <div className="flex items-center justify-between mt-4 pt-4 border-t">
                                                         <div className="flex items-center gap-4 text-sm text-muted-foreground">
                                                             <span>{cardCount} cards</span>
                                                         </div>
                                                         <div className="flex items-center gap-2">
-                                                            <Users className="w-4 h-4 text-muted-foreground" />
+                                                            <SetMembersAvatars setId={set.id} ownerId={set.userId} />
                                                         </div>
                                                     </div>
                                                     <div className="mt-4">
@@ -1481,8 +1517,9 @@ const DashboardPage = () => {
                                                         </div>
                                                     </div>
                                                     <div className="mt-4 flex gap-2">
-                                                        <Button 
-                                                            variant="outline" 
+                                                        {!isImpersonating && (
+                                                        <Button
+                                                            variant="outline"
                                                             className="flex-1"
                                                             onClick={(e) => {
                                                                 e.preventDefault();
@@ -1493,7 +1530,8 @@ const DashboardPage = () => {
                                                             <Edit className="mr-2 h-4 w-4" />
                                                             Collab
                                                         </Button>
-                                                        <Button 
+                                                        )}
+                                                        <Button
                                                             className="flex-1"
                                                             onClick={(e) => {
                                                                 e.preventDefault();
@@ -1515,15 +1553,19 @@ const DashboardPage = () => {
                                          <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                                          <h3 className="text-lg font-semibold mb-2">no group sets yet</h3>
                                          <p className="text-muted-foreground mb-4">
-                                             join sets by entering a set ID or sharing link
+                                             {isImpersonating
+                                                 ? "this user hasn't joined any group sets"
+                                                 : "join sets by entering a set ID or sharing link"}
                                          </p>
-                                         <Button 
+                                         {!isImpersonating && (
+                                           <Button
                                              variant="outline"
                                              onClick={() => setIsJoinDialogOpen(true)}
-                                         >
+                                           >
                                              <Users className="mr-2 h-4 w-4" />
                                              join by set ID
-                                         </Button>
+                                           </Button>
+                                         )}
                                      </div>
                                  )}
                              </div>

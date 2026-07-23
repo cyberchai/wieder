@@ -1,0 +1,26 @@
+[     104ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://relooped.vercel.app/index.css:0
+[     174ms] [WARNING] cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation @ https://cdn.tailwindcss.com/:63
+[     238ms] [LOG] %c🌀 @strudel/core loaded 🌀 background-color: black;color:white;border-radius:15px @ https://relooped.vercel.app/assets/index-DChL8n5K.js:742
+[     248ms] [LOG] %c🌀 @strudel/core loaded 🌀 background-color: black;color:white;border-radius:15px @ https://relooped.vercel.app/assets/index-DChL8n5K.js:819
+[     248ms] [WARNING] @strudel/core was loaded more than once...
+This might happen when you have multiple versions of strudel installed. 
+Please check with "npm ls @strudel/core". @ https://relooped.vercel.app/assets/index-DChL8n5K.js:820
+[    1091ms] [LOG] Using Strudel audio context @ https://relooped.vercel.app/assets/index-DChL8n5K.js:96
+[    1092ms] [LOG] Audio analyser node created and ready @ https://relooped.vercel.app/assets/index-DChL8n5K.js:96
+[    1092ms] [LOG] Audio analyser initialized @ https://relooped.vercel.app/assets/index-DChL8n5K.js:96
+[    1211ms] [LOG] Preloading common samples... @ https://relooped.vercel.app/assets/index-DChL8n5K.js:822
+[    1215ms] [LOG] %c[eval] code updated background-color: black;color:white;border-radius:15px @ https://relooped.vercel.app/assets/index-DChL8n5K.js:742
+[    1215ms] [LOG] %c[cyclist] start background-color: black;color:white;border-radius:15px @ https://relooped.vercel.app/assets/index-DChL8n5K.js:742
+[    1216ms] [LOG] %c[sampler] load sound "bd:0:0".. background-color: black;color:white;border-radius:15px @ https://relooped.vercel.app/assets/index-DChL8n5K.js:742
+[    1224ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://relooped.vercel.app/favicon.ico:0
+[    1229ms] [LOG] %c[sampler] load sound "bd:0:0"... done! loaded 54.4 KiB in 12ms background-color: black;color:white;border-radius:15px @ https://relooped.vercel.app/assets/index-DChL8n5K.js:742
+[    1324ms] [LOG] %c[cyclist] stop background-color: black;color:white;border-radius:15px @ https://relooped.vercel.app/assets/index-DChL8n5K.js:742
+[    1326ms] [LOG] %c[eval] code updated background-color: black;color:white;border-radius:15px @ https://relooped.vercel.app/assets/index-DChL8n5K.js:742
+[    1326ms] [LOG] %c[cyclist] start background-color: black;color:white;border-radius:15px @ https://relooped.vercel.app/assets/index-DChL8n5K.js:742
+[    1326ms] [LOG] %c[sampler] load sound "jazz:0:0".. background-color: black;color:white;border-radius:15px @ https://relooped.vercel.app/assets/index-DChL8n5K.js:742
+[    1381ms] [LOG] %c[sampler] load sound "jazz:0:0"... done! loaded 24.8 KiB in 56ms background-color: black;color:white;border-radius:15px @ https://relooped.vercel.app/assets/index-DChL8n5K.js:742
+[    1428ms] [LOG] %c[cyclist] stop background-color: black;color:white;border-radius:15px @ https://relooped.vercel.app/assets/index-DChL8n5K.js:742
+[    1428ms] [LOG] Sample preloading complete @ https://relooped.vercel.app/assets/index-DChL8n5K.js:822
+[    1428ms] [LOG] Strudel audio engine initialized @ https://relooped.vercel.app/assets/index-DChL8n5K.js:822
+[    1608ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://relooped.vercel.app/favicon.ico:0
+[    2429ms] [LOG] Audio analyser connected to audio context @ https://relooped.vercel.app/assets/index-DChL8n5K.js:822

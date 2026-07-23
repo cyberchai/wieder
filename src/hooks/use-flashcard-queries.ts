@@ -20,6 +20,7 @@ import {
   migrateJoinedSetsToFirebase 
 } from '@/services/users';
 import { useAuth } from '@/providers/auth-provider';
+import { useEffectiveUser } from '@/providers/impersonation-provider';
 import { useToast } from '@/hooks/use-toast';
 import { trackUserEngagement } from '@/lib/analytics';
 
@@ -32,10 +33,11 @@ export const flashcardQueryKeys = {
   sharedSets: (setIds: string[]) => [...flashcardQueryKeys.all, 'shared', setIds] as const,
 };
 
-// Hook to get user's flashcard sets
+// Hook to get user's flashcard sets (of the *effective* user — the impersonated
+// user when the superadmin is viewing someone, otherwise the signed-in user).
 export const useUserFlashcardSets = () => {
-  const { user } = useAuth();
-  
+  const { user } = useEffectiveUser();
+
   return useQuery({
     queryKey: flashcardQueryKeys.userSets(user?.uid || ''),
     queryFn: async () => {
@@ -116,16 +118,21 @@ export const usePublicFlashcardSets = (pageSize: number = 20) => {
 
 // Hook to get shared sets (from Firebase)
 export const useSharedFlashcardSets = () => {
-  const { user } = useAuth();
-  
+  const { user, isImpersonating } = useEffectiveUser();
+
   return useQuery({
-    queryKey: flashcardQueryKeys.sharedSets([]), // We'll update this dynamically
+    // Key on the effective uid so switching impersonated users refetches.
+    queryKey: [...flashcardQueryKeys.all, 'shared', user?.uid || ''],
     queryFn: async () => {
       if (!user) return [];
-      
-      // Migrate localStorage data to Firebase on first load
-      await migrateJoinedSetsToFirebase(user.uid);
-      
+
+      // Migrate localStorage data to Firebase on first load. Skipped while
+      // impersonating: it's a write, and the admin's localStorage has nothing
+      // to do with the user being viewed.
+      if (!isImpersonating) {
+        await migrateJoinedSetsToFirebase(user.uid);
+      }
+
       const userProfile = await getUserProfile(user.uid);
       const joinedSetIds = userProfile?.joinedSetIds || [];
       
@@ -150,16 +157,19 @@ export const useSharedFlashcardSets = () => {
 
 // Hook to get group sets (from Firebase)
 export const useGroupFlashcardSets = () => {
-  const { user } = useAuth();
-  
+  const { user, isImpersonating } = useEffectiveUser();
+
   return useQuery({
     queryKey: [...flashcardQueryKeys.all, 'group', user?.uid || ''],
     queryFn: async () => {
       if (!user) return [];
-      
-      // Migrate localStorage data to Firebase on first load
-      await migrateJoinedSetsToFirebase(user.uid);
-      
+
+      // Migrate localStorage data to Firebase on first load (not while
+      // impersonating — see useSharedFlashcardSets).
+      if (!isImpersonating) {
+        await migrateJoinedSetsToFirebase(user.uid);
+      }
+
       const userProfile = await getUserProfile(user.uid);
       const joinedGroupSetIds = userProfile?.joinedGroupSetIds || [];
       
@@ -491,13 +501,13 @@ export const useJoinSharedSet = () => {
     },
     onSuccess: (_, setId) => {
       // Invalidate shared sets query
-      queryClient.invalidateQueries({ 
-        queryKey: flashcardQueryKeys.sharedSets([]) 
+      queryClient.invalidateQueries({
+        queryKey: [...flashcardQueryKeys.all, 'shared', user?.uid || '']
       });
-      
+
       // Track joining set
       if (user) {
-        trackUserEngagement('join_flashcard_set', { 
+        trackUserEngagement('join_flashcard_set', {
           set_id: setId,
           action: 'join'
         }, user.uid);
@@ -532,13 +542,13 @@ export const useLeaveSharedSet = () => {
     },
     onSuccess: (_, setId) => {
       // Invalidate shared sets query
-      queryClient.invalidateQueries({ 
-        queryKey: flashcardQueryKeys.sharedSets([]) 
+      queryClient.invalidateQueries({
+        queryKey: [...flashcardQueryKeys.all, 'shared', user?.uid || '']
       });
-      
-      toast({ 
-        title: 'Set removed', 
-        description: 'The shared set has been removed from your dashboard.' 
+
+      toast({
+        title: 'Set removed',
+        description: 'The shared set has been removed from your dashboard.'
       });
     },
     onError: (error) => {

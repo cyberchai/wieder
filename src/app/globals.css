@@ -57,6 +57,23 @@ svg circle[fill*="url(#a-cl-9)"] {
   display: none !important;
 }
 
+/* Header scrim: a colored top fade whose left/right ends drop ever so slightly
+   below the center, giving a subtle concave-down (arch) bottom edge. Two mask
+   layers are intersected: a vertical fade (opaque top -> transparent bottom,
+   which also fades out the backdrop-blur and keeps the corners clean) and a
+   very shallow dome rising from the bottom-center that lifts the center's
+   fade line just above the edges'. */
+.header-scrim {
+  -webkit-mask-image:
+    linear-gradient(to bottom, #000 0%, #000 40%, rgba(0, 0, 0, 0) 100%),
+    radial-gradient(130% 155% at 50% 146%, rgba(0, 0, 0, 0) 55%, #000 82%);
+  mask-image:
+    linear-gradient(to bottom, #000 0%, #000 40%, rgba(0, 0, 0, 0) 100%),
+    radial-gradient(130% 155% at 50% 146%, rgba(0, 0, 0, 0) 55%, #000 82%);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+
 @layer base {
   .wiederland {
     /* Blue "chrome" (header + landscape scrim) stays dark so the day sky and
@@ -135,6 +152,56 @@ svg circle[fill*="url(#a-cl-9)"] {
     --radius: 1rem;
     --tab-bar-bg: 45 83.3% 87.5%; /* Darker tab bar background for Neilson theme */
   }
+
+  /* Neilson Library nod — kept very subtle. The stat cards + cream panel stay
+     the warm "shelf"; only the set rows and the canvas change, so the theme
+     barely shifts. A faint honey wash warms the canvas like the library's
+     wood-and-daylight atrium. */
+  .neilson body {
+    background-image:
+      radial-gradient(70rem 52rem at 14% -10%, hsla(38, 68%, 66%, 0.13), transparent 60%),
+      radial-gradient(60rem 55rem at 100% 6%, hsla(28, 58%, 62%, 0.07), transparent 55%);
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+  }
+
+  /* Drop the heavy oak outline from the section cards (stat cards, sets panel,
+     etc.); the cream fill + shadow-sm already separate them from the canvas.
+     The more specific .bg-card .bg-card rule below keeps the set rows' frame. */
+  .neilson .bg-card {
+    border-color: transparent;
+  }
+
+  /* Set-list rows are cards nested in the cream panel, so they share its fill
+     and vanish into it. Lift each to a warm near-white "page" framed by a 2px
+     oak border on all four sides (redefining --card locally so the bg-card
+     utility resolves the new value without a cascade-layer fight); the existing
+     shadow-sm floats it. Hover warms the fill with honey. */
+  .neilson .bg-card .bg-card {
+    --card: 42 55% 97%; /* warm near-white page */
+    border-color: hsl(36 38% 80%); /* soft oak frame at rest */
+    border-width: 2px !important; /* !important beats the `border` utility's 1px,
+                                     which lives in a later cascade layer */
+  }
+  .neilson .bg-card .bg-card:hover {
+    --card: 44 80% 95%; /* honey warm fill on hover */
+    border-width: 3px !important; /* frame thickens on hover for emphasis */
+    /* These rows are auto-height, so the extra 1px of border top+bottom would
+       push every card below down. A -1px margin on each side absorbs the growth
+       (the border expands outward, the margin-box stays the same size), so
+       siblings don't shift and the hovered card's content stays put. */
+    margin: -1px;
+  }
+
+  /* On hover, the WHOLE frame lights up in a muted "library" hue — a book's
+     spine color, rotating per row down the shelf. Low-saturation on purpose.
+     Always the full border, never a left-only accent (see design.md). */
+  .neilson .bg-card a:nth-child(5n + 1) .bg-card:hover { border-color: hsl(38 46% 55%); } /* honey oak */
+  .neilson .bg-card a:nth-child(5n + 2) .bg-card:hover { border-color: hsl(16 44% 58%); } /* terracotta */
+  .neilson .bg-card a:nth-child(5n + 3) .bg-card:hover { border-color: hsl(96 24% 48%); } /* sage */
+  .neilson .bg-card a:nth-child(5n + 4) .bg-card:hover { border-color: hsl(208 34% 56%); } /* dusty blue */
+  .neilson .bg-card a:nth-child(5n + 5) .bg-card:hover { border-color: hsl(300 20% 56%); } /* plum */
+
   .dark {
     --background: 0 0% 2.5%; /* Darker background */
     --foreground: 0 0% 98%;

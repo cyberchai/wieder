@@ -1,0 +1,52 @@
+- generic [active] [ref=e1]:
+  - img "wieder" [ref=e3] [cursor=pointer]
+  - link "Sign in with Google" [ref=e4] [cursor=pointer]:
+    - /url: /login
+    - text: Sign in
+  - generic [ref=e10]:
+    - generic [ref=e11]:
+      - heading "wieder" [level=2] [ref=e12]
+      - heading "scroll down to explore" [level=3] [ref=e13]
+    - figure [ref=e15]:
+      - generic [ref=e16]:
+        - heading "Simple Learning" [level=2] [ref=e17]
+        - paragraph [ref=e18]: Make a set of cards. Add your terms and their meanings, then start studying.
+    - figure [ref=e20]:
+      - generic [ref=e21]:
+        - heading "Flashcards" [level=2] [ref=e22]
+        - paragraph [ref=e23]: Flip through your cards at your own pace. Mark the ones you know, and keep practicing the rest.
+    - figure [ref=e25]:
+      - generic [ref=e26]:
+        - heading "Test Yourself" [level=2] [ref=e27]
+        - paragraph [ref=e28]: Take a quick quiz to see what stuck. It shows what you got right and what to go over again.
+    - figure [ref=e30]:
+      - generic [ref=e31]:
+        - heading "Share Sets" [level=2] [ref=e32]
+        - paragraph [ref=e33]: Share your sets with friends or classmates, or study from a set someone else made.
+    - figure [ref=e35]:
+      - generic [ref=e36]:
+        - heading "Game Modes" [level=2] [ref=e37]
+        - paragraph [ref=e38]: Race the clock, match pairs, or catch falling words — practice that plays like a game.
+    - figure [ref=e40]:
+      - generic [ref=e41]:
+        - heading "Track Progress" [level=2] [ref=e42]
+        - paragraph [ref=e43]: Build a streak and watch the words you keep missing finally click.
+    - figure [ref=e45]:
+      - generic [ref=e46]:
+        - heading "Ready to Start?" [level=2] [ref=e47]
+        - paragraph [ref=e48]: Jump in and start practicing with wieder.
+        - link "Login!" [ref=e49] [cursor=pointer]:
+          - /url: /login
+    - contentinfo [ref=e50]:
+      - paragraph [ref=e51]: Learn freely, live fully
+      - navigation [ref=e52]:
+        - link "privacy policy" [ref=e53] [cursor=pointer]:
+          - /url: /privacy
+        - link "terms of service" [ref=e54] [cursor=pointer]:
+          - /url: /terms
+        - link "contribute" [ref=e55] [cursor=pointer]:
+          - /url: /contribute
+      - paragraph [ref=e56]:
+        - text: by
+        - link "nextnode.technology" [ref=e57] [cursor=pointer]:
+          - /url: https://nextnode.technology/

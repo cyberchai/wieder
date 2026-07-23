@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from "react";
 import { IterationCcw, Loader2, Mail, Check } from 'lucide-react';
 import { PublicRoute } from "@/providers/auth-provider";
 import PolyWorldBackground from "@/components/poly-world-background";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -172,17 +172,39 @@ function LoginContent() {
             wieder
           </Link>
         </div>
-        <div className="relative z-10">
-          <Card className="w-full max-w-sm bg-white/90 backdrop-blur-sm shadow-xl border-0">
-            <CardHeader className="text-center pb-2">
-              <CardTitle className="text-2xl font-bold text-[#59332e]">
-                log in to join your peers
-              </CardTitle>
-              <CardDescription className="text-[#59332e]/70">
-                study together with flashcards
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="pt-4 space-y-4">
+        <div className="relative z-10 flex w-full max-w-sm flex-col items-center">
+          {/* Curved heading floating directly over the globe, no card behind it */}
+          <div className="pointer-events-none mb-6 flex select-none flex-col items-center">
+            <h1 className="sr-only">log in to join your peers</h1>
+            <svg
+              viewBox="0 34 720 100"
+              className="w-[122%] max-w-none"
+              aria-hidden="true"
+            >
+              <defs>
+                <path
+                  id="login-title-arc"
+                  d="M 34 120 A 1550 1550 0 0 1 686 120"
+                  fill="none"
+                />
+              </defs>
+              <text
+                className="fill-[#59332e] font-bold"
+                fontSize="46"
+                textAnchor="middle"
+                style={{ filter: "drop-shadow(0 2px 3px rgba(89,51,46,0.18))" }}
+              >
+                <textPath href="#login-title-arc" startOffset="50%">
+                  log in to join your peers
+                </textPath>
+              </text>
+            </svg>
+            <p className="-mt-1 text-lg font-medium text-[#59332e]/80 [text-shadow:0_1px_2px_rgba(89,51,46,0.15)]">
+              study together with flashcards
+            </p>
+          </div>
+          <Card className="w-full border-0 bg-white/45 shadow-[0_18px_55px_-20px_rgba(89,51,46,0.35)] backdrop-blur-[6px]">
+            <CardContent className="pt-6 space-y-4">
               <Button 
                 variant="outline" 
                 className="w-full bg-white hover:bg-gray-50 text-[#59332e] border-[#59332e]/20 hover:border-[#59332e]/40 transition-all"
@@ -218,10 +240,10 @@ function LoginContent() {
                       <span className="w-full border-t border-[#59332e]/10" />
                     </div>
                     <div className="relative flex justify-center text-xs">
-                      <span className="bg-white/90 px-2 text-[#59332e]/50">or</span>
+                      <span className="bg-white/45 px-2 text-[#59332e]/50 backdrop-blur-[6px]">or</span>
                     </div>
                   </div>
-                  
+
                   <div className="flex flex-col items-center gap-2 py-4 px-3 bg-green-50/80 rounded-lg border border-green-200/50">
                     <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
                       <Check className="h-4 w-4 text-green-600" />
@@ -251,7 +273,7 @@ function LoginContent() {
                       <span className="w-full border-t border-[#59332e]/10" />
                     </div>
                     <div className="relative flex justify-center text-xs">
-                      <span className="bg-white/90 px-2 text-[#59332e]/50">or</span>
+                      <span className="bg-white/45 px-2 text-[#59332e]/50 backdrop-blur-[6px]">or</span>
                     </div>
                   </div>
 

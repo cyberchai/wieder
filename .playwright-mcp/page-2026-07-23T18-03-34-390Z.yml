@@ -1,0 +1,52 @@
+- generic [active] [ref=f8e1]:
+  - img "wieder" [ref=f8e3] [cursor=pointer]
+  - link "Sign in with Google" [ref=f8e7] [cursor=pointer]:
+    - /url: /login
+    - text: Sign in
+  - generic [ref=f8e13]:
+    - generic [ref=f8e14]:
+      - heading "wieder" [level=2] [ref=f8e15]
+      - heading "scroll down to explore" [level=3] [ref=f8e16]
+    - figure [ref=f8e18]:
+      - generic [ref=f8e19]:
+        - heading "Simple Learning" [level=2] [ref=f8e20]
+        - paragraph [ref=f8e21]: Make a set of cards. Add your terms and their meanings, then start studying.
+    - figure [ref=f8e23]:
+      - generic [ref=f8e24]:
+        - heading "Flashcards" [level=2] [ref=f8e25]
+        - paragraph [ref=f8e26]: Flip through your cards at your own pace. Mark the ones you know, and keep practicing the rest.
+    - figure [ref=f8e28]:
+      - generic [ref=f8e29]:
+        - heading "Test Yourself" [level=2] [ref=f8e30]
+        - paragraph [ref=f8e31]: Take a quick quiz to see what stuck. It shows what you got right and what to go over again.
+    - figure [ref=f8e33]:
+      - generic [ref=f8e34]:
+        - heading "Share Sets" [level=2] [ref=f8e35]
+        - paragraph [ref=f8e36]: Share your sets with friends or classmates, or study from a set someone else made.
+    - figure [ref=f8e38]:
+      - generic [ref=f8e39]:
+        - heading "Game Modes" [level=2] [ref=f8e40]
+        - paragraph [ref=f8e41]: Race the clock, match pairs, or catch falling words — practice that plays like a game.
+    - figure [ref=f8e43]:
+      - generic [ref=f8e44]:
+        - heading "Track Progress" [level=2] [ref=f8e45]
+        - paragraph [ref=f8e46]: Build a streak and watch the words you keep missing finally click.
+    - figure [ref=f8e48]:
+      - generic [ref=f8e49]:
+        - heading "Ready to Start?" [level=2] [ref=f8e50]
+        - paragraph [ref=f8e51]: Jump in and start practicing with wieder.
+        - link "Login!" [ref=f8e52] [cursor=pointer]:
+          - /url: /login
+    - contentinfo [ref=f8e53]:
+      - paragraph [ref=f8e54]: Learn freely, live fully
+      - navigation [ref=f8e55]:
+        - link "privacy policy" [ref=f8e56] [cursor=pointer]:
+          - /url: /privacy
+        - link "terms of service" [ref=f8e57] [cursor=pointer]:
+          - /url: /terms
+        - link "contribute" [ref=f8e58] [cursor=pointer]:
+          - /url: /contribute
+      - paragraph [ref=f8e59]:
+        - text: by
+        - link "nextnode.technology" [ref=f8e60] [cursor=pointer]:
+          - /url: https://nextnode.technology/

@@ -6,6 +6,7 @@ import { ThemeSwitcher } from './theme-switcher';
 import { FontSwitcher } from './font-switcher';
 import { UserNav } from './user-nav';
 import { CountdownTimer } from './countdown-timer';
+import { LeaderboardButton } from './leaderboard-button';
 import { Search } from 'lucide-react';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
@@ -20,8 +21,18 @@ export default function Header({ searchQuery = "", onSearchChange, searchInputRe
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [isSearchHovered, setIsSearchHovered] = useState(false);
   return (
-    <header className="sticky top-0 z-50 w-full border-b-0 border-none bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-50 w-full">
+      {/* Colored fade scrim — mirrors the dashboard footer's gradient
+          (from-transparent to-black/25), flipped for the header and a touch
+          stronger, so content softly fades in beneath the bar. The
+          .header-scrim mask fades the backdrop-blur out with the color (no hard
+          bottom edge) and bows the fade into a slight concave-down arch so the
+          left/right ends drop just below the center. */}
+      <div
+        aria-hidden
+        className="header-scrim pointer-events-none absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-background via-background/70 to-transparent backdrop-blur-sm"
+      />
+      <div className="relative container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-14 items-center justify-between">
           {/* Logo Section */}
           <div className="flex items-center">
@@ -70,6 +81,7 @@ export default function Header({ searchQuery = "", onSearchChange, searchInputRe
 
           {/* Theme, Font & Profile Section */}
           <div className="flex items-center space-x-2">
+             <LeaderboardButton />
              <CountdownTimer />
              <FontSwitcher />
              <ThemeSwitcher />
