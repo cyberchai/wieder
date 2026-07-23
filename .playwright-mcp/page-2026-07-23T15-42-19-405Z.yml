@@ -1,0 +1,14 @@
+- generic [active] [ref=f21e1]:
+  - alert [ref=f21e2]
+  - generic [ref=f21e4]:
+    - generic [ref=f21e5]:
+      - generic [ref=f21e6]: 4.2s
+      - generic [ref=f21e7]: 3 / 12
+    - generic [ref=f21e8]:
+      - generic [ref=f21e9]:
+        - paragraph [ref=f21e10]: Definition
+        - paragraph [ref=f21e11]: hotel business manager (m)
+      - textbox "Type the term..." [ref=f21e13]: what this is bigger now
+    - paragraph [ref=f21e15]: "Score: 3 / 12"
+  - region "Notifications (F8)":
+    - list

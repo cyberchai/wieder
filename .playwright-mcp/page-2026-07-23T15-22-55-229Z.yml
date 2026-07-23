@@ -1,0 +1,18 @@
+- generic [active] [ref=f15e1]:
+  - alert [ref=f15e2]
+  - main [ref=f15e6]:
+    - generic [ref=f15e7]:
+      - generic [ref=f15e8]:
+        - generic [ref=f15e9]: back to dashboard
+        - generic [ref=f15e10]: flip · accept general answers
+        - generic [ref=f15e11]: falling words
+      - generic [ref=f15e12]:
+        - generic [ref=f15e13]:
+          - paragraph [ref=f15e14]: "score: 0"
+          - paragraph [ref=f15e15]: "lives: ❤️❤️"
+        - paragraph [ref=f15e17]: die Krankenschwester, -n
+        - generic [ref=f15e18]:
+          - generic [ref=f15e19]: start typing…
+          - generic [ref=f15e20]: press Enter to clear if wrong
+  - region "Notifications (F8)":
+    - list

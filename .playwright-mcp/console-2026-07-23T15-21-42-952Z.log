@@ -1,0 +1,9 @@
+[     143ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_compiled_react-dom_1e674e59._.js:14537
+[   30163ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:900
+[   30163ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:901
+[   30164ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:900
+[   30164ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:901
+[   60163ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:900
+[   60163ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:901
+[   60163ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:900
+[   60163ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:901

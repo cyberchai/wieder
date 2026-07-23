@@ -674,7 +674,7 @@ export default function CrosswordPage() {
   if (gameState === "loading") {
     return (
       <ProtectedRoute>
-        <div className="flex flex-col min-h-screen items-center justify-center bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-gray-900 dark:to-indigo-950">
+        <div className="flex flex-col h-[100dvh] overflow-hidden items-center justify-center bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-gray-900 dark:to-indigo-950">
           <p className="text-xl text-gray-700 dark:text-gray-300">Loading...</p>
         </div>
       </ProtectedRoute>
@@ -685,7 +685,7 @@ export default function CrosswordPage() {
   if (gameState === "error") {
     return (
       <ProtectedRoute>
-        <div className="flex flex-col min-h-screen items-center justify-center bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-gray-900 dark:to-indigo-950 p-6">
+        <div className="flex flex-col h-[100dvh] overflow-hidden items-center justify-center bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-gray-900 dark:to-indigo-950 p-6">
           <div className="text-center max-w-md">
             <h2 className="text-2xl font-bold font-cherry-bomb text-gray-800 dark:text-gray-200 mb-4">
               Oops!
@@ -711,7 +711,7 @@ export default function CrosswordPage() {
   if (gameState === "idle" && set) {
     return (
       <ProtectedRoute>
-        <div className="flex flex-col min-h-screen items-center justify-center bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-gray-900 dark:to-indigo-950 p-6">
+        <div className="flex flex-col h-[100dvh] overflow-hidden items-center justify-center bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-gray-900 dark:to-indigo-950 p-6">
           <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-200 mb-2">
             {set.title}
           </h1>
@@ -742,9 +742,14 @@ export default function CrosswordPage() {
 
   // Render playing/complete state
   if ((gameState === "playing" || gameState === "complete") && board && bounds) {
+    const gridCols = bounds.right - bounds.left + 3;
+    const gridRows = bounds.bottom - bounds.top + 3;
+    // Scale cells to fit the grid area in BOTH dimensions (container-query units),
+    // capped at 40px, so the whole crossword is always on screen with no scrolling.
+    const cellSize = `min(calc((100cqw - ${gridCols * 2}px) / ${gridCols}), calc((100cqh - ${gridRows * 2}px) / ${gridRows}), 40px)`;
     return (
       <ProtectedRoute>
-        <div className="flex flex-col min-h-screen bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-gray-900 dark:to-indigo-950">
+        <div className="flex flex-col h-[100dvh] overflow-hidden bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-gray-900 dark:to-indigo-950">
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b bg-white/50 dark:bg-gray-800/50 backdrop-blur">
             <Button variant="ghost" size="sm" asChild>
@@ -795,9 +800,9 @@ export default function CrosswordPage() {
             </div>
           )}
 
-          <div className="flex-1 flex flex-col lg:flex-row p-4 gap-6 overflow-auto">
+          <div className="flex-1 min-h-0 flex flex-col lg:flex-row p-2 sm:p-4 gap-3 sm:gap-6 overflow-hidden">
             {/* Crossword Grid */}
-            <div className="flex-shrink-0 flex justify-center">
+            <div className="flex-1 min-h-0 flex items-center justify-center overflow-hidden" style={{ containerType: 'size' }}>
               <div
                 className="inline-block bg-gray-800 dark:bg-gray-900 p-1 rounded shadow-lg"
                 style={{ lineHeight: 0 }}
@@ -819,7 +824,8 @@ export default function CrosswordPage() {
                         return (
                           <div
                             key={key}
-                            className={`relative w-8 h-8 sm:w-10 sm:h-10 m-[1px] ${
+                            style={{ width: cellSize, height: cellSize }}
+                            className={`relative m-[1px] ${
                               isActive
                                 ? showResults
                                   ? isCorrect
@@ -834,7 +840,7 @@ export default function CrosswordPage() {
                             {isActive && (
                               <>
                                 {cellNumber && (
-                                  <span className="absolute top-0 left-0.5 text-[8px] sm:text-[10px] text-gray-600 dark:text-gray-800 font-medium leading-none">
+                                  <span style={{ fontSize: `calc(${cellSize} * 0.3)` }} className="absolute top-0 left-0.5 text-gray-600 dark:text-gray-800 font-medium leading-none z-10">
                                     {cellNumber}
                                   </span>
                                 )}
@@ -862,7 +868,8 @@ export default function CrosswordPage() {
                                     }
                                   }}
                                   disabled={gameState === "complete"}
-                                  className={`w-full h-full text-center text-lg sm:text-xl font-bold uppercase bg-transparent border-0 outline-none text-gray-800 dark:text-gray-900 ${
+                                  style={{ fontSize: `calc(${cellSize} * 0.58)` }}
+                                  className={`w-full h-full text-center font-bold uppercase bg-transparent border-0 outline-none text-gray-800 dark:text-gray-900 ${
                                     focusedCell === key
                                       ? "ring-2 ring-inset ring-indigo-500"
                                       : ""
@@ -880,10 +887,10 @@ export default function CrosswordPage() {
             </div>
 
             {/* Clues */}
-            <div className="flex-1 flex flex-col sm:flex-row gap-6 min-w-0">
+            <div className="flex-1 min-h-0 flex flex-col sm:flex-row gap-3 sm:gap-6 min-w-0 overflow-hidden">
               {/* Across Clues */}
-              <div className="flex-1 min-w-0">
-                <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-3 border-b pb-2">
+              <div className="flex-1 min-w-0 min-h-0 overflow-y-auto">
+                <h3 className="text-base font-bold text-gray-800 dark:text-gray-200 mb-2 border-b pb-1">
                   ACROSS
                 </h3>
                 <div className="space-y-2">
@@ -899,8 +906,8 @@ export default function CrosswordPage() {
               </div>
 
               {/* Down Clues */}
-              <div className="flex-1 min-w-0">
-                <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-3 border-b pb-2">
+              <div className="flex-1 min-w-0 min-h-0 overflow-y-auto">
+                <h3 className="text-base font-bold text-gray-800 dark:text-gray-200 mb-2 border-b pb-1">
                   DOWN
                 </h3>
                 <div className="space-y-2">

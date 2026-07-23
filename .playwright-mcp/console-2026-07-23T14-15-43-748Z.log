@@ -1,0 +1,9 @@
+[     154ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_compiled_react-dom_1e674e59._.js:14537
+[   30184ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:900
+[   30184ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:901
+[   30185ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:900
+[   30185ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:901
+[   43485ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5949
+[   43510ms] [LOG] [Fast Refresh] done in 83ms @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5809
+[   43615ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5949
+[   43697ms] [LOG] [Fast Refresh] done in 11ms @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5809

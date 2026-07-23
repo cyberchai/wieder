@@ -1,0 +1,14 @@
+- generic [active] [ref=f19e1]:
+  - alert [ref=f19e2]
+  - generic [ref=f19e4]:
+    - generic [ref=f19e5]:
+      - generic [ref=f19e6]: 4.2s
+      - generic [ref=f19e7]: 3 / 12
+    - generic [ref=f19e8]:
+      - generic [ref=f19e9]:
+        - paragraph [ref=f19e10]: Definition
+        - paragraph [ref=f19e11]: The 16th President of the United States, who led the country during the Civil War
+      - textbox "Type the term..." [ref=f19e13]: Abraham Lincoln who led the
+    - paragraph [ref=f19e15]: "Score: 3 / 12"
+  - region "Notifications (F8)":
+    - list

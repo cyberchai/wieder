@@ -691,8 +691,8 @@ export default function StudyPage() {
                                     autoFocus
                                   />
                                 ) : (
-                                  <div 
-                                    className="text-base font-medium text-foreground break-words cursor-pointer hover:bg-muted/50 p-1 rounded transition-colors"
+                                  <div
+                                    className="text-base font-medium text-card-foreground break-words cursor-pointer hover:bg-muted/50 p-1 rounded transition-colors"
                                     onDoubleClick={() => {
                                       setEditingCard(index);
                                       setEditTerm(card.front);
@@ -718,8 +718,8 @@ export default function StudyPage() {
                                     className="w-full p-2 border rounded-md text-base dark:text-black"
                                   />
                                 ) : (
-                                  <div 
-                                    className="text-base text-foreground break-words cursor-pointer hover:bg-muted/50 p-1 rounded transition-colors"
+                                  <div
+                                    className="text-base text-card-foreground break-words cursor-pointer hover:bg-muted/50 p-1 rounded transition-colors"
                                     onDoubleClick={() => {
                                       setEditingCard(index);
                                       setEditTerm(card.front);

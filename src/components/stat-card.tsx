@@ -29,6 +29,22 @@ const ACCENT_TEXT: Record<string, string> = {
   "bg-purple-500": "text-purple-500",
 };
 
+// A soft halo of the card's own accent, blooming from the icon corner, so the
+// stat row reads as four distinct colored panels instead of four identical
+// slabs. Kept low-alpha to stay calm under the numbers — spice, not noise.
+const ACCENT_GLOW: Record<string, string> = {
+  "bg-blue-500": "rgba(59, 130, 246, 0.18)",
+  "bg-green-500": "rgba(34, 197, 94, 0.18)",
+  "bg-orange-500": "rgba(249, 115, 22, 0.18)",
+  "bg-purple-500": "rgba(168, 85, 247, 0.18)",
+};
+
+function accentGlowStyle(color: string): React.CSSProperties | undefined {
+  const glow = ACCENT_GLOW[color];
+  if (!glow) return undefined;
+  return { backgroundImage: `radial-gradient(120% 120% at 100% 0%, ${glow}, transparent 55%)` };
+}
+
 type StatFaceProps = Pick<StatCardProps, "title" | "value" | "trend" | "color"> & {
   icon: LucideIcon;
 };
@@ -73,10 +89,11 @@ export function StatCard({ title, value, icon: Icon, trend, color, backContent, 
   const [isFlipped, setIsFlipped] = useState(false);
 
   const face = <StatFace title={title} value={value} icon={Icon} trend={trend} color={color} />;
+  const glowStyle = accentGlowStyle(color);
 
   // If no back content, render simple card
   if (!backContent) {
-    return <Card className="p-6">{face}</Card>;
+    return <Card className="p-6" style={glowStyle}>{face}</Card>;
   }
 
   // Flippable card with back content
@@ -93,10 +110,10 @@ export function StatCard({ title, value, icon: Icon, trend, color, backContent, 
         )}
       >
         {/* Front */}
-        <Card className="absolute inset-0 p-6 backface-hidden">{face}</Card>
+        <Card className="absolute inset-0 p-6 backface-hidden" style={glowStyle}>{face}</Card>
 
         {/* Back */}
-        <Card className="absolute inset-0 p-4 backface-hidden rotate-x-180 overflow-hidden">
+        <Card className="absolute inset-0 p-4 backface-hidden rotate-x-180 overflow-hidden" style={glowStyle}>
           {backTitle && (
             <p
               className={cn(

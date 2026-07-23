@@ -280,7 +280,7 @@ export default function MatchPairsPage() {
   if (loading) {
     return (
       <ProtectedRoute>
-        <div className="flex flex-col min-h-screen items-center justify-center bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-gray-900 dark:to-emerald-950">
+        <div className="flex flex-col h-[100dvh] overflow-hidden items-center justify-center bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-gray-900 dark:to-emerald-950">
           <p className="text-xl text-gray-700 dark:text-gray-300">Loading...</p>
         </div>
       </ProtectedRoute>
@@ -290,7 +290,7 @@ export default function MatchPairsPage() {
   if (!set) {
     return (
       <ProtectedRoute>
-        <div className="flex flex-col min-h-screen items-center justify-center bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-gray-900 dark:to-emerald-950">
+        <div className="flex flex-col h-[100dvh] overflow-hidden items-center justify-center bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-gray-900 dark:to-emerald-950">
           <p className="text-xl text-gray-700 dark:text-gray-300">Set not found</p>
         </div>
       </ProtectedRoute>
@@ -299,8 +299,8 @@ export default function MatchPairsPage() {
 
   return (
     <ProtectedRoute>
-      <div className="flex flex-col min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-gray-900 dark:to-emerald-950">
-        
+      <div className="flex flex-col h-[100dvh] overflow-hidden bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-gray-900 dark:to-emerald-950">
+
         {/* Idle State - Start Screen */}
         {gameState === "idle" && (
           <div className="flex-1 flex flex-col items-center justify-center p-6">
@@ -340,7 +340,7 @@ export default function MatchPairsPage() {
 
         {/* Playing State */}
         {gameState === "playing" && (
-          <div className="flex-1 flex flex-col">
+          <div className="flex-1 min-h-0 flex flex-col">
             {/* Header with timer */}
             <div className="flex items-center justify-between p-4 bg-white/50 dark:bg-gray-800/50 backdrop-blur border-b">
               <Button variant="ghost" size="sm" asChild>
@@ -361,8 +361,8 @@ export default function MatchPairsPage() {
             </div>
 
             {/* Game Grid */}
-            <div className="flex-1 flex items-center justify-center p-6">
-              <div className="grid grid-cols-4 gap-4 max-w-4xl w-full">
+            <div className="flex-1 min-h-0 flex items-center justify-center p-3 sm:p-6">
+              <div className="grid grid-cols-4 gap-2 sm:gap-4 max-w-4xl w-full h-full auto-rows-fr">
                 {cards.map((card) => {
                   const isClickable = !card.isMatched && !card.isSelected && !isChecking;
                   return (
@@ -378,7 +378,7 @@ export default function MatchPairsPage() {
                         }
                       }}
                       className={`
-                        relative min-h-[120px] sm:min-h-[140px] p-4 rounded-2xl shadow-md
+                        relative h-full min-h-0 p-2 sm:p-4 rounded-2xl shadow-md overflow-hidden
                         flex items-center justify-center text-center select-none
                         transition-all duration-200 ease-out
                         ${card.isMatched 
@@ -401,7 +401,7 @@ export default function MatchPairsPage() {
                       }}
                     >
                       <span
-                        className="text-base sm:text-lg md:text-xl font-semibold leading-snug"
+                        className="text-sm sm:text-base md:text-lg font-semibold leading-snug line-clamp-4"
                         style={{
                           color: card.isMatched || card.isSelected ? '#ffffff' : '#1f2937'
                         }}

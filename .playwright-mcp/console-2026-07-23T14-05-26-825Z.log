@@ -1,0 +1,87 @@
+[     376ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_compiled_react-dom_1e674e59._.js:14537
+[   30434ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:900
+[   30434ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:901
+[   30434ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:900
+[   30434ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:901
+[   60433ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:900
+[   60434ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:901
+[   60434ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:900
+[   60434ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:901
+[   90424ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:900
+[   90424ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:901
+[   90424ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:900
+[   90424ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:901
+[  120409ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:900
+[  120409ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:901
+[  120410ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:900
+[  120410ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:901
+[  150407ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:900
+[  150407ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:901
+[  150407ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:900
+[  150407ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:901
+[  180406ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:900
+[  180406ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:901
+[  180407ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:900
+[  180407ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:901
+[  210408ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:900
+[  210408ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:901
+[  210408ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:900
+[  210408ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:901
+[  240407ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:900
+[  240407ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:901
+[  240408ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:900
+[  240408ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:901
+[  270407ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:900
+[  270407ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:901
+[  270407ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:900
+[  270407ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:901
+[  300408ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:900
+[  300408ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:901
+[  300408ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:900
+[  300408ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:901
+[  330408ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:900
+[  330408ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:901
+[  330409ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:900
+[  330409ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:901
+[  360407ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:900
+[  360407ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:901
+[  360408ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:900
+[  360408ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:901
+[  390408ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:900
+[  390408ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:901
+[  390408ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:900
+[  390408ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:901
+[  420408ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:900
+[  420408ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:901
+[  420408ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:900
+[  420408ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:901
+[  450409ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:900
+[  450409ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:901
+[  450409ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:900
+[  450409ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:901
+[  480408ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:900
+[  480408ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:901
+[  480408ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:900
+[  480408ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:901
+[  510409ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:900
+[  510409ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:901
+[  510409ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:900
+[  510409ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:901
+[  540409ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:900
+[  540409ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:901
+[  540410ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:900
+[  540410ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:901
+[  540681ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5949
+[  540854ms] [LOG] [Fast Refresh] done in 251ms @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5809
+[  545052ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5949
+[  545059ms] [LOG] [Fast Refresh] done in 97ms @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5809
+[  549525ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5949
+[  549551ms] [LOG] [Fast Refresh] done in 79ms @ http://localhost:9002/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5809
+[  570410ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:900
+[  570411ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:901
+[  570411ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:900
+[  570411ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:901
+[  600411ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:900
+[  600411ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:901
+[  600411ms] [LOG] Overall Hit Rate: 0.00% @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:900
+[  600411ms] [TABLE] [] @ http://localhost:9002/_next/static/chunks/%5Broot-of-the-server%5D__6e30a7ee._.js:901

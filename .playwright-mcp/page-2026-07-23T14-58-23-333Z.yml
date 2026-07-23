@@ -1,0 +1,20 @@
+- generic [active] [ref=f11e1]:
+  - alert [ref=f11e2]
+  - generic [ref=f11e3]:
+    - paragraph [ref=f11e4]: "Cherry Bomb applied over font-mono / font-bold (should all render bubbly):"
+    - generic [ref=f11e5]:
+      - generic [ref=f11e6]: 12.3s
+      - generic [ref=f11e7]: 4 / 10
+      - paragraph [ref=f11e8]: "score: 120"
+      - paragraph [ref=f11e9]: "lives: ❤️❤️❤️"
+    - paragraph [ref=f11e10]: "Score: 5 / 10"
+    - heading "Time's Up!" [level=2] [ref=f11e11]
+    - heading "Game Complete!" [level=2] [ref=f11e12]
+    - heading "lock in!" [level=2] [ref=f11e13]
+    - heading "womp womp game over!" [level=2] [ref=f11e14]
+    - paragraph [ref=f11e15]: 8 / 10
+    - paragraph [ref=f11e16]: "final score: 250"
+    - paragraph [ref=f11e17]: Crossword Puzzle
+    - paragraph [ref=f11e18]: Match Pairs
+  - region "Notifications (F8)":
+    - list

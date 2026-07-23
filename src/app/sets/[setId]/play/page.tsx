@@ -69,8 +69,6 @@ export default function PlayPage() {
   // prevents double life-loss for the same missed word
   const missedHandledRef = useRef(false);
 
-  // header height estimate so the play area fills the rest (adjust if your header height changes)
-  const headerOffset = 72;
   const safePaddingX = 20; // keep words fully visible left/right
   const fallSpeed = isMobile ? 0.625 : 1.25;  // half speed on mobile
 
@@ -476,7 +474,7 @@ export default function PlayPage() {
   if (loading) {
     return (
       <ProtectedRoute>
-        <div className="flex flex-col min-h-screen bg-secondary/50">
+        <div className="flex flex-col h-[100dvh] overflow-hidden bg-secondary/50">
           <Header />
           <main className="flex-1 flex items-center justify-center">
             <p className="opacity-70">loading…</p>
@@ -489,7 +487,7 @@ export default function PlayPage() {
   if (!set) {
     return (
       <ProtectedRoute>
-        <div className="flex flex-col min-h-screen bg-secondary/50">
+        <div className="flex flex-col h-[100dvh] overflow-hidden bg-secondary/50">
           <Header />
           <main className="flex-1 flex items-center justify-center">
             <p>loading set…</p>
@@ -501,12 +499,12 @@ export default function PlayPage() {
 
   return (
     <ProtectedRoute>
-      <div className="flex flex-col min-h-screen bg-background">
+      <div className="flex flex-col h-[100dvh] overflow-hidden bg-background">
         <Header />
 
         {/* Main uses full screen width; the game area itself will be w-screen */}
-        <main className="flex-1 px-0">
-          <div className="w-full mx-auto flex flex-col">
+        <main className="flex-1 min-h-0 px-0 flex flex-col">
+          <div className="w-full mx-auto flex flex-col flex-1 min-h-0">
 
             {/* Top bar */}
             <div className="flex items-center justify-between gap-4 px-4 sm:px-6 lg:px-8 py-4">
@@ -551,11 +549,7 @@ export default function PlayPage() {
             {/* Game area (full-bleed, no border/outline) */}
             <div
               ref={gameAreaRef}
-              className="relative overflow-hidden flex items-center justify-center w-screen"
-              style={{
-                minHeight: `calc(100vh - ${headerOffset}px)`,
-                // no border/rounded styles: it's the whole screen width
-              }}
+              className="relative overflow-hidden flex items-center justify-center w-screen flex-1 min-h-0"
             >
               {gameState === "idle" && (
                 <div className="text-center flex flex-col items-center justify-center h-full w-full">

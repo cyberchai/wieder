@@ -1,0 +1,6 @@
+- generic [active] [ref=f17e1]:
+  - button "Open Next.js Dev Tools" [ref=f17e7] [cursor=pointer]
+  - alert [ref=f17e11]
+  - textbox "Type the term..." [ref=f17e14]: make this
+  - region "Notifications (F8)":
+    - list

@@ -1,0 +1,20 @@
+- generic [active] [ref=f9e1]:
+  - button "Open Next.js Dev Tools" [ref=f9e7] [cursor=pointer]
+  - alert [ref=f9e11]
+  - generic [ref=f9e13]:
+    - paragraph [ref=f9e14]: Top 3
+    - generic [ref=f9e15]:
+      - generic [ref=f9e16]:
+        - generic [ref=f9e19]: L
+        - generic [ref=f9e21]: Langley Owen
+        - generic [ref=f9e22]: "8820"
+      - generic [ref=f9e23]:
+        - generic [ref=f9e30]: K
+        - generic [ref=f9e32]: Katarina Peteranderl
+        - generic [ref=f9e33]: "7224"
+      - generic [ref=f9e34]:
+        - generic [ref=f9e41]: D
+        - generic [ref=f9e43]: Della Baer
+        - generic [ref=f9e44]: "1364"
+  - region "Notifications (F8)":
+    - list

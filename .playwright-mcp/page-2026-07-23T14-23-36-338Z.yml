@@ -1,0 +1,84 @@
+- generic [active] [ref=f4e1]:
+  - button "Open Next.js Dev Tools" [ref=f4e7] [cursor=pointer]
+  - alert [ref=f4e11]
+  - generic [ref=f4e12]:
+    - banner [ref=f4e85]:
+      - textbox "search sets, cards, and tags..." [ref=f4e90]
+    - main [ref=f4e92]:
+      - heading "Hi Chaira, let's get stacked" [level=2] [ref=f4e93]
+      - generic [ref=f4e94]:
+        - generic [ref=f4e97]:
+          - paragraph [ref=f4e98]: Cards Studied
+          - paragraph [ref=f4e99]: "0"
+          - generic [ref=f4e100]:
+            - generic [ref=f4e101]: ↑
+            - text: 0 cards available
+        - generic [ref=f4e109]:
+          - paragraph [ref=f4e110]: Wieds
+          - paragraph [ref=f4e111]: "0"
+          - generic [ref=f4e112]:
+            - generic [ref=f4e113]: ↑
+            - text: 1 per card, 100 per game
+        - generic [ref=f4e122]:
+          - paragraph [ref=f4e123]: Study Streak
+          - paragraph [ref=f4e124]: "1"
+          - generic [ref=f4e125]:
+            - generic [ref=f4e126]: ↑
+            - text: Keep it up!
+        - generic [ref=f4e132]:
+          - paragraph [ref=f4e133]: Leaderboard Rank
+          - paragraph [ref=f4e134]: …
+          - generic [ref=f4e135]:
+            - generic [ref=f4e136]: ↓
+            - text: No rank yet
+      - generic [ref=f4e141]:
+        - generic [ref=f4e142]:
+          - tablist [ref=f4e143]:
+            - tab "My Sets" [ref=f4e144] [cursor=pointer]
+            - tab "Group Sets" [ref=f4e145] [cursor=pointer]
+            - tab "Public Sets 20" [selected] [ref=f4e146] [cursor=pointer]:
+              - text: Public Sets
+              - generic [ref=f4e147]: "20"
+          - generic [ref=f4e149]:
+            - button "join set" [ref=f4e150] [cursor=pointer]
+            - button "new set" [ref=f4e151] [cursor=pointer]
+        - generic [ref=f4e152]:
+          - heading "public sets" [level=2] [ref=f4e153]
+          - button "browse all" [ref=f4e154] [cursor=pointer]
+        - generic [ref=f4e155]:
+          - generic [ref=f4e160]:
+            - generic [ref=f4e161]:
+              - 'heading "Kapitel 7: “Verkehr in der Stadt,”" [level=3] [ref=f4e162]'
+              - generic [ref=f4e163]: public
+            - paragraph [ref=f4e164]: 111 cards
+            - generic [ref=f4e165]:
+              - generic [ref=f4e166]: General
+              - generic [ref=f4e167]: by Everet Smith
+            - generic [ref=f4e169]:
+              - generic [ref=f4e170]: Progress
+              - generic [ref=f4e171]: 0%
+            - button "Study" [ref=f4e174] [cursor=pointer]
+          - generic [ref=f4e179]:
+            - generic [ref=f4e180]:
+              - heading "Kapital 2 “Berufe”, “Arbeit und Beruf”" [level=3] [ref=f4e181]
+              - generic [ref=f4e182]: public
+            - paragraph [ref=f4e183]: 5 cards
+            - generic [ref=f4e184]:
+              - generic [ref=f4e185]: General
+              - generic [ref=f4e186]: by Everet Smith
+            - generic [ref=f4e188]:
+              - generic [ref=f4e189]: Progress
+              - generic [ref=f4e190]: 0%
+            - button "Study" [ref=f4e193] [cursor=pointer]
+      - generic [ref=f4e194]:
+        - heading "Game Modes" [level=2] [ref=f4e195]
+        - paragraph [ref=f4e196]: Challenge yourself or play with friends
+        - generic [ref=f4e197]:
+          - generic [ref=f4e198]:
+            - heading "Crossword" [level=3] [ref=f4e203]
+            - paragraph [ref=f4e204]: Solve crossword puzzles using your flashcard knowledge
+          - generic [ref=f4e205]:
+            - heading "Speed" [level=3] [ref=f4e209]
+            - paragraph [ref=f4e210]: Race against the clock to answer as many cards as possible
+  - region "Notifications (F8)":
+    - list

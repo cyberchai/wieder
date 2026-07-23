@@ -1,0 +1,26 @@
+- generic [active] [ref=f14e1]:
+  - alert [ref=f14e2]
+  - generic [ref=f14e4]:
+    - generic [ref=f14e5]:
+      - generic [ref=f14e6]: Back
+      - generic [ref=f14e7]: 0:42
+      - generic [ref=f14e8]: 2 / 8 pairs
+    - generic [ref=f14e10]:
+      - generic [ref=f14e11]: term or a fairly long definition number 0
+      - generic [ref=f14e13]: term or a fairly long definition number 1
+      - generic [ref=f14e15]: term or a fairly long definition number 2
+      - generic [ref=f14e17]: term or a fairly long definition number 3
+      - generic [ref=f14e19]: term or a fairly long definition number 4
+      - generic [ref=f14e21]: term or a fairly long definition number 5
+      - generic [ref=f14e23]: term or a fairly long definition number 6
+      - generic [ref=f14e25]: term or a fairly long definition number 7
+      - generic [ref=f14e27]: term or a fairly long definition number 8
+      - generic [ref=f14e29]: term or a fairly long definition number 9
+      - generic [ref=f14e31]: term or a fairly long definition number 10
+      - generic [ref=f14e33]: term or a fairly long definition number 11
+      - generic [ref=f14e35]: term or a fairly long definition number 12
+      - generic [ref=f14e37]: term or a fairly long definition number 13
+      - generic [ref=f14e39]: term or a fairly long definition number 14
+      - generic [ref=f14e41]: term or a fairly long definition number 15
+  - region "Notifications (F8)":
+    - list

@@ -320,7 +320,7 @@ export default function SpeedPage() {
     return (
       <ProtectedRoute>
         <div 
-          className="flex flex-col min-h-screen items-center justify-center"
+          className="flex flex-col h-[100dvh] overflow-hidden items-center justify-center"
           style={{ backgroundColor: "rgb(144, 238, 144)" }}
         >
           <p className="text-xl text-gray-700">Loading...</p>
@@ -333,7 +333,7 @@ export default function SpeedPage() {
     return (
       <ProtectedRoute>
         <div 
-          className="flex flex-col min-h-screen items-center justify-center"
+          className="flex flex-col h-[100dvh] overflow-hidden items-center justify-center"
           style={{ backgroundColor: "rgb(144, 238, 144)" }}
         >
           <p className="text-xl text-gray-700">Set not found</p>
@@ -345,7 +345,7 @@ export default function SpeedPage() {
   return (
     <ProtectedRoute>
       <div 
-        className="flex flex-col min-h-screen transition-colors duration-300"
+        className="flex flex-col h-[100dvh] overflow-hidden transition-colors duration-300"
         style={{ 
           backgroundColor: gameState === "playing" 
             ? getBackgroundColor(timePercent) 
@@ -391,36 +391,36 @@ export default function SpeedPage() {
 
         {/* Playing State */}
         {gameState === "playing" && currentCard && (
-          <div className="flex-1 flex flex-col">
+          <div className="flex-1 min-h-0 flex flex-col">
             {/* Top bar with timer and progress */}
             <div className="flex justify-between items-center p-4">
-              <div className="text-lg font-mono font-cherry-bomb text-gray-800 bg-white/50 px-3 py-1 rounded">
+              <div className="text-xl font-mono font-cherry-bomb text-gray-800 bg-white/50 px-3 py-1 rounded">
                 {timeRemaining.toFixed(1)}s
               </div>
-              <div className="text-lg font-semibold font-cherry-bomb text-gray-800 bg-white/50 px-3 py-1 rounded">
+              <div className="text-xl font-semibold font-cherry-bomb text-gray-800 bg-white/50 px-3 py-1 rounded">
                 {currentIndex + 1} / {gameCards.length}
               </div>
             </div>
 
             {/* Definition display */}
-            <div className="flex-1 flex flex-col items-center justify-center px-6">
-              <div className="text-center mb-12">
-                <p className="text-sm uppercase tracking-wide text-gray-600 mb-4">
+            <div className="flex-1 min-h-0 overflow-hidden flex flex-col items-center justify-center px-6">
+              <div className="text-center mb-6 sm:mb-12">
+                <p className="text-base uppercase tracking-wide text-gray-600 mb-4">
                   Definition
                 </p>
-                <p className="text-2xl md:text-4xl font-medium text-gray-800 max-w-2xl leading-relaxed">
+                <p className="text-2xl sm:text-3xl md:text-4xl font-medium text-gray-800 max-w-3xl leading-relaxed line-clamp-6">
                   {currentCard.back}
                 </p>
               </div>
 
               {/* Input area */}
-              <div className="w-full max-w-md">
+              <div className="w-full max-w-2xl">
                 <Input
                   ref={inputRef}
                   value={typed}
                   onChange={handleInputChange}
                   placeholder="Type the term..."
-                  className="text-xl h-14 text-center bg-white/80 border-2 border-white shadow-lg placeholder:text-gray-400"
+                  className="text-3xl md:text-4xl h-20 text-center bg-white/80 border-2 border-white shadow-lg !text-gray-900 placeholder:text-gray-400"
                   autoFocus
                   autoComplete="off"
                   autoCapitalize="off"
